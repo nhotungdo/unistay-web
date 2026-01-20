@@ -3,30 +3,34 @@
     ViewData["Title"] = "Đặt lịch xem phòng";
 }
 
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h3>Đặt lịch xem phòng</h3>
-                    
-                    <form asp-action="Create" method="post">
-                        <input type="hidden" asp-for="RoomId" value="@ViewBag.RoomId" />
-                        
-                        <div class="mb-3">
-                            <label asp-for="AppointmentDate" class="form-label">Ngày & giờ xem phòng</label>
-                            <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required />
-                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Notes" class="form-label">Ghi chú (tùy chọn)</label>
-                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
-                    </form>
+            <div class="glass-panel animate-scale-in" style="padding: 2rem;">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-2">Đặt lịch xem phòng</h1>
+                    <p class="text-muted">Chọn thời gian phù hợp với bạn</p>
                 </div>
+                
+                <form asp-action="Create" method="post">
+                    <input type="hidden" asp-for="RoomId" value="@ViewBag.RoomId" />
+                    
+                    <div class="mb-4">
+                        <label asp-for="AppointmentDate" class="text-muted small font-weight-bold mb-1 d-block">NGÀY & GIỜ XEM PHÒNG</label>
+                        <input asp-for="AppointmentDate" type="datetime-local" class="form-input" required />
+                        <span asp-validation-for="AppointmentDate" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="text-muted small font-weight-bold mb-1 d-block">GHI CHÚ (TÙY CHỌN)</label>
+                        <textarea asp-for="Notes" class="form-input" rows="3" placeholder="Bạn có yêu cầu đặc biệt gì không?"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">Đặt lịch ngay</button>
+                    <div class="text-center mt-3">
+                        <a href="javascript:history.back()" class="text-muted small text-decoration-none">Hủy bỏ</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

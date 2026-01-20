@@ -32,6 +32,8 @@ namespace Unistay_Web.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<LoginHistory> LoginHistories { get; set; }
+        public DbSet<ActivityHistory> ActivityHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
