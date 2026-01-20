@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<section class="py-5">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb" style="display: flex; gap: 8px; list-style: none; padding: 0;">
+                <li class="breadcrumb-item"><a href="/" class="text-muted text-decoration-none">Trang chủ</a></li>
+                <li class="breadcrumb-item text-muted">/</li>
+                <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Chợ đồ cũ</a></li>
+                <li class="breadcrumb-item text-muted">/</li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-600);">Tủ lạnh mini Aqua 90L</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Images -->
+            <div class="col-md-6 mb-4">
+                <div class="card overflow-hidden mb-3">
+                    <img src="https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=800&h=600&fit=crop" class="w-100 object-cover" style="height: 400px;" alt="Main Image">
+                </div>
+                <div class="d-flex gap-2 overflow-auto">
+                    <img src="https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=100&h=100&fit=crop" class="rounded-md border border-primary-500 cursor-pointer" style="width: 80px; height: 80px; object-fit: cover;" alt="Thumbnail">
+                    <div class="rounded-md bg-light d-flex align-center justify-center cursor-pointer opacity-70 border border-neutral-200" style="width: 80px; height: 80px;">
+                        <!-- Placeholder -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="col-md-6">
+                <div class="d-flex justify-between align-start mb-2">
+                    <h1 class="h3 mb-0">Tủ lạnh mini Aqua 90L</h1>
+                    <button class="btn btn-ghost btn-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="d-flex align-center gap-2 mb-4">
+                    <span class="badge badge-success">Còn hàng</span>
+                    <span class="text-muted">•</span>
+                    <span class="text-muted">Đăng 2 giờ trước</span>
+                    <span class="text-muted">•</span>
+                    <span class="text-muted">Quận 3, TP.HCM</span>
+                </div>
+
+                <h2 class="h3 text-primary font-weight-bold mb-4">1.500.000 đ</h2>
+
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="h6 mb-3">Thông tin người bán</h4>
+                        <div class="d-flex align-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Tran+Van+B&background=random" class="rounded-full" width="48" height="48" alt="Seller">
+                            <div>
+                                <h5 class="mb-0 text-base">Trần Văn B</h5>
+                                <div class="d-flex align-center gap-1 text-warning small">
+                                    <span>★ 4.9</span>
+                                    <span class="text-muted">(15 đánh giá)</span>
+                                </div>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-outline-primary">Xem trang</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="h5 mb-2">Mô tả sản phẩm</h4>
+                    <p class="text-muted line-height-relaxed">
+                        Do chuyển trọ nên mình cần pass lại tủ lạnh mini Aqua 90L.
+                        Tủ mua mới được 6 tháng, còn bảo hành chính hãng.
+                        Mọi chức năng hoạt động bình thường, làm lạnh nhanh, tiết kiệm điện.
+                        Phù hợp cho sinh viên ở trọ hoặc phòng ngủ.
+                        Có fix nhẹ tiền xăng xe cho bạn nào qua lấy nhanh.
+                    </p>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex">
+                    <button class="btn btn-primary btn-lg flex-1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        Liên hệ người bán
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg flex-1">Nhắn tin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
