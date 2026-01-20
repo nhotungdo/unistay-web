@@ -3,186 +3,170 @@
     ViewData["Title"] = "Đăng phòng trọ";
 }
 
-<section class="py-5 bg-light">
+<section class="py-5" style="background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);">
     <div class="container mb-5">
         <div class="row justify-center">
             <div class="col-12 col-md-10 col-lg-8 mb-4">
-                <div class="text-center mb-5">
+                <div class="text-center mb-5 animate-fade-in">
                     <h1 class="h2 mb-2">Đăng phòng trọ mới</h1>
                     <p class="text-muted">Điền đầy đủ thông tin để thu hút người thuê nhanh nhất</p>
                 </div>
 
                 <form asp-action="Create" method="post" enctype="multipart/form-data">
                     <!-- Basic Information -->
-                    <div class="card card-elevated mb-4 animate-scale-in">
-                        <div class="card-body p-4">
-                            <h3 class="h5 mb-4 d-flex align-center gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary">
-                                    <path d="M3 21h18M5 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem;">
+                        <h3 class="h5 mb-4 d-flex align-center gap-2 text-primary font-weight-bold">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 21h18M5 21V7l8-4 8 4v14" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Thông tin cơ bản
+                        </h3>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Title" class="text-muted small font-weight-bold mb-1 d-block">TIÊU ĐỀ BÀI ĐĂNG <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-input" placeholder="VD: Phòng trọ cao cấp, full nội thất tại Quận 1" style="font-size: 1.1rem;" />
+                            <span asp-validation-for="Title" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Address" class="text-muted small font-weight-bold mb-1 d-block">ĐỊA CHỈ CHI TIẾT <span class="text-danger">*</span></label>
+                            <div class="position-relative">
+                                <input asp-for="Address" class="form-input" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-muted" style="position: absolute; right: 12px; top: 12px;">
+                                    <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32688 5.63604 3.63604C7.32387 1.94521 9.61305 1 12 1C14.3869 1 16.6761 1.94521 18.364 3.63604C20.0518 5.32688 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
                                 </svg>
-                                Thông tin cơ bản
-                            </h3>
-                            
-                            <div class="form-group mb-4">
-                                <label asp-for="Title" class="form-label">Tiêu đề bài đăng <span class="text-error">*</span></label>
-                                <input asp-for="Title" class="form-control form-control-lg" placeholder="VD: Phòng trọ cao cấp, full nội thất tại Quận 1" />
-                                <span asp-validation-for="Title" class="form-error"></span>
                             </div>
+                            <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
+                        </div>
 
-                            <div class="form-group mb-4">
-                                <label asp-for="Address" class="form-label">Địa chỉ chi tiết <span class="text-error">*</span></label>
-                                <div class="position-relative">
-                                    <input asp-for="Address" class="form-control" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-muted" style="position: absolute; right: 12px; top: 12px;">
-                                        <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32688 5.63604 3.63604C7.32387 1.94521 9.61305 1 12 1C14.3869 1 16.6761 1.94521 18.364 3.63604C20.0518 5.32688 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                </div>
-                                <span asp-validation-for="Address" class="form-error"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Description" class="form-label">Mô tả phòng <span class="text-error">*</span></label>
-                                <textarea asp-for="Description" class="form-control" rows="5" placeholder="Mô tả chi tiết về phòng, tiện ích xung quanh, giờ giấc..."></textarea>
-                                <span asp-validation-for="Description" class="form-error"></span>
-                            </div>
+                        <div class="mb-0">
+                            <label asp-for="Description" class="text-muted small font-weight-bold mb-1 d-block">MÔ TẢ PHÒNG <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-input" rows="5" placeholder="Mô tả chi tiết về phòng, tiện ích xung quanh, giờ giấc..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
                         </div>
                     </div>
 
                     <!-- Pricing & Specs -->
-                    <div class="card card-elevated mb-4 animate-scale-in" style="animation-delay: 0.1s">
-                        <div class="card-body p-4">
-                            <h3 class="h5 mb-4 d-flex align-center gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary">
-                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                Giá cả & Diện tích
-                            </h3>
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem; animation-delay: 0.1s">
+                        <h3 class="h5 mb-4 d-flex align-center gap-2 text-primary font-weight-bold">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Giá cả & Diện tích
+                        </h3>
 
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-4">
-                                    <div class="form-group">
-                                        <label asp-for="Price" class="form-label">Giá thuê (tháng) <span class="text-error">*</span></label>
-                                        <div class="position-relative">
-                                            <input asp-for="Price" type="number" class="form-control" placeholder="0" />
-                                            <span class="text-muted" style="position: absolute; right: 12px; top: 12px;">VNĐ</span>
-                                        </div>
-                                        <span asp-validation-for="Price" class="form-error"></span>
-                                    </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-4">
+                                <label asp-for="Price" class="text-muted small font-weight-bold mb-1 d-block">GIÁ THUÊ (THÁNG) <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input asp-for="Price" type="number" class="form-input" placeholder="0" />
+                                    <span class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events:none;">VNĐ</span>
                                 </div>
-                                <div class="col-12 col-md-6 mb-4">
-                                    <div class="form-group">
-                                        <label asp-for="Deposit" class="form-label">Tiền cọc</label>
-                                        <div class="position-relative">
-                                            <input asp-for="Deposit" type="number" class="form-control" placeholder="0" />
-                                            <span class="text-muted" style="position: absolute; right: 12px; top: 12px;">VNĐ</span>
-                                        </div>
-                                    </div>
+                                <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-4">
+                                <label asp-for="Deposit" class="text-muted small font-weight-bold mb-1 d-block">TIỀN CỌC</label>
+                                <div class="position-relative">
+                                    <input asp-for="Deposit" type="number" class="form-input" placeholder="0" />
+                                    <span class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events:none;">VNĐ</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-4">
-                                    <div class="form-group">
-                                        <label asp-for="Area" class="form-label">Diện tích <span class="text-error">*</span></label>
-                                        <div class="position-relative">
-                                            <input asp-for="Area" type="number" class="form-control" placeholder="0" />
-                                            <span class="text-muted" style="position: absolute; right: 12px; top: 12px;">m²</span>
-                                        </div>
-                                    </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-4 mb-md-0">
+                                <label asp-for="Area" class="text-muted small font-weight-bold mb-1 d-block">DIỆN TÍCH <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input asp-for="Area" type="number" class="form-input" placeholder="0" />
+                                    <span class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events:none;">m²</span>
                                 </div>
-                                <div class="col-12 col-md-6 mb-4">
-                                    <div class="form-group">
-                                        <label asp-for="MaxOccupants" class="form-label">Số người tối đa</label>
-                                        <div class="position-relative">
-                                            <input asp-for="MaxOccupants" type="number" class="form-control" placeholder="1" />
-                                            <span class="text-muted" style="position: absolute; right: 12px; top: 12px;">Người</span>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="MaxOccupants" class="text-muted small font-weight-bold mb-1 d-block">SỐ NGƯỜI TỐI ĐA</label>
+                                <div class="position-relative">
+                                    <input asp-for="MaxOccupants" type="number" class="form-input" placeholder="1" />
+                                    <span class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events:none;">Người</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Images -->
-                    <div class="card card-elevated mb-4 animate-scale-in" style="animation-delay: 0.2s">
-                        <div class="card-body p-4">
-                            <h3 class="h5 mb-4 d-flex align-center gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-                                    <polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                Hình ảnh phòng
-                            </h3>
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem; animation-delay: 0.2s">
+                        <h3 class="h5 mb-4 d-flex align-center gap-2 text-primary font-weight-bold">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            Hình ảnh phòng
+                        </h3>
 
-                            <div class="form-group">
-                                <div class="border-2 border-dashed border-neutral-300 rounded-xl p-5 text-center bg-light">
-                                    <input type="file" id="imageUpload" class="d-none" multiple accept="image/*" />
-                                    <label for="imageUpload" class="cursor-pointer mb-3 d-inline-block">
-                                        <div class="feature-icon mb-3" style="width: 48px; height: 48px; background: var(--primary-100); color: var(--primary-600);">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="17 8 12 3 7 8"></polyline>
-                                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                                            </svg>
-                                        </div>
-                                    </label>
-                                    <p class="mb-1 fw-bold">Kéo thả ảnh vào đây hoặc click để tải lên</p>
-                                    <small class="text-muted">Hỗ trợ JPG, PNG (Tối đa 5MB/ảnh)</small>
-                                </div>
-                                <div class="image-gallery mt-3" id="previewGallery">
-                                    <!-- Previews will appear here -->
-                                </div>
+                        <div class="mb-0">
+                            <div class="border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-fast" style="border-color: var(--border-glass); background: rgba(255,255,255,0.5);">
+                                <input type="file" id="imageUpload" class="d-none" multiple accept="image/*" />
+                                <label for="imageUpload" class="cursor-pointer mb-3 d-inline-block">
+                                    <div class="feature-icon mb-3 d-flex align-center justify-center rounded-circle" style="width: 48px; height: 48px; background: var(--primary-100); color: var(--primary-600); margin: 0 auto;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                </label>
+                                <p class="mb-1 fw-bold">Kéo thả ảnh vào đây hoặc click để tải lên</p>
+                                <small class="text-muted">Hỗ trợ JPG, PNG (Tối đa 5MB/ảnh)</small>
+                            </div>
+                            <div class="image-gallery mt-3 d-flex flex-wrap gap-2" id="previewGallery">
+                                <!-- Previews will appear here -->
                             </div>
                         </div>
                     </div>
 
                     <!-- Amenities -->
-                    <div class="card card-elevated mb-4 animate-scale-in" style="animation-delay: 0.3s">
-                        <div class="card-body p-4">
-                            <h3 class="h5 mb-4 d-flex align-center gap-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                Tiện ích
-                            </h3>
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem; animation-delay: 0.3s">
+                        <h3 class="h5 mb-4 d-flex align-center gap-2 text-primary font-weight-bold">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Tiện ích
+                        </h3>
 
-                            <div class="row g-3">
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="wifi" id="wifi">
-                                        <label class="form-check-label" for="wifi">Wifi miễn phí</label>
-                                    </div>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="wifi" id="wifi" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="wifi">Wifi miễn phí</label>
                                 </div>
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="ac" id="ac">
-                                        <label class="form-check-label" for="ac">Máy lạnh</label>
-                                    </div>
+                            </div>
+                            <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="ac" id="ac" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="ac">Máy lạnh</label>
                                 </div>
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="wc" id="wc">
-                                        <label class="form-check-label" for="wc">WC riêng</label>
-                                    </div>
+                            </div>
+                            <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="wc" id="wc" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="wc">WC riêng</label>
                                 </div>
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="parking" id="parking">
-                                        <label class="form-check-label" for="parking">Chỗ để xe</label>
-                                    </div>
+                            </div>
+                             <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="parking" id="parking" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="parking">Chỗ để xe</label>
                                 </div>
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="security" id="security">
-                                        <label class="form-check-label" for="security">An ninh 24/7</label>
-                                    </div>
+                            </div>
+                              <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="security" id="security" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="security">An ninh 24/7</label>
                                 </div>
-                                <div class="col-6 col-md-4 mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="kitchen" id="kitchen">
-                                        <label class="form-check-label" for="kitchen">Kệ bếp</label>
-                                    </div>
+                            </div>
+                            <div class="col-6 col-md-4 mb-3">
+                                <div class="form-check d-flex gap-2 align-center">
+                                    <input class="form-check-input" type="checkbox" value="kitchen" id="kitchen" style="width: 1.25em; height: 1.25em;">
+                                    <label class="form-check-label pt-1" for="kitchen">Kệ bếp</label>
                                 </div>
                             </div>
                         </div>
@@ -190,8 +174,8 @@
 
                     <!-- Actions -->
                     <div class="d-flex gap-3 justify-end">
-                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Hủy bỏ</a>
-                        <button type="submit" class="btn btn-primary btn-lg px-5">Đăng tin</button>
+                        <a asp-action="Index" class="btn btn-outline" style="border:none;">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-5 py-2" style="font-size:1.1rem;">Đăng tin</button>
                     </div>
                 </form>
             </div>

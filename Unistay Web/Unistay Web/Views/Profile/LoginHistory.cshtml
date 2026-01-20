@@ -1,0 +1,161 @@
+@model List<Unistay_Web.Models.User.LoginHistory>
+@{
+    ViewData["Title"] = "Lịch sử đăng nhập";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Lịch sử đăng nhập</h4>
+                    <small class="text-muted">Xem tất cả hoạt động đăng nhập của bạn</small>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info">
+                            Không có lịch sử đăng nhập.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Thời gian</th>
+                                        <th>Phương thức</th>
+                                        <th>Thiết bị</th>
+                                        <th>Địa chỉ IP</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thời lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var login in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <small>@login.LoginTime.ToString("dd/MM/yyyy HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-info">
+                                                    @(login.AuthenticationMethod ?? "Unknown")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    @if (!string.IsNullOrEmpty(login.DeviceType))
+                                                    {
+                                                        <span>@login.DeviceType</span>
+                                                        <br />
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(login.Browser))
+                                                    {
+                                                        <span class="text-muted">@login.Browser</span>
+                                                        <br />
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(login.OperatingSystem))
+                                                    {
+                                                        <span class="text-muted">@login.OperatingSystem</span>
+                                                    }
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small class="text-monospace">@login.IpAddress</small>
+                                            </td>
+                                            <td>
+                                                @if (login.IsSuccessful)
+                                                {
+                                                    <span class="badge badge-success">Thành công</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">Thất bại</span>
+                                                    @if (!string.IsNullOrEmpty(login.FailureReason))
+                                                    {
+                                                        <br />
+                                                        <small class="text-danger">@login.FailureReason</small>
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (login.SessionDuration.HasValue)
+                                                {
+                                                    <small>
+                                                        @{
+                                                            var duration = login.SessionDuration.Value;
+                                                            if (duration.TotalHours >= 1)
+                                                            {
+                                                                @($"{(int)duration.TotalHours}h {duration.Minutes}m")
+                                                            }
+                                                            else if (duration.TotalMinutes >= 1)
+                                                            {
+                                                                @($"{(int)duration.TotalMinutes}m {duration.Seconds}s")
+                                                            }
+                                                            else
+                                                            {
+                                                                @($"{duration.Seconds}s")
+                                                            }
+                                                        }
+                                                    </small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">Đang hoạt động</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if (ViewBag.HasNextPage)
+                        {
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="@Url.Action("LoginHistory", "Profile", new { page = ViewBag.CurrentPage - 1 })">
+                                                Trang trước
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="page-item active">
+                                        <span class="page-link">@ViewBag.CurrentPage</span>
+                                    </li>
+                                    @if (ViewBag.HasNextPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="@Url.Action("LoginHistory", "Profile", new { page = ViewBag.CurrentPage + 1 })">
+                                                Trang tiếp theo
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
+                    }
+
+                    <div class="alert alert-warning mt-4 mb-0">
+                        <strong>Lưu ý bảo mật:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Kiểm tra danh sách các thiết bị đã đăng nhập</li>
+                            <li>Nếu bạn phát hiện đăng nhập từ một vị trí không quen thuộc, hãy đổi mật khẩu ngay</li>
+                            <li>Luôn đăng xuất khỏi các thiết bị công cộng</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-secondary">Quay lại hồ sơ</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,11 +3,11 @@
     ViewData["Title"] = "Tạo hồ sơ tìm bạn trọ";
 }
 
-<section class="py-5 bg-light">
+<section class="py-5" style="background: radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%);">
     <div class="container mb-5">
         <div class="row justify-center">
             <div class="col-12 col-md-10 col-lg-8">
-                <div class="text-center mb-5">
+                <div class="text-center mb-5 animate-fade-in">
                     <h1 class="h2 mb-2">Tạo hồ sơ tìm bạn trọ</h1>
                     <p class="text-muted">Cập nhật thông tin để tìm người bạn cùng phòng lý tưởng</p>
                 </div>
@@ -15,133 +15,134 @@
                 <form asp-action="Create" method="post" enctype="multipart/form-data">
                     
                     <!-- Basic Info -->
-                    <div class="card card-elevated mb-4 animate-scale-in">
-                        <div class="card-body p-4">
-                            <h3 class="h5 mb-4 text-primary">Thông tin cá nhân</h3>
-                            
-                            <div class="row align-center mb-4">
-                                <div class="col-auto">
-                                    <div class="position-relative">
-                                        <div class="w-20 h-20 rounded-full bg-neutral-200 d-flex align-center justify-center overflow-hidden" id="avatarPreviewContainer">
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="text-muted" stroke="currentColor" stroke-width="2">
-                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                <circle cx="12" cy="7" r="4"></circle>
-                                            </svg>
-                                        </div>
-                                        <label for="avatarUpload" class="btn btn-sm btn-primary rounded-full position-absolute bottom-0 right-0 p-1" style="width: 32px; height: 32px;">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                <polyline points="17 8 12 3 7 8"></polyline>
-                                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                                            </svg>
-                                        </label>
-                                        <input type="file" id="avatarUpload" class="d-none" accept="image/*" />
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem;">
+                        <h3 class="h5 mb-4 text-primary font-weight-bold">Thông tin cá nhân</h3>
+                        
+                        <div class="row align-center mb-4">
+                            <div class="col-auto">
+                                <div class="position-relative">
+                                    <div class="d-flex align-center justify-center overflow-hidden rounded-circle" id="avatarPreviewContainer" style="width: 80px; height: 80px; background: rgba(0,0,0,0.05);">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="text-muted" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
                                     </div>
-                                </div>
-                                <div class="col">
-                                    <h5 class="mb-1">Ảnh đại diện</h5>
-                                    <p class="text-muted small mb-0">Tải lên ảnh rõ mặt để tăng độ tin cậy. Hỗ trợ JPG, PNG.</p>
+                                    <label for="avatarUpload" class="btn btn-primary rounded-circle position-absolute bottom-0 right-0 p-0 d-flex align-center justify-center cursor-pointer" style="width: 32px; height: 32px; right: 0; bottom: 0;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </label>
+                                    <input type="file" id="avatarUpload" class="d-none" accept="image/*" />
                                 </div>
                             </div>
+                            <div class="col">
+                                <h5 class="mb-1">Ảnh đại diện</h5>
+                                <p class="text-muted small mb-0">Tải lên ảnh rõ mặt để tăng độ tin cậy. Hỗ trợ JPG, PNG.</p>
+                            </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Họ và tên</label>
-                                    <input type="text" class="form-control" placeholder="Nguyễn Văn A" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Giới tính</label>
-                                    <select class="form-select form-control">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small font-weight-bold mb-1 d-block">HỌ VÀ TÊN</label>
+                                <input type="text" class="form-input" placeholder="Nguyễn Văn A" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small font-weight-bold mb-1 d-block">GIỚI TÍNH</label>
+                                <div class="position-relative">
+                                    <select class="form-input">
                                         <option value="">Chọn giới tính</option>
                                         <option value="Male">Nam</option>
                                         <option value="Female">Nữ</option>
                                         <option value="Other">Khác</option>
                                     </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Năm sinh</label>
-                                    <input type="number" class="form-control" placeholder="2003" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nghề nghiệp/Trường học</label>
-                                    <input type="text" class="form-control" placeholder="Sinh viên ĐHKHTN" />
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events: none;">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
                                 </div>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small font-weight-bold mb-1 d-block">NĂM SINH</label>
+                                <input type="number" class="form-input" placeholder="2003" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small font-weight-bold mb-1 d-block">NGHỀ NGHIỆP/TRƯỜNG HỌC</label>
+                                <input type="text" class="form-input" placeholder="Sinh viên ĐHKHTN" />
+                            </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Giới thiệu bản thân</label>
-                                <textarea class="form-control" rows="4" placeholder="Viết một đoạn ngắn về bản thân, sở thích, lối sống..."></textarea>
-                            </div>
+                        <div class="mb-3">
+                            <label class="text-muted small font-weight-bold mb-1 d-block">GIỚI THIỆU BẢN THÂN</label>
+                            <textarea class="form-input" rows="4" placeholder="Viết một đoạn ngắn về bản thân, sở thích, lối sống..."></textarea>
                         </div>
                     </div>
 
                     <!-- Preferences -->
-                    <div class="card card-elevated mb-4 animate-scale-in" style="animation-delay: 0.1s;">
-                         <div class="card-body p-4">
-                            <h3 class="h5 mb-4 text-primary">Tiêu chí tìm bạn/phòng</h3>
+                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem; animation-delay: 0.1s;">
+                            <h3 class="h5 mb-4 text-primary font-weight-bold">Tiêu chí tìm bạn/phòng</h3>
                             
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Khu vực mong muốn</label>
-                                    <input type="text" class="form-control" placeholder="VD: Quận 1, Quận 5" />
+                                    <label class="text-muted small font-weight-bold mb-1 d-block">KHU VỰC MONG MUỐN</label>
+                                    <input type="text" class="form-input" placeholder="VD: Quận 1, Quận 5" />
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Ngân sách (VNĐ/tháng)</label>
+                                    <label class="text-muted small font-weight-bold mb-1 d-block">NGÂN SÁCH (VNĐ/THÁNG)</label>
                                     <div class="d-flex gap-2">
-                                        <input type="number" class="form-control" placeholder="Tối thiểu" />
+                                        <input type="number" class="form-input" placeholder="Tối thiểu" />
                                         <span class="align-self-center">-</span>
-                                        <input type="number" class="form-control" placeholder="Tối đa" />
+                                        <input type="number" class="form-input" placeholder="Tối đa" />
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label d-block mb-3">Thói quen & Lối sống</label>
+                                <label class="text-muted small font-weight-bold mb-3 d-block">THÓI QUEN & LỐI SỐNG</label>
                                 <div class="row g-3">
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="smoking">
-                                            <label class="form-check-label" for="smoking">Không hút thuốc</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="smoking" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="smoking">Không hút thuốc</label>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="pet">
-                                            <label class="form-check-label" for="pet">Nuôi thú cưng</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="pet" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="pet">Nuôi thú cưng</label>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="cooking">
-                                            <label class="form-check-label" for="cooking">Thích nấu ăn</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="cooking" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="cooking">Thích nấu ăn</label>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="clean">
-                                            <label class="form-check-label" for="clean">Ngăn nắp, sạch sẽ</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="clean" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="clean">Ngăn nắp, sạch sẽ</label>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="quiet">
-                                            <label class="form-check-label" for="quiet">Yên tĩnh</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="quiet" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="quiet">Yên tĩnh</label>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-4">
-                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="party">
-                                            <label class="form-check-label" for="party">Thích tụ tập</label>
+                                            <div class="form-check d-flex align-center gap-2">
+                                            <input class="form-check-input" type="checkbox" id="party" style="width: 1.25em; height: 1.25em;">
+                                            <label class="form-check-label pt-1" for="party">Thích tụ tập</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                         </div>
                     </div>
 
                     <div class="d-flex gap-3 justify-end">
-                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Hủy bỏ</a>
-                        <button type="submit" class="btn btn-primary btn-lg px-5">Hoàn tất</button>
+                        <a asp-action="Index" class="btn btn-outline" style="border:none;">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-5">Hoàn tất</button>
                     </div>
                 </form>
             </div>
