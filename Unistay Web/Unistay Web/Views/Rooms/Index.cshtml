@@ -1,0 +1,119 @@
+@{
+    ViewData["Title"] = "Tìm phòng trọ";
+}
+
+<section style="padding: 2rem 0;">
+    <div class="container">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 2rem;">
+            <div>
+                <h1 class="h2 mb-2">Tìm phòng trọ</h1>
+                <p class="text-muted">Hàng ngàn phòng trọ chất lượng đang chờ bạn</p>
+            </div>
+            <a asp-action="Create" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Đăng tin miễn phí
+            </a>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="glass-panel animate-fade-in" style="padding: 1.5rem; margin-bottom: 3rem;">
+            <form asp-action="Search" method="get">
+                <div class="row align-end" style="display:flex; gap:1.5rem; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="flex:2; min-width:250px;">
+                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">KHU VỰC</label>
+                        <div style="position:relative;">
+                            <input type="text" class="form-input" name="location" placeholder="Nhập quận/huyện..." style="padding-left:2.5rem;" />
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-muted" style="position: absolute; left: 12px; top: 12px;">
+                                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">KHOẢNG GIÁ</label>
+                        <select class="form-input" name="priceRange">
+                            <option value="">Tất cả mức giá</option>
+                            <option value="0-2000000">Dưới 2 triệu</option>
+                            <option value="2000000-4000000">2 - 4 triệu</option>
+                            <option value="4000000-6000000">4 - 6 triệu</option>
+                            <option value="6000000+">Trên 6 triệu</option>
+                        </select>
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">LOẠI PHÒNG</label>
+                        <select class="form-input" name="roomType">
+                            <option value="">Tất cả loại phòng</option>
+                            <option value="dorm">Ký túc xá</option>
+                            <option value="room">Phòng trọ</option>
+                            <option value="apartment">Căn hộ</option>
+                            <option value="house">Nhà nguyên căn</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Lọc tin</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Rooms List -->
+        <div class="grid-3 animate-fade-in delay-200" id="roomsList">
+            <!-- Example Item -->
+             <div class="modern-card p-0" style="padding:0; position:relative;">
+                <span class="badge badge-success" style="position:absolute; top:12px; right:12px; z-index:2;">Mới đăng</span>
+                 <div style="aspect-ratio:4/3; position:relative; overflow:hidden; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" style="width:100%; height:100%; object-fit:cover; transition:transform 0.5s;" alt="Room">
+                </div>
+                
+                <div style="padding:1.5rem;">
+                    <h3 class="h5 mb-1 text-truncate">Phòng trọ cao cấp Quận 1</h3>
+                    <p class="text-muted small mb-3" style="display:flex; align-items:center; gap:0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32688 5.63604 3.63604C7.32387 1.94521 9.61305 1 12 1C14.3869 1 16.6761 1.94521 18.364 3.63604C20.0518 5.32688 21 7.61305 21 10Z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Quận 1, TP.HCM
+                    </p>
+                    
+                    <div style="display:flex; gap:1rem; margin-bottom:1.5rem;">
+                        <span style="background:var(--bg-body); padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.8rem; display:flex; align-items:center; gap:0.25rem; color:var(--text-muted);">
+                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 21h18M5 21V7l8-4 8 4v14"></path>
+                            </svg>
+                            25m²
+                        </span>
+                        <span style="background:var(--bg-body); padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.8rem; display:flex; align-items:center; gap:0.25rem; color:var(--text-muted);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            2 người
+                        </span>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-glass); padding-top:1rem;">
+                        <span class="h5 text-primary mb-0">3.5 tr/tháng</span>
+                        <a asp-action="Details" asp-route-id="1" class="btn btn-outline" style="padding:0.5rem 1rem; font-size:0.875rem;">Chi tiết</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More Items... (This would be a loop in real implementation) -->
+        </div>
+
+        <!-- Pagination -->
+        <div style="display:flex; justify-content:center; margin-top:4rem;">
+            <div style="display:flex; gap:0.5rem;">
+                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&larr;</a>
+                <a href="#" class="btn btn-primary" style="padding:0.5rem 1rem;">1</a>
+                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">2</a>
+                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">3</a>
+                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>

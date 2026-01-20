@@ -1,0 +1,37 @@
+@model Unistay_Web.Models.Booking.Appointment
+@{
+    ViewData["Title"] = "Đặt lịch xem phòng";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Đặt lịch xem phòng</h3>
+                    
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="RoomId" value="@ViewBag.RoomId" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="AppointmentDate" class="form-label">Ngày & giờ xem phòng</label>
+                            <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Ghi chú (tùy chọn)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

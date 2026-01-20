@@ -1,0 +1,204 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="row" style="display:flex; align-items:center; gap:4rem; flex-wrap:wrap;">
+            <div class="col-lg-6" style="flex:1; min-width:300px;">
+                <div class="animate-fade-in">
+                    <span class="badge badge-primary mb-3" style="display:inline-block;">Nền tảng số 1 cho sinh viên</span>
+                    <h1 class="hero-title">
+                        Tìm nơi ở lý tưởng <br/>
+                        <span class="text-gradient">Kết nối cộng đồng</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Unistay giúp bạn tìm phòng trọ, bạn cùng phòng và mua bán đồ dùng một cách dễ dàng, an toàn và hiện đại nhất.
+                    </p>
+                    
+                    <div class="glass-panel p-2" style="display:flex; gap:0.5rem; padding:0.5rem; max-width:500px;">
+                        <div style="flex:1; position:relative;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted);">
+                                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input type="text" style="width:100%; border:none; padding:1rem 1rem 1rem 2.5rem; background:transparent; font-size:1rem; outline:none;" placeholder="Tìm kiếm khu vực (VD: Quận 1)...">
+                        </div>
+                        <button class="btn btn-primary">Tìm ngay</button>
+                    </div>
+                    
+                    <div class="mt-4" style="margin-top:2rem; display:flex; gap:2rem;">
+                        <div>
+                            <h3 class="h2 text-primary" style="margin-bottom:0; font-size:2rem; font-weight:800; color:var(--primary-600);">10K+</h3>
+                            <p class="text-muted">Phòng trọ</p>
+                        </div>
+                        <div>
+                            <h3 class="h2 text-primary" style="margin-bottom:0; font-size:2rem; font-weight:800; color:var(--secondary-500);">5K+</h3>
+                            <p class="text-muted">Người dùng</p>
+                        </div>
+                         <div>
+                            <h3 class="h2 text-primary" style="margin-bottom:0; font-size:2rem; font-weight:800; color:#10B981;">98%</h3>
+                            <p class="text-muted">Hài lòng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6" style="flex:1; min-width:300px;">
+                <div class="animate-fade-in delay-200" style="position:relative;">
+                    <!-- Abstract Decorative Elements -->
+                    <div style="position:absolute; top:-20px; right:-20px; width:200px; height:200px; background:var(--primary-gradient); filter:blur(80px); opacity:0.4; border-radius:50%;"></div>
+                    <div style="position:absolute; bottom:-40px; left:-20px; width:250px; height:250px; background:var(--secondary-gradient); filter:blur(80px); opacity:0.4; border-radius:50%;"></div>
+                    
+                    <!-- Main Hero Image Card -->
+                    <div class="modern-card" style="transform:rotate(-2deg); z-index:2; position:relative;">
+                        <img src="https://images.unsplash.com/photo-1556020685-ae79c9562774?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Modern Room" style="border-radius:var(--radius-md); width:100%; aspect-ratio:4/3; object-fit:cover;">
+                        <div class="glass-panel" style="position:absolute; bottom:20px; left:20px; right:20px; padding:1rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h4 style="font-size:1.1rem; margin-bottom:0.25rem;">Căn hộ Studio Luxury</h4>
+                                    <p class="text-muted" style="font-size:0.875rem;">Quận 7, TP.HCM</p>
+                                </div>
+                                <span class="badge badge-primary">5.5tr/tháng</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section style="padding: 5rem 0;">
+    <div class="container">
+        <div class="text-center mb-5" style="margin-bottom:4rem; text-align:center;">
+            <h2 class="h1">Khám phá dịch vụ</h2>
+            <p class="hero-subtitle text-muted" style="max-width:600px; margin:0 auto;">Hệ sinh thái toàn diện dành cho sinh viên hiện đại</p>
+        </div>
+        
+        <div class="grid-3">
+            <a asp-controller="Rooms" asp-action="Index" class="modern-card" style="text-decoration:none;">
+                <div style="width:64px; height:64px; border-radius:16px; background:var(--primary-gradient); display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; color:white;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <h3 class="h4 mb-2">Tìm phòng trọ</h3>
+                <p class="text-muted mb-4">Hàng ngàn phòng trọ được xác thực, hình ảnh rõ ràng và giá cả minh bạch.</p>
+                <span class="text-gradient font-weight-bold" style="font-weight:700;">Khám phá ngay &rarr;</span>
+            </a>
+            
+            <a asp-controller="Roommates" asp-action="Index" class="modern-card" style="text-decoration:none;">
+                <div style="width:64px; height:64px; border-radius:16px; background:var(--secondary-gradient); display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; color:white;">
+                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h3 class="h4 mb-2">Tìm bạn ở ghép</h3>
+                <p class="text-muted mb-4">Kết nối với những người bạn cùng sở thích, lối sống để chia sẻ không gian sống.</p>
+                <span class="text-gradient font-weight-bold" style="font-weight:700;">Tìm bạn ngay &rarr;</span>
+            </a>
+            
+            <a asp-controller="Marketplace" asp-action="Index" class="modern-card" style="text-decoration:none;">
+                <div style="width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg, #10B981, #059669); display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; color:white;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                </div>
+                <h3 class="h4 mb-2">Chợ đồ cũ</h3>
+                <p class="text-muted mb-4">Mua bán, trao đổi đồ dùng học tập và sinh hoạt với giá sinh viên.</p>
+                <span class="text-gradient font-weight-bold" style="font-weight:700;">Mua sắm ngay &rarr;</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Rooms Preview -->
+<section style="padding: 5rem 0; background: rgba(99, 102, 241, 0.03);">
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:3rem;">
+            <div>
+                <h2 class="h2">Phòng trọ nổi bật</h2>
+                <p class="text-muted">Được xem nhiều nhất tuần qua</p>
+            </div>
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline">Xem tất cả</a>
+        </div>
+        
+        <div class="grid-3">
+            <!-- Room 1 -->
+            <div class="modern-card p-0" style="padding:0;">
+                <div style="position:relative;">
+                     <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" style="width:100%; height:240px; object-fit:cover;">
+                     <span class="badge badge-primary" style="position:absolute; top:1rem; right:1rem;">MỚI</span>
+                </div>
+                <div style="padding:1.5rem;">
+                    <h3 class="h5 mb-2">Phòng Studio Quận 1</h3>
+                    <p class="text-muted small mb-3">Đầy đủ nội thất, view đẹp, an ninh 24/7</p>
+                    <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">
+                        <span>25m²</span> | <span>2 người</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="h5 text-primary mb-0">3.5 tr/tháng</span>
+                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="1" class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;">Xem</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Room 2 -->
+             <div class="modern-card p-0" style="padding:0;">
+                <div style="position:relative;">
+                     <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop" style="width:100%; height:240px; object-fit:cover;">
+                     <span class="badge badge-success" style="position:absolute; top:1rem; right:1rem;">HOT</span>
+                </div>
+                <div style="padding:1.5rem;">
+                    <h3 class="h5 mb-2">Homestay Bình Thạnh</h3>
+                    <p class="text-muted small mb-3">Gần trường HUTECH, UEF, đi lại thuận tiện</p>
+                    <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">
+                        <span>30m²</span> | <span>4 người</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="h5 text-primary mb-0">4.2 tr/tháng</span>
+                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="2" class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;">Xem</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Room 3 -->
+             <div class="modern-card p-0" style="padding:0;">
+                <div style="position:relative;">
+                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" style="width:100%; height:240px; object-fit:cover;">
+                </div>
+                <div style="padding:1.5rem;">
+                    <h3 class="h5 mb-2">Phòng trọ cao cấp Q7</h3>
+                    <p class="text-muted small mb-3">Khu dân cư yên tĩnh, gần Lotte Mart</p>
+                    <div style="display:flex; gap:1rem; font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">
+                        <span>20m²</span> | <span>1 người</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="h5 text-primary mb-0">2.8 tr/tháng</span>
+                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="3" class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;">Xem</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section style="padding: 5rem 0; position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; background:var(--bg-body); z-index:-1;"></div>
+    <div class="container text-center">
+        <div class="glass-panel" style="padding:4rem; background:var(--primary-gradient); color:white; border:none;">
+            <h2 class="h1 mb-3" style="color:white;">Bạn có phòng trống?</h2>
+            <p class="mb-5" style="max-width:600px; margin:0 auto; opacity:0.9;">Đăng tin miễn phí ngay hôm nay để tiếp cận hàng ngàn sinh viên đang tìm trọ.</p>
+            <a asp-controller="Rooms" asp-action="Create" class="btn" style="background:white; color:var(--primary-600);">Đăng tin ngay</a>
+        </div>
+    </div>
+</section>
