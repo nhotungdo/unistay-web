@@ -1,184 +1,460 @@
+@model Unistay_Web.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Đăng nhập";
-    Layout = null; // We might want a custom layout or no layout for full screen, but usually keeping default layout is safer for scripts. However, full screen split needs to break out of container.
-    // Actually, usually in MVC _Layout.cshtml defines a container. If I want full screen, I might need to override the layout or use a specific one.
-    // Given the constraints, I will assume I can just output the HTML and if it's inside a container in _Layout, I might need to use some CSS to break out or just recommend a blank layout.
-    // Let's check _ViewStart.cshtml to see what the default layout is.
-}
-
-@{
-    Layout = ""; // Disabling default layout to have full control over the page structure for this specific modern full-screen design.
+    ViewData["Title"] = "Sign In";
+    Layout = null;
 }
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Unistay Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Unistay_Web.styles.css" asp-append-version="true" />
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/modern-theme.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Unistay</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: gradientShift 15s ease infinite;
+            background-size: 400% 400%;
+        }
+
+        @@keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .auth-container {
+            display: flex;
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 70px 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .auth-left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-left h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-left p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .auth-features {
+            margin-top: 50px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(8px);
+        }
+
+        .feature-item i {
+            font-size: 28px;
+            margin-right: 20px;
+            background: rgba(255,255,255,0.15);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-item span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .auth-right {
+            flex: 1;
+            padding: 70px 50px;
+            position: relative;
+        }
+
+        .auth-header {
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .auth-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-header p {
+            color: #888;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .auth-header p a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-header p a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2a2a2a;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.12);
+            background: white;
+        }
+
+        .form-control::placeholder {
+            color: #aaa;
+            font-weight: 400;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+            border-radius: 4px;
+        }
+
+        .form-check-label {
+            color: #555;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 35px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 18px;
+            color: #999;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-social:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f5f9ff 0%, #f0f5ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .btn-social i {
+            font-size: 1.2rem;
+        }
+
+        .text-danger {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .alert {
+            padding: 16px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            border-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+
+            .auth-left {
+                padding: 50px 30px;
+            }
+
+            .auth-right {
+                padding: 40px 30px;
+            }
+
+            .auth-left h1 {
+                font-size: 2rem;
+            }
+
+            .auth-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .auth-left::before,
+            .auth-left::after {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">
-        <!-- Decoration Sidebar -->
-        <div class="auth-sidebar">
-            <div class="shape-blob shape-1"></div>
-            <div class="shape-blob shape-2"></div>
-            
-            <div class="auth-sidebar-content">
-                <div class="glass-panel p-5 animate-fade-in" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                    <div class="mb-4">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary-600);">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <h1>Chào mừng trở lại!</h1>
+                <p>Quay lại cuộc sống sinh viên của bạn. Tìm kiếm phòng hoàn hảo, kết nối với những người ở chung tuyệt vời, và tạo nên trải nghiệm đại học không thể quên.</p>
+                
+                <div class="auth-features">
+                    <div class="feature-item">
+                        <i class="fas fa-home"></i>
+                        <span>Khám phá những phòng tuyệt vời</span>
                     </div>
-                    <h1 class="mb-3 display-4 fw-bold">Tìm nơi ở lý tưởng của bạn.</h1>
-                    <p class="h5 fw-normal text-muted mb-4" style="line-height: 1.6;">
-                        Kết nối sinh viên và chủ nhà trọ với trải nghiệm tìm kiếm thông minh, an toàn và tiện lợi nhất.
-                    </p>
-                    
-                    <div class="d-flex gap-3 mt-5">
-                        <div class="d-flex align-center gap-2">
-                            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-weight: 800; color: var(--primary-600);">10k+</span>
-                            </div>
-                            <span class="small font-weight-bold opacity-75">Người dùng</span>
-                        </div>
-                        <div class="d-flex align-center gap-2">
-                            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-weight: 800; color: var(--secondary-500);">5k+</span>
-                            </div>
-                            <span class="small font-weight-bold opacity-75">Phòng trọ</span>
-                        </div>
+                    <div class="feature-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat với người ở chung</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>100% An toàn & được xác minh</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-star"></i>
+                        <span>Đọc các bình luận thực</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="auth-main">
-            
-            <div class="auth-card glass-panel p-4 p-md-5 animate-fade-in delay-100">
-                <!-- Mobile Logo -->
-                <div class="mb-5 d-lg-none">
-                    <div class="d-flex align-center gap-2">
-                        <div style="width: 40px; height: 40px; background: var(--primary-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                        </div>
-                        <span style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;">Unistay</span>
-                    </div>
+        <div class="auth-right">
+            <div class="auth-header">
+                <h2>Đăng nhập</h2>
+                <p>Mới tới đây? <a asp-action="Register">Tạo tài khoản →</a></p>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <div asp-validation-summary="All"></div>
                 </div>
+            }
 
-                <div class="mb-5">
-                    <h2 class="h1 mb-2">Chào mừng trở lại! 👋</h2>
-                    <p class="text-muted">Nhập thông tin đăng nhập của bạn để tiếp tục.</p>
-                </div>
-
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
-                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                        {
-                            <p class="m-0 small">@error.ErrorMessage</p>
-                        }
-                    </div>
-                }
-
-                <form asp-action="Login" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-
-                    <!-- Email Field -->
-                    <div class="mb-4">
-                        <label class="text-muted small font-weight-bold mb-1 d-block">EMAIL</label>
-                        <div style="position: relative;">
-                            <input type="email" name="email" class="form-input" placeholder="name@example.com" style="padding-left: 2.75rem;" />
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div class="mb-4">
-                        <div class="d-flex justify-between align-center mb-1">
-                             <label class="text-muted small font-weight-bold d-block m-0">MẬT KHẨU</label>
-                             <a asp-action="ForgotPassword" class="small text-primary font-weight-bold" style="text-decoration: none;">Quên mật khẩu?</a>
-                        </div>
-                        <div style="position: relative;">
-                            <input type="password" name="password" class="form-input" placeholder="••••••••" style="padding-left: 2.75rem;" />
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                         <div class="d-flex align-center gap-2">
-                            <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 1.1rem; height: 1.1rem; border-radius: 4px; accent-color: var(--primary-600); cursor: pointer;" />
-                            <label for="rememberMe" class="text-muted cursor-pointer" style="user-select: none;">Ghi nhớ đăng nhập trên thiết bị này</label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mb-4 py-3" style="font-size: 1.1rem;">
-                        Đăng nhập
-                    </button>
-
-</form>
-
-                    <div class="position-relative text-center mb-4">
-                        <hr class="text-muted opacity-25" />
-                        <span class="position-absolute top-50 start-50 translate-middle px-3 small text-muted bg-white">
-                            hoặc đăng nhập với
-                        </span>
-                    </div>
-
-                     <form asp-action="GoogleLogin" method="get">
-                        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-                        <button type="submit" class="btn btn-outline w-100 py-2 text-dark border-2" style="border-color: #E2E8F0;">
-                            <svg class="mr-2" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                            </svg>
-                            Google
-                        </button>
-                    </form>
-
-                <p class="text-center mt-5 text-muted">
-                    Chưa có tài khoản? 
-                    <a asp-action="Register" class="text-primary font-weight-bold text-decoration-none hover-underline">Đăng ký ngay</a>
-                </p>
+            <form asp-action="Login" asp-controller="Account" method="post">
+                <input type="hidden" asp-for="@ViewData["ReturnUrl"]" />
                 
-                 <div class="mt-4 text-center">
-                    <a href="/" class="small text-muted text-decoration-none d-inline-flex align-items-center gap-1">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Trở về trang chủ
-                    </a>
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">📧 Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="ban@university.edu" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label">🔐 Mật khẩu</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu của bạn" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe" />
+                    <label asp-for="RememberMe" class="form-check-label" for="rememberMe">Giữ cho tôi đăng nhập</label>
+                </div>
+
+                <button type="submit" class="btn-primary">✨ Đăng nhập</button>
+            </form>
+
+            <div class="divider">
+                <span>Hoặc tiếp tục với</span>
+            </div>
+
+            <div class="social-login">
+                <form asp-action="GoogleLogin" asp-controller="Account" method="get" style="flex: 1;">
+                    <button type="submit" class="btn-social" style="width: 100%;">
+                        <i class="fab fa-google" style="color: #DB4437;"></i>
+                        Google
+                    </button>
+                </form>
             </div>
         </div>
     </div>
-    
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

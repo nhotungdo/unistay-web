@@ -1,119 +1,356 @@
 @{
-    ViewData["Title"] = "Tìm phòng trọ";
+    ViewData["Title"] = "Tìm Chốn An Cư";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<section style="padding: 2rem 0;">
-    <div class="container">
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 2rem;">
-            <div>
-                <h1 class="h2 mb-2">Tìm phòng trọ</h1>
-                <p class="text-muted">Hàng ngàn phòng trọ chất lượng đang chờ bạn</p>
-            </div>
-            <a asp-action="Create" class="btn btn-primary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Đăng tin miễn phí
-            </a>
-        </div>
+<!-- Hero Search Section -->
+<div class="search-hero position-relative overflow-hidden p-5 mb-5">
+    <div class="absolute-bg"></div>
+    <div class="container position-relative z-2 text-center py-5">
+        <span class="badge bg-white bg-opacity-25 border border-white border-opacity-25 backdrop-blur-md rounded-pill px-3 py-2 mb-4 text-white animate-fade-in-up">
+            <i class="bi bi-stars me-2 text-warning"></i>Được tin dùng bởi 15.000+ sinh viên
+        </span>
+        <h1 class="display-3 fw-bold text-white mb-4 animate-fade-in-up delay-100">Tìm nơi ở mà bạn yêu thích</h1>
+        <p class="lead text-white text-opacity-75 mb-5 animate-fade-in-up delay-200" style="max-width: 600px; margin: 0 auto;">
+            Khám phá phòng trọ cao cấp, chủ nhà đã xác thực và bạn cùng phòng hợp ý.
+        </p>
 
-        <!-- Filter Section -->
-        <div class="glass-panel animate-fade-in" style="padding: 1.5rem; margin-bottom: 3rem;">
-            <form asp-action="Search" method="get">
-                <div class="row align-end" style="display:flex; gap:1.5rem; flex-wrap:wrap; align-items:flex-end;">
-                    <div style="flex:2; min-width:250px;">
-                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">KHU VỰC</label>
-                        <div style="position:relative;">
-                            <input type="text" class="form-input" name="location" placeholder="Nhập quận/huyện..." style="padding-left:2.5rem;" />
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-muted" style="position: absolute; left: 12px; top: 12px;">
-                                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
+        <!-- Main Search Bar -->
+        <div class="search-bar-container bg-white rounded-pill shadow-lg p-2 mx-auto animate-fade-in-up delay-300" style="max-width: 800px;">
+            <form asp-action="Search" method="get" class="d-md-flex align-items-center">
+                <div class="flex-grow-1 px-3 py-2 border-end-md">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-geo-alt text-primary fs-5 me-3"></i>
+                        <div class="text-start w-100">
+                            <label class="d-block small text-muted fw-bold text-uppercase mb-0" style="font-size: 0.7rem;">Khu vực</label>
+                            <input type="text" name="location" class="form-control border-0 p-0 shadow-none fw-semibold" placeholder="Quận/Huyện hoặc Trường ĐH?">
                         </div>
                     </div>
-                    <div style="flex:1; min-width:180px;">
-                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">KHOẢNG GIÁ</label>
-                        <select class="form-input" name="priceRange">
-                            <option value="">Tất cả mức giá</option>
-                            <option value="0-2000000">Dưới 2 triệu</option>
-                            <option value="2000000-4000000">2 - 4 triệu</option>
-                            <option value="4000000-6000000">4 - 6 triệu</option>
-                            <option value="6000000+">Trên 6 triệu</option>
-                        </select>
+                </div>
+                
+                <div class="flex-grow-1 px-3 py-2 border-end-md">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-house text-primary fs-5 me-3"></i>
+                        <div class="text-start w-100">
+                            <label class="d-block small text-muted fw-bold text-uppercase mb-0" style="font-size: 0.7rem;">Loại hình</label>
+                            <select name="type" class="form-select border-0 p-0 shadow-none fw-semibold bg-transparent">
+                                <option value="">Tất cả</option>
+                                <option value="apartment">Căn hộ</option>
+                                <option value="studio">Căn hộ Studio</option>
+                                <option value="dorm">Ký túc xá</option>
+                                <option value="shared">Phòng ở ghép</option>
+                            </select>
+                        </div>
                     </div>
-                    <div style="flex:1; min-width:180px;">
-                        <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">LOẠI PHÒNG</label>
-                        <select class="form-input" name="roomType">
-                            <option value="">Tất cả loại phòng</option>
-                            <option value="dorm">Ký túc xá</option>
-                            <option value="room">Phòng trọ</option>
-                            <option value="apartment">Căn hộ</option>
-                            <option value="house">Nhà nguyên căn</option>
-                        </select>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary" style="width:100%;">Lọc tin</button>
+                </div>
+
+                <div class="px-3 py-2">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-cash-stack text-primary fs-5 me-3"></i>
+                        <div class="text-start me-3">
+                            <label class="d-block small text-muted fw-bold text-uppercase mb-0" style="font-size: 0.7rem;">Ngân sách</label>
+                            <select name="price" class="form-select border-0 p-0 shadow-none fw-semibold bg-transparent" style="width: 130px;">
+                                <option value="">Tất cả</option>
+                                <option value="0-2">Dưới 2 triệu</option>
+                                <option value="2-5">2 - 5 triệu</option>
+                                <option value="5-10">5 - 10 triệu</option>
+                                <option value="10+">Trên 10 triệu</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm transition-transform hover-scale">
+                            <i class="bi bi-search me-2"></i>Tìm kiếm
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
+    </div>
+</div>
 
-        <!-- Rooms List -->
-        <div class="grid-3 animate-fade-in delay-200" id="roomsList">
-            <!-- Example Item -->
-             <div class="modern-card p-0" style="padding:0; position:relative;">
-                <span class="badge badge-success" style="position:absolute; top:12px; right:12px; z-index:2;">Mới đăng</span>
-                 <div style="aspect-ratio:4/3; position:relative; overflow:hidden; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
-                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" style="width:100%; height:100%; object-fit:cover; transition:transform 0.5s;" alt="Room">
+<div class="container mb-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <aside class="col-lg-3 mb-4 mb-lg-0">
+            <div class="glass-panel p-4 sticky-top" style="top: 100px; z-index: 10;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Bộ lọc</h5>
+                    <button class="btn btn-link btn-sm text-decoration-none text-muted p-0">Đặt lại</button>
                 </div>
-                
-                <div style="padding:1.5rem;">
-                    <h3 class="h5 mb-1 text-truncate">Phòng trọ cao cấp Quận 1</h3>
-                    <p class="text-muted small mb-3" style="display:flex; align-items:center; gap:0.5rem;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32688 5.63604 3.63604C7.32387 1.94521 9.61305 1 12 1C14.3869 1 16.6761 1.94521 18.364 3.63604C20.0518 5.32688 21 7.61305 21 10Z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        Quận 1, TP.HCM
-                    </p>
-                    
-                    <div style="display:flex; gap:1rem; margin-bottom:1.5rem;">
-                        <span style="background:var(--bg-body); padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.8rem; display:flex; align-items:center; gap:0.25rem; color:var(--text-muted);">
-                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 21h18M5 21V7l8-4 8 4v14"></path>
-                            </svg>
-                            25m²
-                        </span>
-                        <span style="background:var(--bg-body); padding:0.25rem 0.75rem; border-radius:1rem; font-size:0.8rem; display:flex; align-items:center; gap:0.25rem; color:var(--text-muted);">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                            2 người
-                        </span>
+
+                <form id="filterForm">
+                    <div class="mb-4">
+                        <label class="fw-bold small text-uppercase text-muted mb-3">Tiện ích</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="wifi">
+                            <label class="form-check-label" for="wifi">Wifi tốc độ cao</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="ac">
+                            <label class="form-check-label" for="ac">Máy lạnh</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="kitchen">
+                            <label class="form-check-label" for="kitchen">Nhà bếp</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="parking">
+                            <label class="form-check-label" for="parking">Chỗ để xe</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="fw-bold small text-uppercase text-muted mb-3">Giới tính ở ghép</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="gender" id="g-any" checked>
+                            <label class="btn btn-outline-light text-dark border" for="g-any">Tất cả</label>
+                            
+                            <input type="radio" class="btn-check" name="gender" id="g-male">
+                            <label class="btn btn-outline-light text-dark border" for="g-male">Nam</label>
+                            
+                            <input type="radio" class="btn-check" name="gender" id="g-female">
+                            <label class="btn btn-outline-light text-dark border" for="g-female">Nữ</label>
+                        </div>
                     </div>
                     
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-glass); padding-top:1rem;">
-                        <span class="h5 text-primary mb-0">3.5 tr/tháng</span>
-                        <a asp-action="Details" asp-route-id="1" class="btn btn-outline" style="padding:0.5rem 1rem; font-size:0.875rem;">Chi tiết</a>
+                    <button class="btn btn-light border w-100 fw-bold">Áp dụng</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Results Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">124 Kết quả</h4>
+                <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm border-0 bg-light rounded-pill px-3" style="width: auto;">
+                        <option>Phù hợp nhất</option>
+                        <option>Giá: Thấp đến Cao</option>
+                        <option>Giá: Cao đến Thấp</option>
+                        <option>Mới nhất</option>
+                    </select>
+                    <button class="btn btn-light rounded-circle shadow-sm p-2 lh-1" type="button" title="Xem bản đồ">
+                        <i class="bi bi-map-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Listing Card 1 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 overflow-hidden card-hover-lift">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80" class="card-img-top object-fit-cover" height="240" alt="Phòng trọ">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-white text-dark shadow-sm fw-bold px-3 py-2 rounded-pill">
+                                    <i class="bi bi-lightning-fill text-warning me-1"></i>Đã xác thực
+                                </span>
+                            </div>
+                            <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm p-2 lh-1 hover-scale-sm">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-fade-bottom">
+                                <span class="badge bg-primary rounded-pill px-2">Căn hộ</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title fw-bold mb-0 text-truncate">Căn hộ Sunlight Studio</h5>
+                                <div class="text-end">
+                                    <span class="h5 fw-bold text-primary mb-0">4.5 tr</span>
+                                    <small class="text-muted d-block">/tháng</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill me-1"></i> Đa Kao, Quận 1, TP.HCM</p>
+                            
+                            <div class="d-flex gap-3 mb-3 border-top border-bottom py-2">
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-aspect-ratio me-1"></i> 25m²
+                                </div>
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-people me-1"></i> Tối đa 2
+                                </div>
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-droplet me-1"></i> 1 WC
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://i.pravatar.cc/150?u=1" class="rounded-circle border border-2 border-white shadow-sm me-2" width="32" height="32" alt="Host">
+                                    <small class="text-muted">Minh T.</small>
+                                </div>
+                                <a asp-action="Details" asp-route-id="1" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Listing Card 2 -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 overflow-hidden card-hover-lift">
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1596276020587-8044fe049813?w=800&q=80" class="card-img-top object-fit-cover" height="240" alt="Phòng trọ">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-success text-white shadow-sm fw-bold px-3 py-2 rounded-pill">
+                                    Còn trống
+                                </span>
+                            </div>
+                            <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm p-2 lh-1 hover-scale-sm">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                             <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-fade-bottom">
+                                <span class="badge bg-info text-white rounded-pill px-2">KTX</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title fw-bold mb-0 text-truncate">KTX Xanh gần RMIT</h5>
+                                <div class="text-end">
+                                    <span class="h5 fw-bold text-primary mb-0">1.8 tr</span>
+                                    <small class="text-muted d-block">/giường</small>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill me-1"></i> Tân Phong, Quận 7, TP.HCM</p>
+                            
+                             <div class="d-flex gap-3 mb-3 border-top border-bottom py-2">
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-aspect-ratio me-1"></i> 10m²
+                                </div>
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-people me-1"></i> 4 Giường
+                                </div>
+                                <div class="d-flex align-items-center small text-muted">
+                                    <i class="bi bi-wifi me-1"></i> Mạnh
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://i.pravatar.cc/150?u=2" class="rounded-circle border border-2 border-white shadow-sm me-2" width="32" height="32" alt="Host">
+                                    <small class="text-muted">Host Club</small>
+                                </div>
+                                <a asp-action="Details" asp-route-id="2" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Xem chi tiết</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- More Items... (This would be a loop in real implementation) -->
-        </div>
-
-        <!-- Pagination -->
-        <div style="display:flex; justify-content:center; margin-top:4rem;">
-            <div style="display:flex; gap:0.5rem;">
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&larr;</a>
-                <a href="#" class="btn btn-primary" style="padding:0.5rem 1rem;">1</a>
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">2</a>
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">3</a>
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&rarr;</a>
-            </div>
+            <!-- Pagination -->
+            <nav class="mt-5">
+                <ul class="pagination pagination-modern justify-content-center">
+                    <li class="page-item disabled"><a class="page-link rounded-circle me-2 icon-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link rounded-circle me-2" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link rounded-circle me-2" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link rounded-circle me-2" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link rounded-circle icon-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+                </ul>
+            </nav>
         </div>
     </div>
-</section>
+</div>
+
+<style>
+    .search-hero {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        border-radius: 0 0 50px 50px;
+        position: relative;
+    }
+    
+    .absolute-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: radial-gradient(circle at 20% 150%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+        pointer-events: none;
+    }
+
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.8);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    }
+    
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+
+    .hover-scale-sm:hover {
+        transform: scale(1.1);
+        color: #e11d48;
+    }
+
+    .bg-gradient-fade-bottom {
+        background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    }
+    
+    .border-end-md {
+         border-right: 1px solid #e5e7eb;
+    }
+    @@media (max-width: 768px) {
+        .border-end-md {
+            border-right: none;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .search-hero {
+            border-radius: 0 0 30px 30px;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+    }
+    
+    .pagination-modern .page-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        color: #4b5563;
+        font-weight: 600;
+        margin: 0 4px;
+        transition: all 0.2s;
+    }
+    
+    .pagination-modern .page-item.active .page-link {
+        background-color: #6366f1;
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+    }
+    
+    .pagination-modern .page-link:hover:not(.active) {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+    
+    /* Animation classes */
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+
+    @@keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

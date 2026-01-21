@@ -780,11 +780,20 @@ namespace Unistay_Web.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CompatibilityAnalysis")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("District")
@@ -810,6 +819,9 @@ namespace Unistay_Web.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HouseNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("IdCardNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -819,14 +831,24 @@ namespace Unistay_Web.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsAddressVerified")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsIdVerified")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsOnboardingComplete")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LandlordVerificationStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
@@ -872,6 +894,9 @@ namespace Unistay_Web.Migrations
                     b.Property<string>("Occupation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OnboardingStep")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -891,6 +916,9 @@ namespace Unistay_Web.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SuccessfulBookings")
@@ -913,6 +941,9 @@ namespace Unistay_Web.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Ward")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ZodiacSign")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

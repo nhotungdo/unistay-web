@@ -3,165 +3,386 @@
     ViewData["Title"] = "Tạo hồ sơ tìm bạn trọ";
 }
 
-<section class="py-5" style="background: radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%);">
-    <div class="container mb-5">
-        <div class="row justify-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                <div class="text-center mb-5 animate-fade-in">
-                    <h1 class="h2 mb-2">Tạo hồ sơ tìm bạn trọ</h1>
-                    <p class="text-muted">Cập nhật thông tin để tìm người bạn cùng phòng lý tưởng</p>
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        --input-bg: rgba(255, 255, 255, 0.5);
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+    }
+
+    .roommate-create-container {
+        min-height: 100vh;
+        background: radial-gradient(circle at top right, #e0e7ff 0%, #f3e8ff 40%, #ffffff 100%);
+        padding: 4rem 1rem;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: var(--glass-shadow);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-title i {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.5rem;
+    }
+
+    .form-floating-custom {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background: var(--input-bg);
+        border: 2px solid transparent;
+        border-radius: 16px;
+        font-size: 1rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        background: #ffffff;
+        border-color: #818cf8;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    .form-label-custom {
+        position: absolute;
+        left: 1.25rem;
+        top: 1rem;
+        font-size: 1rem;
+        color: var(--text-secondary);
+        pointer-events: none;
+        transition: all 0.3s ease;
+        background: transparent;
+    }
+
+    .form-control-custom:focus ~ .form-label-custom,
+    .form-control-custom:not(:placeholder-shown) ~ .form-label-custom {
+        top: -0.6rem;
+        left: 1rem;
+        font-size: 0.85rem;
+        color: #6366f1;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .upload-area {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 2px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.5);
+    }
+
+    .upload-area:hover {
+        border-color: #6366f1;
+        transform: scale(1.05);
+    }
+
+    .upload-area img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-icon {
+        font-size: 2rem;
+        color: #94a3b8;
+        transition: color 0.3s ease;
+    }
+
+    .habit-chip {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .habit-chip input {
+        display: none;
+    }
+
+    .habit-chip span {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+    }
+
+    .habit-chip input:checked + span {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        border-color: transparent;
+        transform: translateY(-2px);
+    }
+
+    .btn-gradient {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 1rem 3rem;
+        border-radius: 16px;
+        font-weight: 600;
+        border: none;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-gradient::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(255,255,255,0.2), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-gradient:hover::after {
+        opacity: 1;
+    }
+
+    /* Animation classes */
+    .fade-up {
+        animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+
+    @@keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="roommate-create-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                
+                <div class="text-center mb-5 fade-up">
+                    <h1 class="display-4 fw-bold mb-3" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Tạo Hồ Sơ
+                    </h1>
+                    <p class="lead text-muted">
+                        Kết nối với người bạn cùng phòng lý tưởng của bạn
+                    </p>
                 </div>
 
-                <form asp-action="Create" method="post" enctype="multipart/form-data">
-                    
-                    <!-- Basic Info -->
-                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem;">
-                        <h3 class="h5 mb-4 text-primary font-weight-bold">Thông tin cá nhân</h3>
-                        
-                        <div class="row align-center mb-4">
-                            <div class="col-auto">
-                                <div class="position-relative">
-                                    <div class="d-flex align-center justify-center overflow-hidden rounded-circle" id="avatarPreviewContainer" style="width: 80px; height: 80px; background: rgba(0,0,0,0.05);">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="text-muted" stroke="currentColor" stroke-width="2">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                    </div>
-                                    <label for="avatarUpload" class="btn btn-primary rounded-circle position-absolute bottom-0 right-0 p-0 d-flex align-center justify-center cursor-pointer" style="width: 32px; height: 32px; right: 0; bottom: 0;">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                    </label>
-                                    <input type="file" id="avatarUpload" class="d-none" accept="image/*" />
-                                </div>
-                            </div>
-                            <div class="col">
-                                <h5 class="mb-1">Ảnh đại diện</h5>
-                                <p class="text-muted small mb-0">Tải lên ảnh rõ mặt để tăng độ tin cậy. Hỗ trợ JPG, PNG.</p>
-                            </div>
+                <form asp-action="Create" method="post" enctype="multipart/form-data" class="fade-up delay-100">
+                    <!-- Personal Info Card -->
+                    <div class="glass-card p-4 p-md-5 mb-4">
+                        <div class="section-title">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Thông tin cá nhân</span>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">HỌ VÀ TÊN</label>
-                                <input type="text" class="form-input" placeholder="Nguyễn Văn A" />
+                        <div class="row align-items-center mb-5">
+                            <div class="col-md-4 text-center mb-4 mb-md-0">
+                                <label for="avatarUpload" class="upload-area shadow-sm">
+                                    <span class="upload-icon" id="uploadPlaceholder" style="@(string.IsNullOrEmpty(ViewBag.UserAvatar) ? "" : "display: none;")">
+                                        <i class="bi bi-camera-fill"></i>
+                                    </span>
+                                    <img id="avatarPreview" src="@(ViewBag.UserAvatar ?? "#")" alt="Avatar" style="@(string.IsNullOrEmpty(ViewBag.UserAvatar) ? "display: none;" : "display: block;")" />
+                                </label>
+                                <input type="file" id="avatarUpload" name="avatarUpload" class="d-none" accept="image/*">
+                                <div class="mt-3 text-sm text-muted">Chạm để tải ảnh</div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">GIỚI TÍNH</label>
-                                <div class="position-relative">
-                                    <select class="form-input">
-                                        <option value="">Chọn giới tính</option>
-                                        <option value="Male">Nam</option>
-                                        <option value="Female">Nữ</option>
-                                        <option value="Other">Khác</option>
-                                    </select>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events: none;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">NĂM SINH</label>
-                                <input type="number" class="form-input" placeholder="2003" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">NGHỀ NGHIỆP/TRƯỜNG HỌC</label>
-                                <input type="text" class="form-input" placeholder="Sinh viên ĐHKHTN" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="text-muted small font-weight-bold mb-1 d-block">GIỚI THIỆU BẢN THÂN</label>
-                            <textarea class="form-input" rows="4" placeholder="Viết một đoạn ngắn về bản thân, sở thích, lối sống..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Preferences -->
-                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem; animation-delay: 0.1s;">
-                            <h3 class="h5 mb-4 text-primary font-weight-bold">Tiêu chí tìm bạn/phòng</h3>
-                            
-                            <div class="row mb-3">
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small font-weight-bold mb-1 d-block">KHU VỰC MONG MUỐN</label>
-                                    <input type="text" class="form-input" placeholder="VD: Quận 1, Quận 5" />
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small font-weight-bold mb-1 d-block">NGÂN SÁCH (VNĐ/THÁNG)</label>
-                                    <div class="d-flex gap-2">
-                                        <input type="number" class="form-input" placeholder="Tối thiểu" />
-                                        <span class="align-self-center">-</span>
-                                        <input type="number" class="form-input" placeholder="Tối đa" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="text-muted small font-weight-bold mb-3 d-block">THÓI QUEN & LỐI SỐNG</label>
+                            <div class="col-md-8">
                                 <div class="row g-3">
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="smoking" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="smoking">Không hút thuốc</label>
+                                    <div class="col-12">
+                                        <div class="form-floating-custom">
+                                            <input type="text" class="form-control-custom" id="fullName" name="FullName" placeholder=" " value="@ViewBag.UserFullName">
+                                            <label class="form-label-custom">Họ và tên</label>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="pet" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="pet">Nuôi thú cưng</label>
+                                    <div class="col-md-6">
+                                        <div class="form-floating-custom">
+                                            <select class="form-control-custom" asp-for="Gender" style="appearance: none;">
+                                                <option value="">Chọn giới tính</option>
+                                                <option value="Male">Nam</option>
+                                                <option value="Female">Nữ</option>
+                                                <option value="Other">Khác</option>
+                                            </select>
+                                            <label class="form-label-custom">Giới tính</label>
+                                            <i class="bi bi-chevron-down position-absolute" style="right: 1.25rem; top: 1.1rem; color: #9ca3af; pointer-events: none;"></i>
                                         </div>
                                     </div>
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="cooking" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="cooking">Thích nấu ăn</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="clean" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="clean">Ngăn nắp, sạch sẽ</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="quiet" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="quiet">Yên tĩnh</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-4">
-                                            <div class="form-check d-flex align-center gap-2">
-                                            <input class="form-check-input" type="checkbox" id="party" style="width: 1.25em; height: 1.25em;">
-                                            <label class="form-check-label pt-1" for="party">Thích tụ tập</label>
+                                    <div class="col-md-6">
+                                        <div class="form-floating-custom">
+                                            <input type="number" class="form-control-custom" id="birthYear" name="BirthYear" placeholder=" " value="@ViewBag.UserBirthYear">
+                                            <label class="form-label-custom">Năm sinh</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                         <div class="form-floating-custom">
+                            <input type="text" class="form-control-custom" id="occupation" name="Occupation" placeholder=" " value="@ViewBag.UserOccupation">
+                            <label class="form-label-custom">Nghề nghiệp / Trường học</label>
+                        </div>
+
+                        <div class="form-floating-custom mb-0">
+                            <textarea class="form-control-custom" id="introduction" name="Introduction" style="height: 120px; resize: none;" placeholder=" ">@ViewBag.UserBio</textarea>
+                            <label class="form-label-custom">Giới thiệu bản thân (Sở thích, tính cách...)</label>
+                        </div>
                     </div>
 
-                    <div class="d-flex gap-3 justify-end">
-                        <a asp-action="Index" class="btn btn-outline" style="border:none;">Hủy bỏ</a>
-                        <button type="submit" class="btn btn-primary px-5">Hoàn tất</button>
+                    <!-- Preferences Card -->
+                    <div class="glass-card p-4 p-md-5 mb-4 fade-up delay-200">
+                        <div class="section-title">
+                            <i class="bi bi-sliders"></i>
+                            <span>Mong muốn tìm bạn</span>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control-custom" asp-for="PreferredArea" placeholder=" ">
+                                    <label class="form-label-custom">Khu vực mong muốn</label>
+                                </div>
+                            </div>
+                             <div class="col-md-6">
+                                <div class="form-floating-custom">
+                                    <input type="date" class="form-control-custom" asp-for="MoveInDate" placeholder=" ">
+                                    <label class="form-label-custom">Ngày dự kiến chuyển vào</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating-custom">
+                                    <input type="number" class="form-control-custom" asp-for="Budget" placeholder=" ">
+                                    <label class="form-label-custom">Ngân sách tối đa (VNĐ/tháng)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="d-block mb-3 fw-bold text-secondary text-uppercase small ls-1">Thói quen & Lối sống</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                @{
+                                    var allHabits = new[] { "Không hút thuốc", "Gọn gàng", "Yên tĩnh", "Thích nấu ăn", "Thân thiện", "Thích thú cưng", "Ngủ sớm", "Tiệc tùng" };
+                                    var currentHabits = Model?.Habits?.Split(", ", StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
+                                    
+                                    foreach (var habit in allHabits)
+                                    {
+                                        var isChecked = currentHabits.Contains(habit);
+                                        <label class="habit-chip">
+                                            <input type="checkbox" name="HabitsList" value="@habit" @(isChecked ? "checked" : "")>
+                                            <span>@habit</span>
+                                        </label>
+                                    }
+                                }
+                                <input type="hidden" asp-for="Habits" id="HabitsInput" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center fade-up delay-300">
+                        <button type="submit" class="btn-gradient shadow-lg">
+                            Hoàn tất hồ sơ
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 @section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <script>
-        // Simple avatar preview
-        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+        // Avatar Preview Logic
+        const avatarUpload = document.getElementById('avatarUpload');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+        avatarUpload.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const container = document.getElementById('avatarPreviewContainer');
-                    container.innerHTML = `<img src="${e.target.result}" class="w-100 h-100 object-cover" alt="Preview">`;
+                    avatarPreview.src = e.target.result;
+                    avatarPreview.style.display = 'block';
+                    uploadPlaceholder.style.display = 'none';
                 }
                 reader.readAsDataURL(this.files[0]);
             }
         });
+
+        // Habits Collection Logic
+        const habitsCheckboxes = document.querySelectorAll('input[name="HabitsList"]');
+        const habitsInput = document.getElementById('HabitsInput');
+
+        function updateHabits() {
+            const selected = Array.from(habitsCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            habitsInput.value = selected.join(', ');
+        }
+
+        habitsCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateHabits);
+        });
+        
+        // Init habits input on load just in case
+        updateHabits();
     </script>
 }

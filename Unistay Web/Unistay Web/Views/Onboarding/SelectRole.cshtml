@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Chọn Hành Trình Của Bạn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="onboarding-container fade-in">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient">Chào mừng đến với Unistay</h1>
+        <p class="lead text-secondary">Hãy cá nhân hóa trải nghiệm của bạn. Bạn muốn tìm trọ hay đăng tin?</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Tenant Card -->
+        <div class="col-md-5 col-lg-4">
+            <div class="role-card glass-panel h-100 p-5 text-center position-relative" onclick="selectRole('Student')">
+                <div class="icon-wrapper mb-4">
+                    <i class="bi bi-person-heart display-1 text-primary"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Tìm Nơi Ở</h3>
+                <p class="text-muted">Tôi đang tìm phòng trọ, bạn ở ghép hoặc một nơi hoàn hảo để bắt đầu.</p>
+                <div class="selection-indicator">
+                    <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Landlord Card -->
+        <div class="col-md-5 col-lg-4">
+            <div class="role-card glass-panel h-100 p-5 text-center position-relative" onclick="selectRole('Landlord')">
+                <div class="icon-wrapper mb-4">
+                    <i class="bi bi-house-door-fill display-1 text-warning"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Đăng Tin Cho Thuê</h3>
+                <p class="text-muted">Tôi có phòng/nhà cho thuê và muốn tìm người thuê uy tín.</p>
+                <div class="selection-indicator">
+                    <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="roleForm" asp-action="SelectRole" method="post" class="d-none">
+        <input type="hidden" name="role" id="selectedRole" />
+    </form>
+</div>
+
+<style>
+    .onboarding-container {
+        padding: 4rem 2rem;
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    .role-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border-color: var(--bs-primary);
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, #2563eb, #9333ea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .selection-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .role-card.selected {
+        border: 2px solid #2563eb;
+        background: rgba(37, 99, 235, 0.05);
+    }
+    
+    .role-card.selected .selection-indicator {
+        opacity: 1;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    function selectRole(role) {
+        document.querySelectorAll('.role-card').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        document.getElementById('selectedRole').value = role;
+        
+        // Small delay for visual feedback
+        setTimeout(() => {
+            document.getElementById('roleForm').submit();
+        }, 300);
+    }
+</script>

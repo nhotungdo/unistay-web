@@ -12,7 +12,7 @@ using Unistay_Web.Data;
 namespace Unistay_Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260120172801_UserProfileEnhancement")]
+    [Migration("UserProfileEnhancement")]
     partial class UserProfileEnhancement
     {
         /// <inheritdoc />

@@ -1,142 +1,322 @@
+@model Unistay_Web.Models.Roommate.RoommateProfileDetailViewModel
+
 @{
-    ViewData["Title"] = "Hồ sơ tìm bạn trọ";
+    ViewData["Title"] = "Hồ sơ: " + Model.FullName;
 }
 
-<section class="py-5">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --score-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        --glass-bg: rgba(255, 255, 255, 0.8);
+    }
+
+    .profile-header {
+        background: radial-gradient(circle at top right, #f3e8ff 0%, #ffffff 50%, #e0e7ff 100%);
+        padding-top: 3rem;
+        padding-bottom: 5rem;
+        margin-bottom: -4rem;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .avatar-lg {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 6px solid white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+    }
+
+    .match-circle {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .match-circle::before {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        background: var(--score-gradient);
+        z-index: -1;
+        opacity: 0.3;
+    }
+
+    .score-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--score-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .feature-bar {
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    .feature-progress {
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 4px;
+        transition: width 1s ease-out;
+    }
+
+    .interest-tag {
+        background: #f3f4f6;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        color: #4b5563;
+        font-weight: 500;
+        display: inline-block;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .interest-tag.shared {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #d1fae5;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ai-report-box {
+        background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+        border-left: 5px solid #0ea5e9;
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+</style>
+
+<div class="profile-header">
     <div class="container">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb" style="display: flex; gap: 8px; list-style: none; padding: 0;">
-                <li class="breadcrumb-item"><a href="/" class="text-muted text-decoration-none">Trang chủ</a></li>
-                <li class="breadcrumb-item text-muted">/</li>
-                <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Tìm bạn trọ</a></li>
-                <li class="breadcrumb-item text-muted">/</li>
-                <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-600);">Nguyễn Văn Nam</li>
-            </ol>
-        </nav>
-
-        <div class="row">
-            <!-- Left Column: Profile Card -->
-            <div class="col-12 col-md-4 mb-4">
-                <div class="card card-elevated sticky-top" style="top: 100px;">
-                    <div class="card-body text-center p-4">
-                        <div class="position-relative d-inline-block mb-3">
-                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop" class="rounded-full border-4 border-white shadow-lg" style="width: 150px; height: 150px; object-fit: cover;" alt="Avatar">
-                            <span class="position-absolute bottom-0 right-0 w-5 h-5 bg-success border-4 border-white rounded-full"></span>
-                        </div>
-                        
-                        <h1 class="h3 mb-1">Nguyễn Văn Nam</h1>
-                        <p class="text-muted mb-3">Nam • 22 tuổi • Sinh viên năm 4</p>
-                        
-                        <div class="d-flex justify-center flex-wrap gap-2 mb-4">
-                            <span class="badge badge-primary bg-primary-50 text-primary-700 px-3 py-2 rounded-full">Yên tĩnh</span>
-                            <span class="badge badge-primary bg-primary-50 text-primary-700 px-3 py-2 rounded-full">Sạch sẽ</span>
-                            <span class="badge badge-primary bg-primary-50 text-primary-700 px-3 py-2 rounded-full">Không hút thuốc</span>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary btn-lg">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                Nhắn tin
-                            </button>
-                            <button class="btn btn-outline-primary btn-lg">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                                Thêm vào yêu thích
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-light p-3">
-                        <div class="d-flex justify-between text-small">
-                            <span class="text-muted">Tham gia:</span>
-                            <span class="font-weight-medium">01/2024</span>
-                        </div>
-                        <div class="d-flex justify-between text-small mt-1">
-                            <span class="text-muted">Phản hồi:</span>
-                            <span class="font-weight-medium text-success">Rất nhanh</span>
-                        </div>
+        <div class="row align-items-center">
+            <div class="col-md-8 d-flex align-items-center gap-4">
+                <img src="@(!string.IsNullOrEmpty(Model.AvatarUrl) ? Model.AvatarUrl : "/images/default-avatar.png")"
+                    class="avatar-lg" alt="@Model.FullName"
+                    onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.FullName)&background=random'">
+                <div>
+                    <h1 class="display-5 fw-bold mb-1">@Model.FullName</h1>
+                    <p class="text-secondary fs-5 mb-2">
+                        @(Model.Age > 0 ? $"{Model.Age} tuổi" : "")
+                        • @(Model.Occupation ?? "Chưa cập nhật nghề nghiệp")
+                    </p>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> @(Model.PreferredArea ?? "Toàn quốc")
+                        </span>
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            <i class="bi bi-gender-ambiguous text-primary me-1"></i> @(Model.Gender ?? "Không xác định")
+                        </span>
                     </div>
                 </div>
             </div>
-
-            <!-- Right Column: Details -->
-            <div class="col-12 col-md-8">
-                <!-- About Me -->
-                <div class="card card-elevated mb-4 animate-scale-in">
-                    <div class="card-body p-4">
-                        <h3 class="h5 mb-3 d-flex align-center gap-2 text-primary">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            Giới thiệu bản thân
-                        </h3>
-                        <p class="text-muted line-height-relaxed mb-0">
-                            Chào mọi người, mình là Nam, sinh viên năm cuối trường ĐH Khoa học Tự nhiên. 
-                            Mình là người khá yên tĩnh, tập trung vào việc học và đi làm thêm. 
-                            Mình tôn trọng sự riêng tư của người khác và mong muốn tìm bạn cùng phòng cũng vậy.
-                            Mình thường nấu ăn ở nhà nên sẽ rất vui nếu bạn cùng phòng cũng thích nấu nướng hoặc cùng chia sẻ việc dọn dẹp.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Preferences -->
-                <div class="card card-elevated mb-4 animate-scale-in" style="animation-delay: 0.1s;">
-                    <div class="card-body p-4">
-                        <h3 class="h5 mb-4 d-flex align-center gap-2 text-primary">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                            Tiêu chí tìm kiếm
-                        </h3>
-
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-muted font-size-xs font-weight-bold mb-2">Khu vực mong muốn</h6>
-                                <p class="mb-0 font-weight-medium">Quận 1, Quận 5, Quận 10</p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-muted font-size-xs font-weight-bold mb-2">Ngân sách dự kiến</h6>
-                                <p class="mb-0 font-weight-medium text-success">2.000.000 - 3.000.000 VNĐ/tháng</p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-muted font-size-xs font-weight-bold mb-2">Giới tính bạn trọ</h6>
-                                <p class="mb-0 font-weight-medium">Nam</p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-muted font-size-xs font-weight-bold mb-2">Thời điểm chuyển vào</h6>
-                                <p class="mb-0 font-weight-medium">Ngay lập tức</p>
-                            </div>
-                        </div>
-
-                        <hr class="my-4 border-neutral-200">
-
-                        <h6 class="text-uppercase text-muted font-size-xs font-weight-bold mb-3">Thói quen sinh hoạt</h6>
-                        <div class="d-flex flex-wrap gap-2">
-                             <span class="border border-neutral-200 bg-light px-3 py-1 rounded-full text-small">Giờ giấc: Tự do</span>
-                             <span class="border border-neutral-200 bg-light px-3 py-1 rounded-full text-small">Thú cưng: Không</span>
-                             <span class="border border-neutral-200 bg-light px-3 py-1 rounded-full text-small">Khách đến chơi: Hạn chế</span>
-                             <span class="border border-neutral-200 bg-light px-3 py-1 rounded-full text-small">Nấu ăn: Có</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact Info (Hidden) -->
-                <div class="alert alert-info d-flex align-center gap-3">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="flex-shrink-0" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    <div>
-                        <strong>Thông tin liên hệ được ẩn</strong>
-                        <p class="mb-0 small mt-1">Vui lòng đăng nhập hoặc nhắn tin để trao đổi thông tin liên lạc.</p>
-                    </div>
-                </div>
+            <div class="col-md-4 text-center text-md-end mt-4 mt-md-0">
+                <a href="#" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm mb-2"
+                    style="background: var(--primary-gradient); border: none;">
+                    <i class="bi bi-chat-dots-fill me-2"></i>Nhắn tin
+                </a>
+                <br>
+                <button class="btn btn-outline-secondary rounded-pill px-4 border-2 fw-bold">
+                    <i class="bi bi-heart me-1"></i> Quan tâm
+                </button>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-4">
+        <!-- Left Column: AI Analysis -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100">
+                <h3 class="section-title"><i class="bi bi-cpu text-primary"></i> AI Phân tích</h3>
+
+                <div class="mb-4">
+                    <form method="get" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <label class="small text-muted fw-bold mb-0 text-nowrap">Ưu tiên:</label>
+                        <select name="priority" class="form-select form-select-sm rounded-pill"
+                            onchange="this.form.submit()">
+                            @foreach (var p in new[] { "Balanced", "Budget", "Lifestyle", "Personality" })
+                            {
+                                bool isSelected = (ViewBag.CurrentPriority as string)?.ToLower() == p.ToLower();
+                                if (isSelected)
+                                {
+                                    <option value="@p" selected>@p</option>
+                                }
+                                else
+                                {
+                                    <option value="@p">@p</option>
+                                }
+                            }
+                        </select>
+                    </form>
+                </div>
+
+                @if (Model.CompatibilityScore > 0)
+                {
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <div class="match-circle mb-3">
+                            <div class="text-center">
+                                <div class="score-value">@Model.CompatibilityScore%</div>
+                                <div class="small text-muted fw-bold">TƯƠNG HỢP</div>
+                            </div>
+                        </div>
+                        <p class="text-center text-muted small">Dựa trên phân tích ngân sách, lối sống và sở thích.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-uppercase small text-muted mb-3">Chi tiết điểm số</h6>
+                        @if (Model.CompatibilityBreakdown != null)
+                        {
+                            foreach (var item in Model.CompatibilityBreakdown)
+                            {
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="fw-bold">@item.Key</span>
+                                        <span class="text-primary">@item.Value%</span>
+                                    </div>
+                                    <div class="feature-bar">
+                                        <div class="feature-progress" style="width: @item.Value%"></div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    @if (Model.SharedInterests != null && Model.SharedInterests.Any())
+                    {
+                        <div class="mb-3">
+                            <h6 class="fw-bold text-uppercase small text-muted mb-2">Điểm chung</h6>
+                            <div>
+                                @foreach (var interest in Model.SharedInterests)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill me-1 mb-1">
+                                        <i class="bi bi-check2 me-1"></i>@interest
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-lock-fill display-4 text-muted mb-3 d-block"></i>
+                        <p>Đăng nhập để xem phân tích AI chi tiết về mức độ phù hợp với người này.</p>
+                        <a href="/Account/Login" class="btn btn-outline-primary rounded-pill">Đăng nhập ngay</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right Column: Details -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4 mb-4">
+                <h3 class="section-title"><i class="bi bi-person-lines-fill text-primary"></i> Thông tin chi tiết</h3>
+
+                <div class="ai-report-box mb-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-stars text-warning me-2"></i>Đánh giá từ AI</h5>
+                    <p class="mb-0 text-dark" style="line-height: 1.6;">@Model.AiAnalysisReport</p>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Ngân sách</h6>
+                            <p class="h4 text-primary fw-bold mb-0">
+                                @(Model.Budget > 0 ? Model.Budget.ToString("N0") + " đ" : "Thỏa thuận")
+                                <small class="text-muted fs-6 fw-normal">/tháng</small>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Ngày chuyển vào</h6>
+                            <p class="h5 text-dark fw-bold mb-0">
+                                @(Model.MoveInDate.HasValue? Model.MoveInDate.Value.ToString("dd/MM/yyyy") : "Sớm nhất                       có thể")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3">Giới thiệu bản thân</h5>
+                    <p class="text-muted" style="white-space: pre-line;">
+                        @(string.IsNullOrEmpty(Model.Bio) ? "Người dùng này chưa viết giới thiệu bản thân." : Model.Bio)
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3">Thói quen & Sở thích</h5>
+                    <div>
+                        @if (Model.Habits != null && Model.Habits.Any())
+                        {
+                            foreach (var habit in Model.Habits)
+                            {
+                                bool isShared = Model.SharedInterests != null && Model.SharedInterests.Contains(habit);
+                                <span class="interest-tag @(isShared ? "shared" : "")">
+                                    @habit
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Chưa cập nhật</span>
+                        }
+                    </div>
+                </div>
+
+                @if (Model.PotentialConflicts != null && Model.PotentialConflicts.Any())
+                {
+                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-4">
+                        <h6 class="fw-bold text-warning-emphasis"><i class="bi bi-exclamation-triangle-fill me-2"></i>Lưu ý
+                            tiềm năng</h6>
+                        <ul class="mb-0 ps-3 text-warning-emphasis small">
+                            @foreach (var conflict in Model.PotentialConflicts)
+                            {
+                                <li>@conflict</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+}

@@ -16,7 +16,8 @@ namespace Unistay_Web.ViewModels
         public string Phone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mật khẩu phải có ít nhất {2} ký tự")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$", ErrorMessage = "Mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số.")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 

@@ -26,6 +26,8 @@ namespace Unistay_Web.Models.User
 
         public string? AvatarUrl { get; set; }
 
+        public string? CoverPhotoUrl { get; set; }
+
         public string? Provider { get; set; } // "Local", "Google", "Facebook"
 
         public string? ProviderKey { get; set; }
@@ -88,5 +90,26 @@ namespace Unistay_Web.Models.User
         public DateTime? LastLoginAt { get; set; }
 
         public string? LastLoginIp { get; set; }
+        // Onboarding Tracking
+        public bool IsOnboardingComplete { get; set; } = false;
+
+        public int OnboardingStep { get; set; } = 1;
+
+        // Personal Info (Accommodation Seeker)
+        public DateTime? DateOfBirth { get; set; }
+
+        public string? ZodiacSign { get; set; }
+
+        public string? CompatibilityAnalysis { get; set; } // Stores AI analysis result
+
+        // Landlord Verification
+        public string? HouseNumber { get; set; }
+        
+        public string? StreetName { get; set; }
+
+        public bool IsAddressVerified { get; set; } = false;
+
+        [StringLength(20)]
+        public string? LandlordVerificationStatus { get; set; } = "Pending"; // Pending, Verified, Rejected
     }
 }

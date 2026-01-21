@@ -1,0 +1,118 @@
+@model List<Unistay_Web.Models.Room.Room>
+
+@{
+    ViewData["Title"] = "So Sánh Phòng";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">So Sánh Chi Tiết</h1>
+        <p class="text-muted">So sánh song song các lựa chọn để tìm ra căn phòng hoàn hảo</p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-4 text-muted">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            </div>
+            <h3>Chưa có phòng để so sánh</h3>
+            <p class="text-muted">Hãy chọn ít nhất 2 phòng để bắt đầu so sánh.</p>
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-primary mt-3">Tìm phòng ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle text-center">
+                <thead>
+                    <tr>
+                        <th class="text-start w-25">Tiêu Chí</th>
+                        @foreach (var room in Model)
+                        {
+                            <th class="w-25">
+                                <div class="position-relative mb-3">
+                                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                         class="rounded-3 w-100" style="height: 150px; object-fit: cover;" alt="@room.Title">
+                                    <button class="btn btn-sm btn-circle btn-danger position-absolute top-0 end-0 m-2" title="Xóa">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </div>
+                                <h5 class="fw-bold mb-1 text-truncate">@room.Title</h5>
+                                <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id" class="text-primary small">Xem chi tiết</a>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Price -->
+                    <tr>
+                        <td class="text-start fw-bold text-muted">Giá Thuê</td>
+                        @foreach (var room in Model)
+                        {
+                            <td class="fs-4 fw-bold text-primary">@room.Price.ToString("N0")</td>
+                        }
+                    </tr>
+                    
+                    <!-- Area -->
+                    <tr>
+                        <td class="text-start fw-bold text-muted">Diện Tích</td>
+                        @foreach (var room in Model)
+                        {
+                            <td>@room.Area m²</td>
+                        }
+                    </tr>
+
+                    <!-- Address -->
+                     <tr>
+                        <td class="text-start fw-bold text-muted">Vị Trí</td>
+                        @foreach (var room in Model)
+                        {
+                            <td class="small">@room.Address</td>
+                        }
+                    </tr>
+
+                    <!-- Amenities -->
+                    <tr>
+                        <td class="text-start fw-bold text-muted">Tiện Ích</td>
+                         @foreach (var room in Model)
+                        {
+                            <td>
+                                <div class="d-flex flex-wrap justify-content-center gap-1">
+                                    @foreach (var am in (room.Amenities ?? "").Split(',').Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark border">@am</span>
+                                    }
+                                </div>
+                            </td>
+                        }
+                    </tr>
+
+                    <!-- Score -->
+                    <tr>
+                        <td class="text-start fw-bold text-muted">Điểm Đánh Giá</td>
+                        @foreach (var room in Model)
+                        {
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center text-warning">
+                                    <span class="fw-bold text-dark me-1">4.5</span> ★★★★★
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                    
+                     <!-- Action -->
+                    <tr>
+                        <td class="text-start"></td>
+                        @foreach (var room in Model)
+                        {
+                            <td class="pt-4">
+                                <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@room.Id" class="btn btn-primary w-100">Đặt Ngay</a>
+                            </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
