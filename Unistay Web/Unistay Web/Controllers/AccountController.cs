@@ -37,33 +37,32 @@ namespace Unistay_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false, string? returnUrl = null)
+        public async Task<IActionResult> Login(Unistay_Web.ViewModels.LoginViewModel model, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Email và mật khẩu không được để trống.");
-                return View();
+                return View(model);
             }
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                await LogLoginHistory(null, email, false, "User not found");
+                await LogLoginHistory(null, model.Email, false, "User not found");
                 ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không đúng.");
-                return View();
+                return View(model);
             }
 
             // Check if user is blocked
             if (user.IsBlocked)
             {
-                await LogLoginHistory(user.Id, email, false, $"Account blocked - Reason: {user.BlockReason}");
+                await LogLoginHistory(user.Id, model.Email, false, $"Account blocked - Reason: {user.BlockReason}");
                 ModelState.AddModelError(string.Empty, "Tài khoản của bạn đã bị khóa.");
-                return View();
+                return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
@@ -71,23 +70,29 @@ namespace Unistay_Web.Controllers
                 user.LastLoginIp = HttpContext.Connection.RemoteIpAddress?.ToString();
                 await _userManager.UpdateAsync(user);
 
-                await LogLoginHistory(user.Id, email, true, null, "Password");
+                await LogLoginHistory(user.Id, model.Email, true, null, "Password");
 
                 _logger.LogInformation("User logged in.");
+
+                if (!user.IsOnboardingComplete)
+                {
+                    return RedirectToAction("Index", "Onboarding");
+                }
+
                 return RedirectToLocal(returnUrl);
             }
             if (result.IsLockedOut)
             {
-                await LogLoginHistory(user.Id, email, false, "Account locked - Too many failed attempts");
+                await LogLoginHistory(user.Id, model.Email, false, "Account locked - Too many failed attempts");
                 _logger.LogWarning("User account locked out.");
                 ModelState.AddModelError(string.Empty, "Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần.");
-                return View();
+                return View(model);
             }
             else
             {
-                await LogLoginHistory(user.Id, email, false, "Invalid password");
+                await LogLoginHistory(user.Id, model.Email, false, "Invalid password");
                 ModelState.AddModelError(string.Empty, "Email hoặc mật khẩu không đúng.");
-                return View();
+                return View(model);
             }
         }
 
@@ -99,53 +104,45 @@ namespace Unistay_Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string fullName, string email, string phone, string password, string confirmPassword, string userType = "student")
+        public async Task<IActionResult> Register(Unistay_Web.ViewModels.RegisterViewModel model)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Vui lòng điền đầy đủ thông tin.");
-                return View();
-            }
-
-            if (password != confirmPassword)
-            {
-                ModelState.AddModelError(string.Empty, "Mật khẩu xác nhận không khớp.");
-                return View();
+                return View(model);
             }
 
             var user = new UserProfile
             {
-                UserName = email,
-                Email = email,
-                FullName = fullName,
-                PhoneNumber = phone,
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+                PhoneNumber = model.Phone,
                 Provider = "Local",
                 CreatedAt = DateTime.UtcNow
             };
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
 
-                // Assign role based on user type
-                string roleName = userType.ToLower() == "landlord" ? "Landlord" : "Student";
-                await _userManager.AddToRoleAsync(user, roleName);
+                // Assign default Student role
+                await _userManager.AddToRoleAsync(user, "Student");
 
                 // Generate email confirmation token
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Scheme);
 
                 // TODO: Send email with confirmation link
-                _logger.LogInformation("Email confirmation link sent to {Email}", email);
+                _logger.LogInformation("Email confirmation link sent to {Email}", model.Email);
 
                 // Log registration activity
-                await LogActivity(user.Id, "AccountCreated", $"Created account as {roleName}");
+                await LogActivity(user.Id, "AccountCreated", "Created account as Student");
 
                 // Auto sign in after registration
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Onboarding");
             }
 
             foreach (var error in result.Errors)
@@ -153,7 +150,7 @@ namespace Unistay_Web.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -221,6 +218,12 @@ namespace Unistay_Web.Controllers
                 }
 
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity?.Name, info.LoginProvider);
+                
+                if (!user.IsOnboardingComplete)
+                {
+                    return RedirectToAction("Index", "Onboarding");
+                }
+
                 return RedirectToLocal(returnUrl);
             }
 
@@ -273,7 +276,7 @@ namespace Unistay_Web.Controllers
                         await LogActivity(user.Id, "AccountCreated", "Created account via Google OAuth");
 
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToAction("Index", "Onboarding");
                     }
                 }
 
@@ -388,7 +391,7 @@ namespace Unistay_Web.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            return View(user);
+            return RedirectToAction("Index", "Profile");
         }
 
         [HttpGet]

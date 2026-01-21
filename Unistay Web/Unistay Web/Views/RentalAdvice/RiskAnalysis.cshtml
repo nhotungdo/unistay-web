@@ -1,0 +1,142 @@
+@model Unistay_Web.Models.RentalAdvice.RiskAnalysis
+
+@{
+    ViewData["Title"] = "Phân Tích Rủi Ro";
+    var scoreColor = Model.RiskScore < 30 ? "text-success" : (Model.RiskScore < 60 ? "text-warning" : "text-danger");
+    var scoreBg = Model.RiskScore < 30 ? "bg-success" : (Model.RiskScore < 60 ? "bg-warning" : "bg-danger");
+}
+
+<div class="container py-5">
+    <div class="glass-card p-5 mw-800 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold mb-3">Báo Cáo An Toàn & Rủi Ro</h1>
+            <p class="text-muted">Phân tích chi tiết dựa trên dữ liệu lịch sử và AI</p>
+        </div>
+
+        <div class="d-flex justify-content-center mb-5">
+            <div class="position-relative d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                <svg viewBox="0 0 36 36" class="circular-chart w-100 h-100">
+                    <path class="circle-bg"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none" stroke="#eee" stroke-width="2.5" />
+                    <path class="circle @scoreColor"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none" stroke="currentColor" stroke-width="2.5" 
+                        stroke-dasharray="@Model.RiskScore, 100" />
+                </svg>
+                <div class="position-absolute text-center">
+                    <div class="display-4 fw-bold @scoreColor">@Model.RiskScore</div>
+                    <small class="text-muted text-uppercase fw-bold">Điểm Rủi Ro</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="p-4 rounded-3 bg-light h-100">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-danger"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01"/></svg>
+                        Cảnh Báo Quan Trọng
+                    </h4>
+                    @if (Model.RiskFactors.Any())
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var risk in Model.RiskFactors)
+                            {
+                                <li class="mb-2 d-flex align-items-start">
+                                    <span class="text-danger me-2">•</span>
+                                    @risk
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-success mb-0">Hiện chưa phát hiện rủi ro lớn nào.</p>
+                    }
+                </div>
+            </div>
+            
+             <div class="col-md-6">
+                <div class="p-4 rounded-3 bg-light h-100">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Xác Thực & Uy Tín
+                    </h4>
+                    <div class="mb-3">
+                        <label class="small text-muted mb-1">Đánh giá chủ nhà</label>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold fs-4 me-2">@Model.LandlordRating</span>
+                            <div class="text-warning">
+                                @for(var i=0; i < (int)Model.LandlordRating; i++) { <span>★</span> }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted mb-1">Trạng thái xác thực</label>
+                        <div>
+                            @if (Model.IsVerified)
+                            {
+                                <span class="badge bg-success">Đã xác minh</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Chưa xác minh</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         @if (Model.FraudIndicators.Any())
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-3 flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div>
+                    <strong>Phát hiện dấu hiệu lừa đảo:</strong>
+                    <ul class="mb-0 mt-1 ps-3">
+                        @foreach (var fraud in Model.FraudIndicators)
+                        {
+                            <li>@fraud</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-5">
+            <a asp-controller="Rooms" asp-action="Details" asp-route-id="@Model.RoomId" class="btn btn-outline-primary">Quay lại chi tiết phòng</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.circular-chart {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 250px;
+}
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 2.5;
+}
+.circle {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+@@keyframes progress {
+  0% { stroke-dasharray: 0 100; }
+}
+.text-danger { stroke: #ef4444; }
+.text-warning { stroke: #f59e0b; }
+.text-success { stroke: #10b981; }
+</style>

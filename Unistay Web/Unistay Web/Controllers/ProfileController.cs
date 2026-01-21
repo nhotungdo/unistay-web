@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Unistay_Web.Models.User;
 using Unistay_Web.Data;
 using System.Security.Claims;
+using Unistay_Web.Helpers;
 
 namespace Unistay_Web.Controllers
 {
@@ -66,7 +67,7 @@ namespace Unistay_Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string fullName, string? gender, int? age, string? occupation,
             string? bio, string? livingArea, decimal? budget, string? lifestyle,
-            DateTime? expectedStayDuration, string? city, string? district, string? ward, string? phoneNumber)
+            DateTime? expectedStayDuration, DateTime? dateOfBirth, string? city, string? district, string? ward, string? phoneNumber)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -90,6 +91,15 @@ namespace Unistay_Web.Controllers
             user.Budget = budget;
             user.Lifestyle = lifestyle;
             user.ExpectedStayDuration = expectedStayDuration;
+            
+            // Calculate Zodiac if DOB changed
+            if (dateOfBirth.HasValue)
+            {
+                user.DateOfBirth = dateOfBirth;
+                var zodiacInfo = ZodiacHelper.GetZodiacInfo(dateOfBirth.Value);
+                user.ZodiacSign = zodiacInfo.Name;
+            }
+
             user.City = city;
             user.District = district;
             user.Ward = ward;
@@ -116,82 +126,11 @@ namespace Unistay_Web.Controllers
             return View(user);
         }
 
-        // POST: /Profile/UploadAvatar
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadAvatar(IFormFile avatarFile)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            if (avatarFile == null || avatarFile.Length == 0)
-            {
-                return Json(new { success = false, message = "Vui lòng chọn một tệp." });
-            }
-
-            // Validate file type
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLower();
-            if (!allowedExtensions.Contains(fileExtension))
-            {
-                return Json(new { success = false, message = "Chỉ hỗ trợ định dạng JPG, PNG, GIF." });
-            }
-
-            // Validate file size (max 5MB)
-            if (avatarFile.Length > 5 * 1024 * 1024)
-            {
-                return Json(new { success = false, message = "Kích thước tệp không được vượt quá 5MB." });
-            }
-
-            try
-            {
-                // Create upload directory if it doesn't exist
-                var uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "uploads", "avatars");
-                Directory.CreateDirectory(uploadsFolder);
-
-                // Generate unique filename
-                var uniqueFileName = $"{user.Id}_{Guid.NewGuid()}{fileExtension}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                // Save file
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await avatarFile.CopyToAsync(fileStream);
-                }
-
-                // Delete old avatar if exists
-                if (!string.IsNullOrEmpty(user.AvatarUrl) && user.AvatarUrl.Contains("/uploads/avatars/"))
-                {
-                    var oldFilePath = Path.Combine(_hostEnvironment.WebRootPath, user.AvatarUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldFilePath))
-                    {
-                        System.IO.File.Delete(oldFilePath);
-                    }
-                }
-
-                // Update user avatar URL
-                user.AvatarUrl = $"/uploads/avatars/{uniqueFileName}";
-                user.UpdatedAt = DateTime.UtcNow;
-
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                {
-                    await LogActivity(user.Id, "AvatarChanged", "Changed profile avatar");
-                    return Json(new { success = true, message = "Cập nhật ảnh đại diện thành công!", avatarUrl = user.AvatarUrl });
-                }
-
-                return Json(new { success = false, message = "Lỗi cập nhật hồ sơ." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading avatar for user {UserId}", user.Id);
-                return Json(new { success = false, message = "Lỗi tải lên: " + ex.Message });
-            }
-        }
+        // Deprecated: Use API/UploadController instead
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> UploadAvatar(IFormFile avatarFile)
+        // { ... }
 
         // GET: /Profile/ChangePassword
         [HttpGet]

@@ -36,7 +36,8 @@ builder.Services.AddIdentity<UserProfile, IdentityRole>(options =>
     options.SignIn.RequireConfirmedEmail = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddErrorDescriber<Unistay_Web.Identity.VietnameseIdentityErrorDescriber>();
 
 // Configure Authentication
 builder.Services.AddAuthentication(options =>
@@ -76,6 +77,11 @@ builder.Services.AddSession(options =>
 
 // Add memory cache
 builder.Services.AddMemoryCache();
+
+// Register Custom Services
+builder.Services.AddScoped<Unistay_Web.Services.RentalAdvice.IRentalAdviceService, Unistay_Web.Services.RentalAdvice.RentalAdviceService>();
+builder.Services.AddScoped<Unistay_Web.Services.IFileUploadService, Unistay_Web.Services.LocalFileUploadService>();
+builder.Services.AddScoped<Unistay_Web.Services.IAiMatchingService, Unistay_Web.Services.AiMatchingService>();
 
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>

@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Cá Nhân Hóa Hồ Sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="onboarding-container fade-in">
+    <div class="glass-panel mx-auto col-lg-8 p-0 overflow-hidden">
+        <!-- Progress Bar -->
+        <div class="progress" style="height: 6px; border-radius: 0;">
+            <div class="progress-bar bg-gradient-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        <div class="row g-0">
+            <!-- Decorative Side -->
+            <div class="col-md-5 bg-gradient-sidebar d-none d-md-flex align-items-center justify-content-center p-5 text-white">
+                <div class="text-center">
+                    <i class="bi bi-stars display-1 mb-4 opacity-75"></i>
+                    <h2 class="fw-bold mb-3">Kết Nối Tâm Giao</h2>
+                    <p class="opacity-75">Chúng tôi sử dụng ngày sinh của bạn để tìm người ở ghép có năng lượng phù hợp. Không phải phép thuật đâu, đó là Unistay AI.</p>
+                </div>
+            </div>
+
+            <!-- Form Side -->
+            <div class="col-md-7 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0">Về Bạn</h3>
+                    <span class="badge bg-light text-dark border">Bước 2 trên 3</span>
+                </div>
+
+                <form asp-action="SeekerProfile" method="post" id="seekerForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Ngày tháng năm sinh</label>
+                        <input type="date" name="dob" class="form-control form-control-lg bg-light border-0" required />
+                        <div class="form-text">Chúng tôi cần thông tin này để tính Cung Hoàng Đạo của bạn.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Sở thích & Lối sống</label>
+                        <textarea name="preferences" class="form-control bg-light border-0" rows="4" placeholder="VD: Tôi hay thức khuya, thích nuôi thú cưng và thích không gian yên tĩnh..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-5">
+                        <button type="submit" name="submitAction" value="save" class="btn btn-link text-muted text-decoration-none">
+                            <i class="bi bi-save me-2"></i>Lưu nháp
+                        </button>
+                        <button type="submit" name="submitAction" value="next" class="btn btn-primary btn-lg px-5 shadow-sm rounded-pill">
+                            Tìm Người Phù Hợp <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .onboarding-container {
+        padding: 4rem 1rem;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .glass-panel {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .bg-gradient-sidebar {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .bg-gradient-sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url('https://www.transparenttextures.com/patterns/cubes.png');
+        opacity: 0.1;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        border-color: #4f46e5;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; margin-top: 20px; }
+        to { opacity: 1; margin-top: 0; }
+    }
+</style>

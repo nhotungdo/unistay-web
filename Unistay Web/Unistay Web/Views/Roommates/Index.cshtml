@@ -1,147 +1,240 @@
+@model IEnumerable<Unistay_Web.Models.Roommate.RoommateDisplayDto>
+
 @{
     ViewData["Title"] = "Tìm bạn cùng phòng";
 }
 
-<section style="padding: 2rem 0;">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.5);
+    }
+
+    .roommate-index-container {
+        padding: 3rem 0;
+        background: radial-gradient(circle at top left, #f3e8ff 0%, #ffffff 50%, #e0e7ff 100%);
+        min-height: 100vh;
+    }
+
+    .glass-filter {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        margin-bottom: 3rem;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .card-header-bg {
+        height: 100px;
+        background: var(--primary-gradient);
+        position: relative;
+    }
+
+    .profile-card:nth-child(even) .card-header-bg {
+        background: var(--secondary-gradient);
+    }
+
+    .avatar-container {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid white;
+        overflow: hidden;
+        margin: -50px auto 1rem;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background: #fff;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .info-section {
+        padding: 0 1.5rem 1.5rem;
+        text-align: center;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .habit-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        background: #f3f4f6;
+        color: #4b5563;
+        font-weight: 500;
+    }
+
+    .detail-box {
+        background: #f9fafb;
+        border-radius: 16px;
+        padding: 1rem;
+        margin: 1rem 0;
+        text-align: left;
+    }
+
+    .match-score {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #10b981;
+        font-weight: 700;
+        font-size: 0.9rem;
+        background: rgba(16, 185, 129, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="roommate-index-container">
     <div class="container">
         <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 2rem;">
+        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
             <div>
-                <h1 class="h2 mb-2">Tìm bạn cùng phòng</h1>
-                <p class="text-muted">Kết nối với những người bạn cùng sở thích và lối sống</p>
+                <h1 class="h2 fw-bold mb-2 text-dark">Tìm bạn cùng phòng</h1>
+                <p class="text-muted mb-0">Kết nối với những người bạn cùng sở thích và lối sống</p>
             </div>
-            <div style="display:flex; gap:1rem;">
-                <a asp-action="Match" class="btn btn-outline">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-2" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    Tìm người phù hợp
+            <div class="d-flex gap-3">
+                <a asp-action="Match" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-stars me-2"></i>Tìm người phù hợp
                 </a>
-                <a asp-action="Create" class="btn btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-2" stroke="currentColor" stroke-width="2">
-                        <path d="M12 5v14M5 12h14"></path>
-                    </svg>
-                    Tạo hồ sơ
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm" style="background: var(--primary-gradient); border: none;">
+                    <i class="bi bi-plus-lg me-2"></i>Tạo hồ sơ
                 </a>
             </div>
         </div>
 
-        <!-- Filters (Glass Panel) -->
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 3rem;">
-             <form class="row g-3" style="display:flex; gap:1.5rem; align-items:flex-end; flex-wrap:wrap;">
-                <div style="flex:1; min-width:200px;">
-                    <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">KHU VỰC</label>
-                    <input type="text" class="form-input" placeholder="Nhập Quận/Huyện..." />
+        <!-- Filter Bar -->
+        <div class="glass-filter">
+             <form class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Khu vực</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-primary"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Nhập Quận/Huyện...">
+                    </div>
                 </div>
-                <div style="flex:1; min-width:150px;">
-                     <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">GIỚI TÍNH</label>
-                     <select class="form-input">
+                <div class="col-md-2">
+                     <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Giới tính</label>
+                     <select class="form-select">
                          <option>Tất cả</option>
                          <option>Nam</option>
                          <option>Nữ</option>
                      </select>
                 </div>
-                <div style="flex:1; min-width:150px;">
-                    <label class="text-muted" style="margin-bottom:0.5rem; display:block; font-size:0.875rem; font-weight:600;">NGÂN SÁCH</label>
-                    <select class="form-input">
+                <div class="col-md-3">
+                    <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Ngân sách</label>
+                    <select class="form-select">
                         <option>Tất cả</option>
                         <option>&lt; 2 triệu</option>
                         <option>2 - 4 triệu</option>
                         <option>&gt; 4 triệu</option>
                     </select>
                 </div>
-                <div>
-                    <button class="btn btn-primary" style="width:100%;">Lọc kết quả</button>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100 fw-bold" style="background: var(--primary-gradient); border: none; height: 38px;">
+                        Lọc kết quả
+                    </button>
                 </div>
             </form>
         </div>
 
-        <!-- Profiles Grid -->
-        <div class="grid-3 animate-fade-in delay-100">
-            <!-- Profile 1 -->
-            <div class="modern-card p-0 text-center" style="overflow:visible; padding-top:3rem;">
-                <div style="position:absolute; top:0; left:0; right:0; height:100px; background:var(--primary-gradient); border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
-                
-                <div style="position:relative; margin-bottom:1rem;">
-                    <div style="width:100px; height:100px; margin:0 auto; border-radius:50%; border:4px solid white; overflow:hidden; box-shadow:var(--shadow-md);">
-                         <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&h=200&fit=crop" style="width:100%; height:100%; object-fit:cover;" alt="Avatar">
-                    </div>
-                </div>
-                
-                <div style="padding: 0 1.5rem 1.5rem;">
-                    <h3 class="h5 mb-1">Nguyễn Văn Nam</h3>
-                    <p class="text-muted small mb-3">Nam &bull; 22 tuổi &bull; Sinh viên ĐHKHTN</p>
-                    
-                    <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-                        <span class="badge badge-primary">Yên tĩnh</span>
-                        <span class="badge badge-primary">Không hút thuốc</span>
-                        <span class="badge badge-primary">Sạch sẽ</span>
-                    </div>
-                    
-                    <div style="background:rgba(0,0,0,0.03); border-radius:var(--radius-md); padding:1rem; margin-bottom:1.5rem; text-align:left;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-                            <span class="text-muted small">Khu vực:</span>
-                            <span class="font-weight-medium small">Quận 1, Quận 5</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span class="text-muted small">Ngân sách:</span>
-                            <span class="text-primary font-weight-bold small">2 - 3 tr/tháng</span>
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; align-items:center; justify-content:center; gap:0.5rem; color:var(--success-color); font-weight:600; font-size:0.875rem; margin-bottom:1rem;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                        </svg>
-                        Phù hợp 85%
-                    </div>
-                    
-                    <a asp-action="Profile" asp-route-id="1" class="btn btn-outline" style="width:100%;">Xem hồ sơ</a>
-                </div>
+        <!-- Results Grid -->
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <div class="mb-3 text-muted display-1"><i class="bi bi-people"></i></div>
+                <h3>Chưa có hồ sơ nào</h3>
+                <p class="text-muted">Hãy là người đầu tiên tạo hồ sơ tìm bạn!</p>
+                <a asp-action="Create" class="btn btn-primary mt-3 rounded-pill px-4">Tạo hồ sơ ngay</a>
             </div>
-
-             <!-- Profile 2 -->
-             <div class="modern-card p-0 text-center" style="overflow:visible; padding-top:3rem;">
-                <div style="position:absolute; top:0; left:0; right:0; height:100px; background:var(--secondary-gradient); border-radius:var(--radius-lg) var(--radius-lg) 0 0;"></div>
-                
-                <div style="position:relative; margin-bottom:1rem;">
-                    <div style="width:100px; height:100px; margin:0 auto; border-radius:50%; border:4px solid white; overflow:hidden; box-shadow:var(--shadow-md);">
-                         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop" style="width:100%; height:100%; object-fit:cover;" alt="Avatar">
-                    </div>
-                </div>
-                
-                <div style="padding: 0 1.5rem 1.5rem;">
-                    <h3 class="h5 mb-1">Trần Thị B</h3>
-                    <p class="text-muted small mb-3">Nữ &bull; 20 tuổi &bull; Sinh viên ĐH Y Dược</p>
-                    
-                    <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-                        <span class="badge" style="background:rgba(236, 72, 153, 0.1); color:var(--secondary-500);">Hòa đồng</span>
-                        <span class="badge" style="background:rgba(236, 72, 153, 0.1); color:var(--secondary-500);">Thích nấu ăn</span>
-                    </div>
-                    
-                    <div style="background:rgba(0,0,0,0.03); border-radius:var(--radius-md); padding:1rem; margin-bottom:1.5rem; text-align:left;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-                            <span class="text-muted small">Khu vực:</span>
-                            <span class="font-weight-medium small">Quận 5, Quận 10</span>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4 col-xl-3 animate-fade-in">
+                        <div class="profile-card">
+                            <div class="card-header-bg"></div>
+                            
+                            <div class="avatar-container">
+                                <img src="@(!string.IsNullOrEmpty(item.AvatarUrl) ? item.AvatarUrl : "/images/default-avatar.png")" 
+                                     class="avatar-img" 
+                                     alt="@item.FullName"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(item.FullName)&background=random'">
+                            </div>
+                            
+                            <div class="info-section">
+                                <h3 class="h5 fw-bold mb-1 text-truncate" title="@item.FullName">@item.FullName</h3>
+                                <p class="text-muted small mb-3 text-truncate">
+                                    @(item.Age > 0 ? $"{item.Age} tuổi" : "") 
+                                    @(string.IsNullOrEmpty(item.Occupation) ? "" : $" • {item.Occupation}")
+                                </p>
+                                
+                                <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap" style="min-height: 26px;">
+                                    @foreach (var habit in item.Habits.Take(3))
+                                    {
+                                        <span class="habit-badge">@habit</span> 
+                                    }
+                                </div>
+                                
+                                <div class="detail-box">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-secondary small">Khu vực:</span>
+                                        <span class="fw-bold small text-dark text-truncate ms-2" style="max-width: 120px;">@item.PreferredArea</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-secondary small">Ngân sách:</span>
+                                        <span class="text-primary fw-bold small">@(item.Budget > 0 ? item.Budget.ToString("N0") : "Thỏa thuận") đ</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="match-score">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Phù hợp @item.MatchPercentage%
+                                </div>
+                                
+                                <a asp-action="Profile" asp-route-id="@item.Id" class="btn btn-outline-primary rounded-pill w-100 mt-auto border-2 fw-bold">
+                                    Xem hồ sơ
+                                </a>
+                            </div>
                         </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span class="text-muted small">Ngân sách:</span>
-                            <span class="text-primary font-weight-bold small">1.5 - 2 tr/tháng</span>
-                        </div>
                     </div>
-                    
-                    <div style="display:flex; align-items:center; justify-content:center; gap:0.5rem; color:var(--secondary-500); font-weight:600; font-size:0.875rem; margin-bottom:1rem;">
-                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                        </svg>
-                        Phù hợp 92%
-                    </div>
-                    
-                    <a asp-action="Profile" asp-route-id="2" class="btn btn-outline" style="width:100%;">Xem hồ sơ</a>
-                </div>
+                }
             </div>
-            
-            <!-- More Profiles -->
-        </div>
+        }
     </div>
-</section>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+}
