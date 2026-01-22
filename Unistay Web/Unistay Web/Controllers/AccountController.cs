@@ -218,7 +218,7 @@ namespace Unistay_Web.Controllers
                 }
 
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity?.Name, info.LoginProvider);
-                
+
                 if (!user.IsOnboardingComplete)
                 {
                     return RedirectToAction("Index", "Onboarding");
