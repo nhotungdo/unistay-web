@@ -1,123 +1,205 @@
 @{
-    ViewData["Title"] = "Quản trị hệ thống";
+    ViewData["Title"] = "Trang quản trị";
 }
 
-<div class="container-fluid py-4" style="background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%); min-height: 100vh;">
-    <div class="d-flex justify-between align-center mb-5 animate-fade-in">
-        <div>
-            <h1 class="h3 mb-1 font-weight-bold display-4" style="font-size: 1.75rem;">Bảng điều khiển</h1>
-            <p class="text-muted">Tổng quan về hoạt động của hệ thống</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline hover-scale">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-2" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Xuất báo cáo
-            </button>
-        </div>
-    </div>
-    
-    <!-- Stats Grid -->
-    <div class="stats-grid stagger-animation mb-5">
-        <div class="glass-panel text-center p-4">
-            <div class="stat-number text-gradient-primary">1,234</div>
-            <div class="stat-label text-muted font-weight-bold">NGƯỜI DÙNG MỚI</div>
-            <div class="mt-2 text-success small">
-                <span class="font-weight-bold">↑ 12%</span> so với tháng trước
-            </div>
-        </div>
-        
-        <div class="glass-panel text-center p-4">
-            <div class="stat-number text-gradient-success">567</div>
-            <div class="stat-label text-muted font-weight-bold">PHÒNG ĐANG HOẠT ĐỘNG</div>
-            <div class="mt-2 text-success small">
-                <span class="font-weight-bold">↑ 5%</span> so với tháng trước
-            </div>
-        </div>
-        
-        <div class="glass-panel text-center p-4">
-            <div class="stat-number text-gradient-warning">23</div>
-            <div class="stat-label text-muted font-weight-bold">BÁO CÁO CHỜ XỬ LÝ</div>
-            <div class="mt-2 text-warning small">
-                Cần xử lý ngay
-            </div>
-        </div>
-        
-        <div class="glass-panel text-center p-4">
-            <div class="stat-number text-gradient-accent">45M</div>
-            <div class="stat-label text-muted font-weight-bold">DOANH THU THÁNG NÀY</div>
-            <div class="mt-2 text-success small">
-                <span class="font-weight-bold">↑ 8%</span> so với tháng trước
-            </div>
-        </div>
-    </div>
-    
-    <!-- Recent Activity & Charts Placeholder -->
+<div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-12 col-lg-8 mb-4">
-            <div class="glass-panel h-100 p-4 animate-scale-in">
-                <h3 class="h5 mb-4 font-weight-bold">Biểu đồ tăng trưởng</h3>
-                <div class="d-flex justify-center align-center rounded-xl" style="height: 300px; background: rgba(99, 102, 241, 0.03); border: 2px dashed var(--border-glass);">
-                    <div class="text-center">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-muted mb-2">
-                            <line x1="18" y1="20" x2="18" y2="10"></line>
-                            <line x1="12" y1="20" x2="12" y2="4"></line>
-                            <line x1="6" y1="20" x2="6" y2="14"></line>
-                        </svg>
-                        <p class="text-muted mb-0">Dữ liệu biểu đồ đang được cập nhật</p>
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            <i class="bi bi-house-door-fill me-2"></i>
+                            Tổng quan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-people-fill me-2"></i>
+                            Quản lý người dùng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-building-fill me-2"></i>
+                            Quản lý tin đăng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-bar-chart-fill me-2"></i>
+                            Báo cáo & Thống kê
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear-fill me-2"></i>
+                            Cài đặt
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Tổng quan</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Chia sẻ</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Xuất</button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                        <i class="bi bi-calendar-event me-1"></i>
+                        Tuần này
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-xl-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="flex-shrink-0 me-4">
+                                <div class="p-3 rounded-3 d-inline-flex align-items-center justify-content-center" style="background-color: #e0e7ff; color: #4338ca;">
+                                    <i class="bi bi-people-fill fs-2"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-1">1,204</h3>
+                                <p class="text-muted mb-0">Người dùng mới</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                     <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="flex-shrink-0 me-4">
+                                <div class="p-3 rounded-3 d-inline-flex align-items-center justify-content-center" style="background-color: #d1fae5; color: #047857;">
+                                    <i class="bi bi-building-fill-add fs-2"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-1">589</h3>
+                                <p class="text-muted mb-0">Tin đăng mới</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                     <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="flex-shrink-0 me-4">
+                               <div class="p-3 rounded-3 d-inline-flex align-items-center justify-content-center" style="background-color: #ffedd5; color: #f97316;">
+                                    <i class="bi bi-cash-coin fs-2"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-1">$5,2M</h3>
+                                <p class="text-muted mb-0">Doanh thu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 col-xl-3">
+                     <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="flex-shrink-0 me-4">
+                               <div class="p-3 rounded-3 d-inline-flex align-items-center justify-content-center" style="background-color: #fee2e2; color: #dc2626;">
+                                    <i class="bi bi-flag-fill fs-2"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-1">73</h3>
+                                <p class="text-muted mb-0">Báo cáo chờ xử lý</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-lg-4 mb-4">
-            <div class="glass-panel h-100 p-4 animate-scale-in" style="animation-delay: 0.1s;">
-                <h3 class="h5 mb-4 font-weight-bold">Hoạt động gần đây</h3>
-                <div class="d-flex flex-column gap-3">
-                    <div class="d-flex gap-3 align-start p-2 rounded hover-bg-light transition-fast">
-                        <div class="rounded-circle bg-primary-100 p-2 text-primary d-flex align-center justify-center" style="width:36px; height:36px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="mb-0 font-weight-medium">Nguyễn Văn A vừa đăng ký</p>
-                            <small class="text-muted">2 phút trước</small>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-3 align-start p-2 rounded hover-bg-light transition-fast">
-                        <div class="rounded-circle bg-success-100 p-2 text-success d-flex align-center justify-center" style="width:36px; height:36px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="mb-0 font-weight-medium">Phòng trọ #123 được đăng tải</p>
-                            <small class="text-muted">15 phút trước</small>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-3 align-start p-2 rounded hover-bg-light transition-fast">
-                        <div class="rounded-circle bg-warning-100 p-2 text-warning d-flex align-center justify-center" style="width:36px; height:36px;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                <line x1="12" y1="9" x2="12" y2="13"></line>
-                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="mb-0 font-weight-medium">Báo cáo vi phạm từ UserXYZ</p>
-                            <small class="text-muted">1 giờ trước</small>
-                        </div>
-                    </div>
+
+            <!-- Chart -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0">
+                    <h5 class="card-title">Lượt truy cập</h5>
                 </div>
-                <div class="mt-4 text-center">
-                    <a href="#" class="text-primary font-weight-bold text-decoration-none hover-scale d-inline-block">Xem tất cả</a>
+                <div class="card-body">
+                    <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
                 </div>
             </div>
-        </div>
+            
+        </main>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Very basic Chart.js setup
+    const ctx = document.getElementById('myChart');
+    if(ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                datasets: [{
+                    label: 'Tuần này',
+                    data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+                    lineTension: 0.3,
+                    backgroundColor: 'rgba(100, 116, 226, 0.1)',
+                    borderColor: '#6474e2',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#6474e2',
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+</script>
+}
+
+<style>
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0; 
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.nav-link {
+    color: #333;
+    font-weight: 500;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    color: #0d6efd;
+}
+</style>
