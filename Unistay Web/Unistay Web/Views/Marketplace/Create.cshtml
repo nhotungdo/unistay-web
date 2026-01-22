@@ -1,89 +1,84 @@
 @model Unistay_Web.Models.Marketplace.MarketplaceItem
+
 @{
-    ViewData["Title"] = "Đăng bán đồ cũ";
+    ViewData["Title"] = "Đăng tin đồ cũ";
 }
 
-<section class="py-5">
-    <div class="container mb-5">
-        <div class="row justify-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                <div class="text-center mb-5 animate-fade-in">
-                    <h1 class="h2 mb-2">Đăng tin bán đồ</h1>
-                    <p class="text-muted">Thanh lý đồ dùng nhanh chóng tới cộng đồng sinh viên</p>
-                </div>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">Đăng bán món đồ của bạn</h1>
+                <p class="text-muted">Điền thông tin chi tiết để tiếp cận hàng ngàn sinh viên khác.</p>
+            </div>
 
-                <form asp-action="Create" method="post" enctype="multipart/form-data">
-                    <div class="glass-panel mb-4 animate-scale-in" style="padding: 2rem;">
-                        <!-- Basic Info -->
+            <div class="card shadow-sm" style="border-radius: 1rem;">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Title -->
                         <div class="mb-4">
-                            <label class="text-muted small font-weight-bold mb-1 d-block">TÊN SẢN PHẨM <span class="text-danger">*</span></label>
-                            <input class="form-input" placeholder="VD: Tủ lạnh mini Aqua 90L cũ" style="font-size: 1.1rem;" />
+                            <label asp-for="Title" class="form-label fw-bold">Tiêu đề</label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="VD: Tủ lạnh mini 90L còn mới" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">DANH MỤC <span class="text-danger">*</span></label>
-                                <div class="position-relative">
-                                    <select class="form-input">
-                                        <option>Chọn danh mục</option>
-                                        <option>Nội thất</option>
-                                        <option>Điện tử</option>
-                                        <option>Đồ dùng học tập</option>
-                                        <option>Phương tiện</option>
-                                        <option>Khác</option>
-                                    </select>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted" style="position: absolute; right: 12px; top: 12px; pointer-events: none;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">GIÁ BÁN (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-input" placeholder="0" />
-                            </div>
-                        </div>
-
+                        <!-- Description -->
                         <div class="mb-4">
-                            <label class="text-muted small font-weight-bold mb-1 d-block">MÔ TẢ CHI TIẾT <span class="text-danger">*</span></label>
-                            <textarea class="form-input" rows="5" placeholder="Mô tả tình trạng, thời gian sử dụng, lý do bán..."></textarea>
+                            <label asp-for="Description" class="form-label fw-bold">Mô tả chi tiết</label>
+                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Mô tả tình trạng, thời gian đã sử dụng, lý do bán..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-4">
-                            <label class="text-muted small font-weight-bold mb-1 d-block">HÌNH ẢNH SẢN PHẨM</label>
-                            <div class="border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-fast" style="background: rgba(255,255,255,0.5); border-color: var(--border-glass);">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted mb-2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                    <polyline points="21 15 16 10 5 21"></polyline>
-                                </svg>
-                                <p class="mb-0 font-weight-medium">Nhấn để tải ảnh lên</p>
-                                <small class="text-muted">Hoặc kéo thả vào đây</small>
-                                <input type="file" multiple class="d-none" />
-                            </div>
-                        </div>
-                        
-                        <hr class="my-4 border-glass" style="opacity: 0.5;">
-                        
-                        <h4 class="h6 mb-3">Thông tin liên hệ</h4>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">SỐ ĐIỆN THOẠI</label>
-                                <input type="tel" class="form-input" placeholder="09xxxxxxxx" />
+                            <!-- Price -->
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="Price" class="form-label fw-bold">Giá bán (VND)</label>
+                                <input asp-for="Price" type="number" class="form-control" placeholder="Chỉ nhập số, VD: 1500000" />
+                                <span asp-validation-for="Price" class="text-danger small"></span>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="text-muted small font-weight-bold mb-1 d-block">KHU VỰC GIAO DỊCH</label>
-                                <input type="text" class="form-input" placeholder="VD: Quận 5, TP.HCM" />
+
+                            <!-- Category -->
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="Category" class="form-label fw-bold">Loại sản phẩm</label>
+                                <select asp-for="Category" class="form-select">
+                                    <option value="">-- Chọn loại --</option>
+                                    <option value="electronics">Đồ điện tử</option>
+                                    <option value="furniture">Nội thất</option>
+                                    <option value="books">Sách & Học tập</option>
+                                    <option value="vehicle">Phương tiện</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger small"></span>
                             </div>
                         </div>
 
-                    </div>
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <label asp-for="Location" class="form-label fw-bold">Khu vực</label>
+                            <input asp-for="Location" class="form-control" placeholder="VD: Quận 3, TP.HCM" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
 
-                    <div class="d-flex gap-3 justify-end">
-                        <a asp-action="Index" class="btn btn-outline" style="border:none;">Hủy bỏ</a>
-                        <button type="submit" class="btn btn-primary px-5">Đăng tin ngay</button>
-                    </div>
-                </form>
+                        <!-- Image Upload -->
+                        <div class="mb-4">
+                            <label for="formFile" class="form-label fw-bold">Hình ảnh sản phẩm</label>
+                            <input class="form-control" type="file" id="formFile" name="imageFile">
+                             <small class="text-muted d-block mt-1">Tải lên ít nhất một ảnh rõ nét về sản phẩm.</small>
+                        </div>
+                        
+                        <hr class="my-4">
+
+                        <!-- Submit -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                <i class="bi bi-send-check me-2"></i>Đăng tin ngay
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>

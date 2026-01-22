@@ -1,95 +1,337 @@
+@model Unistay_Web.Models.Marketplace.MarketplaceItem
+
 @{
-    ViewData["Title"] = "Chi tiết sản phẩm";
+    ViewData["Title"] = Model.Title;
 }
 
-<section class="py-5">
-    <div class="container">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb" style="display: flex; gap: 8px; list-style: none; padding: 0;">
-                <li class="breadcrumb-item"><a href="/" class="text-muted text-decoration-none">Trang chủ</a></li>
-                <li class="breadcrumb-item text-muted">/</li>
-                <li class="breadcrumb-item"><a asp-action="Index" class="text-muted text-decoration-none">Chợ đồ cũ</a></li>
-                <li class="breadcrumb-item text-muted">/</li>
-                <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-600);">Tủ lạnh mini Aqua 90L</li>
-            </ol>
-        </nav>
+<style>
+    .hero-image {
+        width: 100%;
+        height: 500px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
 
-        <div class="row">
-            <!-- Images -->
-            <div class="col-md-6 mb-4">
-                <div class="card overflow-hidden mb-3">
-                    <img src="https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=800&h=600&fit=crop" class="w-100 object-cover" style="height: 400px;" alt="Main Image">
-                </div>
-                <div class="d-flex gap-2 overflow-auto">
-                    <img src="https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=100&h=100&fit=crop" class="rounded-md border border-primary-500 cursor-pointer" style="width: 80px; height: 80px; object-fit: cover;" alt="Thumbnail">
-                    <div class="rounded-md bg-light d-flex align-center justify-center cursor-pointer opacity-70 border border-neutral-200" style="width: 80px; height: 80px;">
-                        <!-- Placeholder -->
-                    </div>
+    .badge-category {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        color: #495057;
+    }
+
+    .price-tag {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .detail-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .detail-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 12px 0;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e0f2fe;
+        border-radius: 10px;
+        color: #0369a1;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .seller-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .seller-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
+    }
+
+    .seller-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        object-fit: cover;
+    }
+
+    .seller-info h6 {
+        margin-bottom: 4px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .seller-info p {
+        font-size: 12px;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+    .btn-contact {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 16px 32px;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-contact:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .btn-contact:active {
+        transform: translateY(0);
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-bottom: 32px;
+    }
+
+    .back-button:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .description-text {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #475569;
+        margin-bottom: 24px;
+    }
+
+    .divider {
+        background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        height: 1px;
+        margin: 24px 0;
+    }
+
+    .secondary-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .btn-secondary-action {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 10px;
+        color: #64748b;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .btn-secondary-action:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        color: #1e293b;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-image {
+            height: 300px;
+        }
+
+        .price-tag {
+            font-size: 2rem;
+        }
+
+        .sticky-panel {
+            position: static;
+        }
+
+        .meta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .secondary-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="py-4">
+    <div class="container">
+        <!-- Back Navigation -->
+        <a href="@Url.Action("Index", "Marketplace")" class="back-button">
+            <i class="bi bi-chevron-left"></i>
+            <span>Trở về Chợ</span>
+        </a>
+
+        <div class="row g-4">
+            <!-- Left Column - Image Gallery -->
+            <div class="col-lg-7">
+                <div class="hero-image" style="background-image: url('@Model.ImageUrls')"></div>
+
+                <!-- Image Info -->
+                <div
+                    style="margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 12px; text-align: center;">
+                    <small style="color: #94a3b8;">1 ảnh được tải lên</small>
                 </div>
             </div>
 
-            <!-- Info -->
-            <div class="col-md-6">
-                <div class="d-flex justify-between align-start mb-2">
-                    <h1 class="h3 mb-0">Tủ lạnh mini Aqua 90L</h1>
-                    <button class="btn btn-ghost btn-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="d-flex align-center gap-2 mb-4">
-                    <span class="badge badge-success">Còn hàng</span>
-                    <span class="text-muted">•</span>
-                    <span class="text-muted">Đăng 2 giờ trước</span>
-                    <span class="text-muted">•</span>
-                    <span class="text-muted">Quận 3, TP.HCM</span>
-                </div>
+            <!-- Right Column - Details Panel -->
+            <div class="col-lg-5">
+                <div class="sticky-panel" style="position: sticky; top: 20px;">
+                    <!-- Category Badge -->
+                    <div style="margin-bottom: 20px;">
+                        <span class="badge-category">@Model.Category</span>
+                    </div>
 
-                <h2 class="h3 text-primary font-weight-bold mb-4">1.500.000 đ</h2>
+                    <!-- Title -->
+                    <h1
+                        style="font-size: 2rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-bottom: 16px;">
+                        @Model.Title
+                    </h1>
 
-                <div class="card bg-light border-0 mb-4">
-                    <div class="card-body">
-                        <h4 class="h6 mb-3">Thông tin người bán</h4>
-                        <div class="d-flex align-center gap-3">
-                            <img src="https://ui-avatars.com/api/?name=Tran+Van+B&background=random" class="rounded-full" width="48" height="48" alt="Seller">
-                            <div>
-                                <h5 class="mb-0 text-base">Trần Văn B</h5>
-                                <div class="d-flex align-center gap-1 text-warning small">
-                                    <span>★ 4.9</span>
-                                    <span class="text-muted">(15 đánh giá)</span>
-                                </div>
+                    <!-- Price -->
+                    <div style="margin-bottom: 24px;">
+                        <p
+                            style="color: #94a3b8; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Giá</p>
+                        <div class="price-tag">@Model.Price.ToString("N0") đ</div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="description-text">@Model.Description</p>
+
+                    <!-- Details Card -->
+                    <div class="detail-card">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-geo-alt"></i>
                             </div>
-                            <div class="ml-auto">
-                                <a href="#" class="btn btn-sm btn-outline-primary">Xem trang</a>
+                            <div>
+                                <small style="color: #94a3b8; display: block; margin-bottom: 4px;">Khu vực</small>
+                                <strong style="color: #1e293b;">@Model.Location</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div>
+                                <small style="color: #94a3b8; display: block; margin-bottom: 4px;">Đăng ngày</small>
+                                <strong style="color: #1e293b;">@Model.CreatedAt.ToShortDateString()</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="divider"></div>
+
+                    <!-- Seller Card -->
+                    <div style="margin-bottom: 24px;">
+                        <small
+                            style="color: #94a3b8; display: block; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Người
+                            bán</small>
+                        <div class="seller-card">
+                            <img src="https://ui-avatars.com/api/?name=@Model.SellerId&background=0078d4&color=fff&size=64"
+                                class="seller-avatar" alt="@Model.SellerId">
+                            <div class="seller-info">
+                                <h6>@Model.SellerId</h6>
+                                <p>ID: @Model.SellerId</p>
+                                <small style="color: #10b981; font-weight: 500;">✓ Đã xác minh</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <button class="btn btn-contact w-100" style="cursor: pointer; color: white; border: none;">
+                        <i class="bi bi-telephone me-2"></i> Liên hệ người bán
+                    </button>
+
+                    <div class="secondary-actions">
+                        <button class="btn-secondary-action">
+                            <i class="bi bi-heart me-2"></i> Yêu thích
+                        </button>
+                        <button class="btn-secondary-action">
+                            <i class="bi bi-share me-2"></i> Chia sẻ
+                        </button>
+                    </div>
+
+                    <!-- Safety Tips -->
+                    <div
+                        style="margin-top: 24px; padding: 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
+                        <div style="display: flex; gap: 12px;">
+                            <i class="bi bi-exclamation-circle" style="color: #d97706; font-weight: bold;"></i>
+                            <div>
+                                <small style="color: #92400e; font-weight: 600; display: block; margin-bottom: 4px;">Lưu
+                                    ý an toàn</small>
+                                <small style="color: #b45309; line-height: 1.6;">Hãy gặp mặt trực tiếp, không chuyển
+                                    tiền trước khi xác minh sản phẩm.</small>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="mb-4">
-                    <h4 class="h5 mb-2">Mô tả sản phẩm</h4>
-                    <p class="text-muted line-height-relaxed">
-                        Do chuyển trọ nên mình cần pass lại tủ lạnh mini Aqua 90L.
-                        Tủ mua mới được 6 tháng, còn bảo hành chính hãng.
-                        Mọi chức năng hoạt động bình thường, làm lạnh nhanh, tiết kiệm điện.
-                        Phù hợp cho sinh viên ở trọ hoặc phòng ngủ.
-                        Có fix nhẹ tiền xăng xe cho bạn nào qua lấy nhanh.
-                    </p>
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex">
-                    <button class="btn btn-primary btn-lg flex-1">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
-                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                        </svg>
-                        Liên hệ người bán
-                    </button>
-                    <button class="btn btn-outline-primary btn-lg flex-1">Nhắn tin</button>
-                </div>
             </div>
         </div>
     </div>
-</section>
+</div>

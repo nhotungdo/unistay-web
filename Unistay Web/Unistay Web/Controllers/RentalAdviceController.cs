@@ -7,6 +7,7 @@ using Unistay_Web.Data; // Assuming context might be needed for direct simpler q
 
 namespace Unistay_Web.Controllers
 {
+    [Route("RentalAdvice")]
     public class RentalAdviceController : Controller
     {
         private readonly IRentalAdviceService _adviceService;
@@ -18,6 +19,8 @@ namespace Unistay_Web.Controllers
             _context = context;
         }
 
+        [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,12 +31,13 @@ namespace Unistay_Web.Controllers
             return View(rooms);
         }
 
+        [Route("Chat")]
         public IActionResult Chat()
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("GetChatResponse")]
         public async Task<IActionResult> GetChatResponse([FromBody] ChatRequest request)
         {
              var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -41,6 +45,7 @@ namespace Unistay_Web.Controllers
              return Json(new { response });
         }
 
+        [Route("Neighborhoods")]
         public async Task<IActionResult> Neighborhoods()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -48,12 +53,14 @@ namespace Unistay_Web.Controllers
             return View(areas);
         }
 
+        [Route("RiskAnalysis/{id?}")]
         public async Task<IActionResult> RiskAnalysis(int id)
         {
             var analysis = await _adviceService.AnalyzeRoomRisksAsync(id);
             return View(analysis);
         }
 
+        [Route("PriceAnalysis")]
         public async Task<IActionResult> PriceAnalysis(string area)
         {
             if (string.IsNullOrEmpty(area)) area = "Downtown"; // Default
@@ -61,6 +68,7 @@ namespace Unistay_Web.Controllers
             return View(trends);
         }
 
+        [Route("Compare")]
         public async Task<IActionResult> Compare(string ids)
         {
             if (string.IsNullOrEmpty(ids)) return RedirectToAction("Index");
