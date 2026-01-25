@@ -24,6 +24,8 @@ namespace Unistay_Web.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return RedirectToAction("Login", "Account");
+            
             ViewBag.AIAdvice = await _adviceService.GetPersonalizedAdviceAsync(userId);
             
             // Get some initial suggestions for the dashboard
@@ -41,6 +43,8 @@ namespace Unistay_Web.Controllers
         public async Task<IActionResult> GetChatResponse([FromBody] ChatRequest request)
         {
              var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+             if (userId == null) return Unauthorized();
+             
              var response = await _adviceService.GetChatResponseAsync(request.Message, userId);
              return Json(new { response });
         }
@@ -49,6 +53,8 @@ namespace Unistay_Web.Controllers
         public async Task<IActionResult> Neighborhoods()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return RedirectToAction("Login", "Account");
+            
             var areas = await _adviceService.GetNeighborhoodSuggestionsAsync(userId);
             return View(areas);
         }
@@ -71,7 +77,10 @@ namespace Unistay_Web.Controllers
         [Route("Compare")]
         public async Task<IActionResult> Compare(string ids)
         {
-            if (string.IsNullOrEmpty(ids)) return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(ids)) 
+            {
+                return View(new List<Unistay_Web.Models.Room.Room>());
+            }
             
             var idList = ids.Split(',').Select(int.Parse).ToList();
             var rooms = _context.Rooms.Where(r => idList.Contains(r.Id)).ToList();
@@ -82,6 +91,6 @@ namespace Unistay_Web.Controllers
 
     public class ChatRequest
     {
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }
