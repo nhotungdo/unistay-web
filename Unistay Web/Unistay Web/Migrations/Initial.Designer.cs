@@ -12,7 +12,7 @@ using Unistay_Web.Data;
 namespace Unistay_Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("Initial")]
+    [Migration("20240101000000_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

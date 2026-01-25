@@ -10,73 +10,163 @@
         <p class="lead text-muted">Khám phá hàng ngàn lựa chọn phòng trọ và căn hộ trên toàn quốc.</p>
     </div>
 
-    <!-- Search & Filter Section -->
-    <div class="card shadow-sm mb-5" style="border-radius: 1rem;">
-        <div class="card-body p-4">
-            <form asp-action="Search" method="get">
-                <div class="row g-3 align-items-center">
-                    <div class="col-lg-5">
-                        <div class="input-group">
-                             <span class="input-group-text bg-transparent border-0"><i class="bi bi-search"></i></span>
-                            <input type="text" name="location" class="form-control border-0 shadow-none" placeholder="Tìm kiếm theo địa điểm, quận hoặc trường đại học...">
+    <!-- Dual-Purpose Section (Seeker vs Poster) -->
+    <div class="glass-panel p-4 mb-5 animate-fade-in-up">
+        <!-- Role Selection Tabs -->
+        <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-pill" id="pills-tab" role="tablist" style="max-width: 600px; margin: 0 auto; border: 1px solid var(--border-glass);">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold" id="pills-seeker-tab" data-bs-toggle="pill" data-bs-target="#pills-seeker" type="button" role="tab" aria-selected="true">
+                    <i class="bi bi-search me-2"></i>Tìm phòng
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold" id="pills-poster-tab" data-bs-toggle="pill" data-bs-target="#pills-poster" type="button" role="tab" aria-selected="false">
+                    <i class="bi bi-house-add me-2"></i>Đăng tin cho thuê
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- Seeker Section -->
+            <div class="tab-pane fade show active" id="pills-seeker" role="tabpanel" aria-labelledby="pills-seeker-tab">
+                <div class="text-center mb-4">
+                     <p class="text-muted">Tìm kiếm chỗ ở lý tưởng phù hợp với nhu cầu và ngân sách của bạn.</p>
+                </div>
+
+                <form asp-action="Search" method="get">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                                 <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
+                                <input type="text" name="location" class="form-control border-0 shadow-none" placeholder="Tìm kiếm theo địa điểm, quận hoặc trường đại học..." style="background: white;">
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4">
+                            <select name="type" class="form-select border-0 shadow-none text-muted" style="background: white;">
+                                <option value="">Loại hình</option>
+                                <option value="apartment">Căn hộ</option>
+                                <option value="studio">Studio</option>
+                                <option value="dorm">Ký túc xá</option>
+                                <option value="shared">Ở ghép</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-4">
+                             <select name="price" class="form-select border-0 shadow-none text-muted" style="background: white;">
+                                <option value="">Mức giá</option>
+                                <option value="0-2">Dưới 2 triệu</option>
+                                <option value="2-5">2 - 5 triệu</option>
+                                <option value="5-10">5 - 10 triệu</option>
+                                <option value="10+">Trên 10 triệu</option>
+                            </select>
+                        </div>
+                         <div class="col-lg-1 col-md-4">
+                            <button type="button" class="btn btn-outline-primary w-100 border-0" data-bs-toggle="collapse" data-bs-target="#filters" style="background: rgba(var(--primary-rgb), 0.1);">
+                                <i class="bi bi-sliders"></i>
+                            </button>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Tìm kiếm</button>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-4">
-                        <select name="type" class="form-select border-0 shadow-none text-muted">
-                            <option value="">Loại hình</option>
-                            <option value="apartment">Căn hộ</option>
-                            <option value="studio">Studio</option>
-                            <option value="dorm">Ký túc xá</option>
-                            <option value="shared">Ở ghép</option>
+                    <!-- Collapsible Filters -->
+                    <div class="collapse pt-3" id="filters">
+                        <hr class="text-muted opacity-25">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                 <label class="form-label fw-bold small text-muted">Tiện ích</label>
+                                 <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.5);">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="wifi">
+                                        <label class="form-check-label" for="wifi">Wifi</label>
+                                    </div>
+                                     <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ac">
+                                        <label class="form-check-label" for="ac">Máy lạnh</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="parking">
+                                        <label class="form-check-label" for="parking">Chỗ để xe</label>
+                                    </div>
+                                 </div>
+                            </div>
+                             <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Số người</label>
+                                <input type="range" class="form-range" min="1" max="10" step="1" id="numPeople">
+                                 <div class="text-center small text-muted">Tối đa <span id="numPeopleValue">5</span> người</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Poster Section -->
+            <div class="tab-pane fade" id="pills-poster" role="tabpanel" aria-labelledby="pills-poster-tab">
+                 <div class="text-center mb-4">
+                    <p class="text-muted">Đăng tin miễn phí để tiếp cận hàng ngàn sinh viên đang tìm trọ.</p>
+                </div>
+                
+                <form asp-action="Create" method="get" class="row g-3 justify-content-center">
+                    <div class="col-md-4">
+                        <select name="type" class="form-select border-0 shadow-none" style="height: 3.5rem; background: white;">
+                             <option value="">Chọn loại hình cho thuê</option>
+                             <option value="apartment">Căn hộ</option>
+                             <option value="studio">Studio</option>
+                             <option value="dorm">Ký túc xá</option>
+                             <option value="shared">Ở ghép</option>
                         </select>
                     </div>
-                    <div class="col-lg-2 col-md-4">
-                         <select name="price" class="form-select border-0 shadow-none text-muted">
-                            <option value="">Mức giá</option>
-                            <option value="0-2">Dưới 2 triệu</option>
-                            <option value="2-5">2 - 5 triệu</option>
-                            <option value="5-10">5 - 10 triệu</option>
-                            <option value="10+">Trên 10 triệu</option>
-                        </select>
+                     <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0"><i class="bi bi-geo-alt text-success"></i></span>
+                            <input type="text" name="address" class="form-control border-0 shadow-none" style="height: 3.5rem; background: white;" placeholder="Nhập địa chỉ bất động sản...">
+                        </div>
                     </div>
-                     <div class="col-lg-1 col-md-4">
-                        <button type="button" class="btn btn-light w-100" data-bs-toggle="collapse" data-bs-target="#filters">
-                            <i class="bi bi-filter"></i>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold h-100">
+                            <i class="bi bi-arrow-right-circle me-2"></i>Đăng tin ngay
                         </button>
                     </div>
-                    <div class="col-lg-2">
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Tìm kiếm</button>
-                    </div>
-                </div>
-                <!-- Collapsible Filters -->
-                <div class="collapse pt-3" id="filters">
-                    <hr>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                             <label class="form-label fw-bold small">Tiện ích</label>
-                             <div class="p-3 bg-light rounded-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="wifi">
-                                    <label class="form-check-label" for="wifi">Wifi</label>
-                                </div>
-                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="ac">
-                                    <label class="form-check-label" for="ac">Máy lạnh</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="parking">
-                                    <label class="form-check-label" for="parking">Chỗ để xe</label>
-                                </div>
-                             </div>
-                        </div>
-                         <div class="col-md-4">
-                            <label class="form-label fw-bold small">Số người</label>
-                            <input type="range" class="form-range" min="1" max="10" step="1" id="numPeople">
-                             <div class="text-center small text-muted">Tối đa <span id="numPeopleValue">5</span> người</div>
+                </form>
+                
+                <div class="row mt-5 g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
+                            <div class="mb-3 text-primary">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                </svg>
+                            </div>
+                            <h6 class="fw-bold">Nhanh chóng</h6>
+                            <small class="text-muted">Quy trình đăng tin đơn giản chỉ trong 2 phút</small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
+                            <div class="mb-3 text-info">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h6 class="fw-bold">Hiệu quả cao</h6>
+                            <small class="text-muted">Tiếp cận hàng ngàn sinh viên mỗi ngày</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                         <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
+                            <div class="mb-3 text-success">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </div>
+                            <h6 class="fw-bold">An toàn & Tin cậy</h6>
+                            <small class="text-muted">Hệ thống xác thực người dùng minh bạch</small>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -104,6 +194,9 @@
                              <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80" class="img-fluid rounded-start" alt="Phòng trọ">
                              <span class="badge bg-danger position-absolute top-0 start-0 m-3">Nổi bật</span>
                              <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 shadow-sm"><i class="bi bi-heart"></i></button>
+                             <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 mt-5 shadow-sm btn-compare" data-id="1" title="So sánh">
+                                <i class="bi bi-arrow-left-right"></i>
+                             </button>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -147,6 +240,9 @@
                            <img src="https://images.unsplash.com/photo-1596276020587-8044fe049813?w=800&q=80" class="img-fluid rounded-start" alt="Phòng trọ">
                            <span class="badge bg-success position-absolute top-0 start-0 m-3">Còn phòng</span>
                            <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 shadow-sm"><i class="bi bi-heart"></i></button>
+                           <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 mt-5 shadow-sm btn-compare" data-id="2" title="So sánh">
+                                <i class="bi bi-arrow-left-right"></i>
+                           </button>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -196,21 +292,6 @@
     </nav>
 </div>
 
-@section Scripts {
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const range = document.getElementById('numPeople');
-        const rangeValue = document.getElementById('numPeopleValue');
-        if(range) {
-            range.addEventListener('input', function() {
-                rangeValue.textContent = this.value;
-            });
-        }
-    });
-</script>
-}
-
-<style>
     .room-card-horizontal {
         transition: all 0.3s ease;
         border-radius: 1rem !important;
@@ -236,4 +317,104 @@
     .form-select, .form-control {
         height: calc(3rem - 2px);
     }
+    
+    /* Floating Compare Bar */
+    #compareBar {
+        z-index: 1050;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.9);
+        border-top: 1px solid rgba(0,0,0,0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+    #compareBar.show {
+        transform: translateY(0);
+    }
 </style>
+
+<!-- Floating Compare Bar -->
+<div id="compareBar" class="position-fixed bottom-0 start-0 w-100 py-3 shadow-lg" style="transform: translateY(100%);">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+             <span class="badge bg-primary rounded-pill fs-6" id="compareCount">0</span>
+             <span class="fw-bold text-dark">Phòng được chọn để so sánh</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="clearCompare()">Xóa tất cả</button>
+            <a href="#" id="compareLink" class="btn btn-primary rounded-pill px-4 shadow-sm">So sánh ngay <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Range Slider Logic
+        const range = document.getElementById('numPeople');
+        const rangeValue = document.getElementById('numPeopleValue');
+        if(range) {
+            range.addEventListener('input', function() {
+                rangeValue.textContent = this.value;
+            });
+        }
+
+        // Compare Logic
+        const compareBar = document.getElementById('compareBar');
+        const compareCount = document.getElementById('compareCount');
+        const compareLink = document.getElementById('compareLink');
+        let selectedIds = JSON.parse(localStorage.getItem('compareIds')) || [];
+
+        function updateUI() {
+            // Update buttons
+            document.querySelectorAll('.btn-compare').forEach(btn => {
+                const id = parseInt(btn.dataset.id);
+                if (selectedIds.includes(id)) {
+                    btn.classList.add('btn-primary', 'text-white');
+                    btn.classList.remove('btn-light');
+                } else {
+                    btn.classList.remove('btn-primary', 'text-white');
+                    btn.classList.add('btn-light');
+                }
+            });
+
+            // Update Bar
+            compareCount.textContent = selectedIds.length;
+            if (selectedIds.length > 0) {
+                compareBar.classList.add('show');
+                compareLink.href = '/RentalAdvice/Compare?ids=' + selectedIds.join(',');
+            } else {
+                compareBar.classList.remove('show');
+            }
+            
+            // Save
+            localStorage.setItem('compareIds', JSON.stringify(selectedIds));
+        }
+
+        // Click Handler
+        document.querySelectorAll('.btn-compare').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                const index = selectedIds.indexOf(id);
+                
+                if (index === -1) {
+                    if (selectedIds.length >= 3) {
+                        alert('Bạn chỉ có thể so sánh tối đa 3 phòng cùng lúc.');
+                        return;
+                    }
+                    selectedIds.push(id);
+                } else {
+                    selectedIds.splice(index, 1);
+                }
+                updateUI();
+            });
+        });
+
+        window.clearCompare = function() {
+            selectedIds = [];
+            updateUI();
+        }
+
+        // Init
+        updateUI();
+    });
+</script>
+}

@@ -26,6 +26,28 @@ namespace Unistay_Web.Services
             return await ProcessAndSaveImageAsync(file, userId, "covers", COVER_WIDTH, COVER_HEIGHT);
         }
 
+        public async Task<string> UploadImageAsync(IFormFile file, string folderName)
+        {
+            if (file == null || file.Length == 0) throw new ArgumentException("File is empty");
+            if (file.Length > 10 * 1024 * 1024) throw new ArgumentException("File size exceeds 10MB limit");
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension)) throw new ArgumentException("Invalid file format");
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", folderName);
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            return $"/uploads/{folderName}/{fileName}";
+        }
+
         private async Task<string> ProcessAndSaveImageAsync(IFormFile file, string userId, string folder, int width, int height)
         {
             if (file == null || file.Length == 0)

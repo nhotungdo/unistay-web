@@ -21,6 +21,7 @@
     <!-- Modern Theme CSS -->
     <link rel="stylesheet" href="~/css/modern-theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
@@ -45,6 +46,7 @@
                 <li><a class="nav-link" asp-controller="Roommates" asp-action="Index">Tìm bạn</a></li>
                 <li><a class="nav-link" asp-controller="RentalAdvice" asp-action="Index">Tư vấn AI</a></li>
                 <li><a class="nav-link" asp-controller="Marketplace" asp-action="Index">Chợ đồ cũ</a></li>
+                <li><a class="nav-link" asp-controller="Messages" asp-action="Index">Tin nhắn</a></li>
             </ul>
 
             <div class="nav-actions">

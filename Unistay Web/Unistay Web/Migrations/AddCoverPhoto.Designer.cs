@@ -12,7 +12,7 @@ using Unistay_Web.Data;
 namespace Unistay_Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("AddCoverPhoto")]
+    [Migration("20240101000001_AddCoverPhoto")]
     partial class AddCoverPhoto
     {
         /// <inheritdoc />

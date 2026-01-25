@@ -12,7 +12,7 @@ using Unistay_Web.Data;
 namespace Unistay_Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("AddOnboardingFields")]
+    [Migration("20240101000002_AddOnboardingFields")]
     partial class AddOnboardingFields
     {
         /// <inheritdoc />

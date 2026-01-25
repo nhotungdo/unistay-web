@@ -227,7 +227,7 @@
         <div class="row g-4">
             <!-- Left Column - Image Gallery -->
             <div class="col-lg-7">
-                <div class="hero-image" style="background-image: url('@Model.ImageUrls')"></div>
+                <div class="hero-image" style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrls) ? "https://via.placeholder.com/800x600?text=No+Image" : Model.ImageUrls)')"></div>
 
                 <!-- Image Info -->
                 <div

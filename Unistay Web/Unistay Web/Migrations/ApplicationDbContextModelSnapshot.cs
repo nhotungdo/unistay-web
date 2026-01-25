@@ -191,6 +191,28 @@ namespace Unistay_Web.Migrations
                     b.ToTable("Appointments");
                 });
 
+            modelBuilder.Entity("Unistay_Web.Models.Chat.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Conversations");
+                });
+
             modelBuilder.Entity("Unistay_Web.Models.Chat.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -206,23 +228,97 @@ namespace Unistay_Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<string>("ReceiverId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
+
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Chat.UserConversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserConversations");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.Connection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddresseeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequesterId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddresseeId");
+
+                    b.HasIndex("RequesterId");
+
+                    b.ToTable("Connections");
                 });
 
             modelBuilder.Entity("Unistay_Web.Models.Marketplace.MarketplaceItem", b =>
@@ -1010,6 +1106,63 @@ namespace Unistay_Web.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Unistay_Web.Models.Chat.Message", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.Chat.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Chat.UserConversation", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.Chat.Conversation", "Conversation")
+                        .WithMany("UserConversations")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.Connection", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "Addressee")
+                        .WithMany()
+                        .HasForeignKey("AddresseeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Addressee");
+
+                    b.Navigation("Requester");
+                });
+
             modelBuilder.Entity("Unistay_Web.Models.User.ActivityHistory", b =>
                 {
                     b.HasOne("Unistay_Web.Models.User.UserProfile", "User")
@@ -1030,6 +1183,13 @@ namespace Unistay_Web.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Chat.Conversation", b =>
+                {
+                    b.Navigation("Messages");
+
+                    b.Navigation("UserConversations");
                 });
 #pragma warning restore 612, 618
         }
