@@ -1,199 +1,470 @@
 @using Unistay_Web.Models.Connection
 @{
-    ViewData["Title"] = "Kết nối & Bạn bè";
+    ViewData["Title"] = "Kết Nối & Bạn Bè";
 }
 
-<!-- Header -->
-<div class="container py-5">
-    <div class="row mb-5 align-items-center">
-        <div class="col-md-8">
-            <h1 class="display-6 fw-bold mb-2">Kết nối cộng đồng</h1>
-            <p class="text-muted lead">Tìm bạn bè, bạn cùng phòng và người cùng sở thích trên Unistay.</p>
+<div class="connections-page container py-5">
+    <!-- Header Section -->
+    <div class="row align-items-center mb-5 animate-slide-down">
+        <div class="col-lg-7">
+            <h1 class="display-4 fw-bold mb-3 text-gradient-modern">
+                Kết Nối Cộng Đồng
+            </h1>
+            <p class="text-muted lead mb-0">
+                Mở rộng vòng kết nối, tìm kiếm bạn cùng phòng và chia sẻ trải nghiệm tuyệt vời.
+            </p>
         </div>
-        <div class="col-md-4 text-md-end">
-            <div class="position-relative">
-                <input type="text" class="form-control rounded-pill ps-5" id="global-search" placeholder="Tìm kiếm người dùng...">
-                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-            </div>
-            <div id="search-results-dropdown" class="card position-absolute w-100 shadow-lg mt-2 d-none" style="z-index: 1000; max-height: 400px; overflow-y: auto;">
-                <div class="list-group list-group-flush" id="search-list"></div>
+        <div class="col-lg-5 mt-4 mt-lg-0">
+            <div class="search-wrapper position-relative">
+                <div class="input-group glass-input-group shadow-sm">
+                    <span class="input-group-text bg-transparent border-0 ps-4">
+                        <i class="bi bi-search text-primary"></i>
+                    </span>
+                    <input type="text" class="form-control border-0 py-3 ps-2" id="global-search"
+                        placeholder="Tìm kiếm bạn bè theo tên, email..." autocomplete="off">
+                </div>
+
+                <!-- Dropdown Results -->
+                <div id="search-results-dropdown"
+                    class="glass-dropdown position-absolute w-100 mt-2 rounded-4 shadow-lg d-none">
+                    <div class="list-group list-group-flush bg-transparent custom-scrollbar" id="search-list"
+                        style="max-height: 350px; overflow-y: auto;">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <ul class="nav nav-pills mb-4 nav-justified bg-white rounded-pill p-1 border shadow-sm" id="pills-tab" role="tablist" style="max-width: 600px; margin: 0 auto;">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-pill" id="pills-discover-tab" data-bs-toggle="pill" data-bs-target="#pills-discover" type="button" role="tab">
-                <i class="bi bi-stars me-2"></i>Gợi ý
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill" id="pills-friends-tab" data-bs-toggle="pill" data-bs-target="#pills-friends" type="button" role="tab">
-                <i class="bi bi-people-fill me-2"></i>Bạn bè
-                <span class="badge bg-secondary ms-1" id="friends-count">0</span>
-            </button>
-        </li>
-         <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill position-relative" id="pills-requests-tab" data-bs-toggle="pill" data-bs-target="#pills-requests" type="button" role="tab">
-                <i class="bi bi-person-plus-fill me-2"></i>Lời mời
-                <span class="badg bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1 border border-light rounded-circle d-none" id="requests-badge">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
-            </button>
-        </li>
-    </ul>
+    <!-- Main Interface -->
+    <div class="row g-4 animate-fade-in delay-100">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3">
+            <div class="glass-card p-3 sticky-top" style="top: 100px; z-index: 900;">
+                <div class="nav flex-column nav-pills custom-pills gap-2" id="v-pills-tab" role="tablist">
+                    <button class="nav-link active d-flex align-items-center justify-content-between p-3 rounded-3"
+                        id="pills-discover-tab" data-bs-toggle="pill" data-bs-target="#pills-discover" type="button"
+                        role="tab">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-primary-subtle text-primary">
+                                <i class="bi bi-compass-fill"></i>
+                            </div>
+                            <span class="fw-semibold">Khám Phá</span>
+                        </div>
+                    </button>
 
-    <!-- Tab Content -->
-    <div class="tab-content" id="pills-tabContent">
-        
-        <!-- Discover Tab -->
-        <div class="tab-pane fade show active" id="pills-discover" role="tabpanel">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Gợi ý cho bạn</h4>
-                <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="loadSuggestions()">
-                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
-                </button>
-            </div>
-            
-            <div class="row g-4" id="suggestions-container">
-                <div class="col-12 text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
+                    <button class="nav-link d-flex align-items-center justify-content-between p-3 rounded-3"
+                        id="pills-friends-tab" data-bs-toggle="pill" data-bs-target="#pills-friends" type="button"
+                        role="tab">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-success-subtle text-success">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <span class="fw-semibold">Bạn Bè</span>
+                        </div>
+                        <span class="badge bg-success rounded-pill shadow-sm" id="friends-count">0</span>
+                    </button>
+
+                    <button class="nav-link d-flex align-items-center justify-content-between p-3 rounded-3"
+                        id="pills-requests-tab" data-bs-toggle="pill" data-bs-target="#pills-requests" type="button"
+                        role="tab">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-box bg-danger-subtle text-danger">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <span class="fw-semibold">Lời Mời</span>
+                        </div>
+                        <span class="badge bg-danger rounded-pill shadow-sm d-none" id="requests-badge">!</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Friends Tab -->
-        <div class="tab-pane fade" id="pills-friends" role="tabpanel">
-             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold">Danh sách bạn bè</h4>
-                <input type="text" class="form-control form-control-sm w-auto" placeholder="Lọc bạn bè..." id="filter-friends">
-            </div>
-            
-            <div class="row g-3" id="friends-container">
-                <!-- Content loaded via JS -->
-            </div>
-        </div>
+        <!-- Content Area -->
+        <div class="col-lg-9">
+            <div class="tab-content min-vh-50" id="v-pills-tabContent">
 
-        <!-- Requests Tab -->
-        <div class="tab-pane fade" id="pills-requests" role="tabpanel">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                     <h4 class="fw-bold mb-4">Lời mời kết bạn</h4>
-                     <div class="list-group shadow-sm rounded-3 overflow-hidden" id="requests-container">
-                         <!-- Content loaded via JS -->
-                     </div>
+                <!-- Discover Tab -->
+                <div class="tab-pane fade show active" id="pills-discover" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4 section-header">
+                        <h4 class="fw-bold m-0 text-gradient-primary">
+                            <i class="bi bi-stars text-warning me-2"></i>Gợi Ý Cho Bạn
+                        </h4>
+                        <button class="btn btn-glass rounded-pill px-4 hover-rotate-icon" onclick="loadSuggestions()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Làm Mới
+                        </button>
+                    </div>
+
+                    <div class="row g-4" id="suggestions-container">
+                        <!-- Loading State -->
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="text-muted mt-3">Đang tìm kiếm kết nối phù hợp...</p>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Friends Tab -->
+                <div class="tab-pane fade" id="pills-friends" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4 section-header">
+                        <h4 class="fw-bold m-0 text-gradient-primary">Danh Sách Bạn Bè</h4>
+                        <div class="input-group w-auto glass-input-group py-1 px-3">
+                            <span class="text-muted me-2"><i class="bi bi-filter"></i></span>
+                            <input type="text" class="form-control border-0 bg-transparent p-1 shadow-none"
+                                placeholder="Lọc danh sách..." id="filter-friends" style="max-width: 200px;">
+                        </div>
+                    </div>
+
+                    <div class="row g-3" id="friends-container">
+                        <!-- JS Loaded -->
+                    </div>
+                </div>
+
+                <!-- Requests Tab -->
+                <div class="tab-pane fade" id="pills-requests" role="tabpanel">
+                    <div class="glass-card p-4">
+                        <h4 class="fw-bold mb-4 text-gradient-primary">Lời Mời Kết Bạn</h4>
+
+                        <div class="d-flex flex-column gap-3" id="requests-container">
+                            <!-- JS Loaded -->
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-
     </div>
 </div>
 
+<style>
+    /* Modern Variables & Utilities */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.5);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        --text-gradient: linear-gradient(90deg, #2563eb, #9333ea);
+    }
+
+    /* Dark Mode Support (Optional/If system supports) */
+    [data-theme="dark"] :root {
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    .text-gradient-modern {
+        background: var(--text-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text-gradient-primary {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Glass Effect Components */
+    .glass-card,
+    .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        box-shadow: var(--glass-shadow);
+    }
+
+    .glass-input-group {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .glass-input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        border-color: #6366f1;
+    }
+
+    .glass-dropdown {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        z-index: 1000;
+    }
+
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+    }
+
+    .btn-glass:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: var(--glass-shadow);
+    }
+
+    /* Navigation Pills */
+    .custom-pills .nav-link {
+        color: var(--text-muted, #64748b);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+        font-weight: 500;
+        background: transparent;
+    }
+
+    .custom-pills .nav-link:hover {
+        background: rgba(255, 255, 255, 0.5);
+        color: var(--text-main, #1e293b);
+        transform: translateX(5px);
+    }
+
+    .custom-pills .nav-link.active {
+        background: white;
+        color: #4f46e5;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+        border-color: rgba(79, 70, 229, 0.1);
+    }
+
+    .custom-pills .nav-link.active .icon-box {
+        background: #4f46e5 !important;
+        color: white !important;
+    }
+
+    .icon-box {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    /* Cards & Hover Effects */
+    .user-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .user-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .user-cover {
+        height: 80px;
+        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+        opacity: 0.6;
+    }
+
+    .avatar-wrapper {
+        margin-top: -40px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-wrapper img {
+        border: 4px solid white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-buttons button {
+        transition: transform 0.2s;
+    }
+
+    .action-buttons button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.3);
+        border-radius: 20px;
+    }
+
+    /* Animations */
+    .animate-slide-down {
+        animation: slideDown 0.6s ease-out forwards;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .hover-rotate-icon:hover i {
+        transform: rotate(180deg);
+        transition: transform 0.5s ease;
+        display: inline-block;
+    }
+</style>
+
+<style type="text/css">
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadSuggestions();
             loadFriends();
             loadPendingRequests();
 
-            // Search debounce
+            // Search Logic
             let timeout = null;
-            document.getElementById('global-search').addEventListener('input', function(e) {
+            document.getElementById('global-search').addEventListener('input', function (e) {
                 clearTimeout(timeout);
-                timeout = setTimeout(() => searchUsers(e.target.value), 500);
+                timeout = setTimeout(() => searchUsers(e.target.value), 400);
             });
 
             // Close search dropdown on click outside
-            document.addEventListener('click', function(e) {
-                if (!document.getElementById('search-results-dropdown').contains(e.target) && e.target.id !== 'global-search') {
-                    document.getElementById('search-results-dropdown').classList.add('d-none');
+            document.addEventListener('click', function (e) {
+                const dropdown = document.getElementById('search-results-dropdown');
+                const searchInput = document.getElementById('global-search');
+                if (!dropdown.contains(e.target) && e.target !== searchInput) {
+                    dropdown.classList.add('d-none');
                 }
             });
         });
 
+        // ----------------------------------------------------
+        // Logic: Suggestions
+        // ----------------------------------------------------
         async function loadSuggestions() {
             const container = document.getElementById('suggestions-container');
-            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>'; // Loading
+            container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>`;
 
             try {
                 const response = await fetch('/api/connections/suggestions');
                 const data = await response.json();
-                
+
                 if (data.length === 0) {
-                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">
-                        <i class="bi bi-emoji-frown fs-1 mb-3"></i>
-                        <p>Không có gợi ý nào phù hợp lúc này.</p>
-                    </div>`;
+                    renderEmptyState(container, 'Không tìm thấy gợi ý nào.', 'Hãy thử cập nhật hồ sơ của bạn để tăng độ hiển thị.');
                     return;
                 }
 
                 container.innerHTML = data.map(u => `
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 border-0 shadow-sm hover-shadow transition-base">
-                            <div class="card-body p-4 text-center position-relative">
-                                <span class="badge bg-light text-primary position-absolute top-0 end-0 m-3 rounded-pill border">${u.score > 0 ? u.score + ' điểm' : 'Mới'}</span>
-                                <img src="${u.avatarUrl}" class="rounded-circle mb-3 border border-4 border-light shadow-sm" width="90" height="90" style="object-fit:cover;">
-                                <h5 class="fw-bold mb-1 text-truncate">${u.name}</h5>
-                                <p class="text-muted small mb-3 text-truncate">${u.mutualInfo}</p>
+                        <div class="col-md-6 col-xl-4">
+                            <div class="glass-card h-100 user-card overflow-hidden text-center position-relative bg-white bg-opacity-50">
+                                <div class="user-cover"></div>
+                                <div class="avatar-wrapper">
+                                    <img src="${u.avatarUrl}" class="rounded-circle" width="80" height="80" style="object-fit:cover;">
+                                </div>
+                            
+                                <div class="p-3 pt-2">
+                                    <h5 class="fw-bold mb-1 text-truncate text-dark">${u.name}</h5>
+                                    <p class="text-muted small mb-2 text-truncate">
+                                        <i class="bi bi-geo-alt me-1"></i>${u.mutualInfo}
+                                    </p>
                                 
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-primary rounded-pill btn-sm" onclick="sendRequest('${u.id}', this)">
-                                        <i class="bi bi-person-plus-fill me-1"></i> Kết bạn
-                                    </button>
-                                    <a href="/Profile/PublicProfile?userId=${u.id}" class="btn btn-outline-secondary rounded-pill btn-sm">Xem hồ sơ</a>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill mb-3 px-3">
+                                        ${u.score > 0 ? u.score + ' Điểm Tương Đồng' : 'Thành viên mới'}
+                                    </span>
+
+                                    <div class="d-grid gap-2 action-buttons">
+                                        <button class="btn btn-primary rounded-pill btn-sm shadow-sm" onclick="sendRequest('${u.id}', this)">
+                                            <i class="bi bi-person-plus-fill me-1"></i> Kết Bạn
+                                        </button>
+                                        <a href="/Profile/PublicProfile?userId=${u.id}" class="btn btn-outline-secondary rounded-pill btn-sm border-0 bg-light">
+                                            Xem Hồ Sơ
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
 
             } catch (error) {
                 console.error(error);
-                container.innerHTML = '<div class="col-12 text-center text-danger">Lỗi tải dữ liệu.</div>';
+                container.innerHTML = '<div class="col-12 text-center text-danger">Không thể tải dữ liệu.</div>';
             }
         }
 
+        // ----------------------------------------------------
+        // Logic: Friends
+        // ----------------------------------------------------
         async function loadFriends() {
-             const container = document.getElementById('friends-container');
-             try {
+            const container = document.getElementById('friends-container');
+            try {
                 const response = await fetch('/api/connections/friends');
                 const data = await response.json();
-                
+
                 document.getElementById('friends-count').textContent = data.length;
 
                 if (data.length === 0) {
-                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">
-                        <p>Bạn chưa có bạn bè nào.</p>
-                        <button class="btn btn-link" onclick="document.getElementById('pills-discover-tab').click()">Tìm bạn mới</button>
-                    </div>`;
+                    renderEmptyState(container, 'Bạn chưa có kết nối nào.', 'Chuyển sang tab Khám Phá để tìm bạn mới!');
                     return;
                 }
 
                 container.innerHTML = data.map(u => `
-                    <div class="col-md-6 col-lg-4 friend-item">
-                        <div class="d-flex align-items-center bg-white p-3 rounded shadow-sm border">
-                            <img src="${u.friendAvatar}" class="rounded-circle me-3" width="50" height="50" style="object-fit:cover;">
-                            <div class="flex-grow-1 overflow-hidden">
-                                <h6 class="mb-0 text-truncate fw-bold">${u.friendName}</h6>
-                                <small class="text-muted">Bạn bè</small>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow">
-                                    <li><a class="dropdown-item" href="/Profile/PublicProfile?userId=${u.friendId}"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
-                                    <li><a class="dropdown-item" href="/Connections/Chat?friendId=${u.friendId}"><i class="bi bi-chat-dots me-2"></i>Nhắn tin</a></li>
-                                </ul>
+                        <div class="col-md-6 col-lg-4 friend-item">
+                            <div class="glass-card p-3 d-flex align-items-center gap-3 bg-white bg-opacity-50 user-card h-100">
+                                 <div class="position-relative">
+                                    <img src="${u.friendAvatar}" class="rounded-circle shadow-sm" width="56" height="56" style="object-fit:cover;">
+                                    <div class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle p-1" style="width: 12px; height: 12px;"></div>
+                                </div>
+                            
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <h6 class="mb-1 text-truncate fw-bold text-dark">${u.friendName}</h6>
+                                    <p class="small text-muted mb-0">Kết nối ${new Date(u.connectedSince).toLocaleDateString('vi-VN')}</p>
+                                </div>
+
+                                <div class="d-flex flex-column gap-1">
+                                    <a href="/Connections/Chat?friendId=${u.friendId}" class="btn btn-primary btn-sm rounded-circle shadow-sm" title="Nhắn tin" style="width: 36px; height: 36px; display: grid; place-items: center;">
+                                        <i class="bi bi-chat-fill"></i>
+                                    </a>
+                                    <a href="/Profile/PublicProfile?userId=${u.friendId}" class="btn btn-light btn-sm rounded-circle" title="Hồ sơ" style="width: 36px; height: 36px; display: grid; place-items: center;">
+                                        <i class="bi bi-person"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `).join('');
-                
+                    `).join('');
+
                 // Filter logic
-                document.getElementById('filter-friends').addEventListener('input', function(e) {
+                document.getElementById('filter-friends').addEventListener('input', function (e) {
                     const term = e.target.value.toLowerCase();
                     document.querySelectorAll('.friend-item').forEach(el => {
                         const name = el.querySelector('h6').textContent.toLowerCase();
@@ -201,48 +472,56 @@
                     });
                 });
 
-             } catch (error) { console.error(error); }
+            } catch (error) { console.error(error); }
         }
 
+        // ----------------------------------------------------
+        // Logic: Requests
+        // ----------------------------------------------------
         async function loadPendingRequests() {
             const container = document.getElementById('requests-container');
-             try {
+            try {
                 const response = await fetch('/api/connections/pending');
                 const data = await response.json();
 
                 if (data.length > 0) {
                     document.getElementById('requests-badge').classList.remove('d-none');
+                    document.getElementById('requests-badge').textContent = data.length;
+
+                    container.innerHTML = data.map(r => `
+                            <div class="p-3 rounded-3 bg-white bg-opacity-50 border border-light d-flex align-items-center justify-content-between animate-fade-in shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="${r.requesterAvatar}" class="rounded-circle shadow-sm" width="60" height="60" style="object-fit:cover;">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold text-dark">${r.requesterName}</h6>
+                                        <p class="small text-muted mb-0">Đã gửi ${new Date(r.sentAt).toLocaleDateString('vi-VN')}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary rounded-pill btn-sm px-4" onclick="respondRequest(${r.connectionId}, 'accept', this)">
+                                        Chấp nhận
+                                    </button>
+                                    <button class="btn btn-outline-danger rounded-pill btn-sm px-4" onclick="respondRequest(${r.connectionId}, 'reject', this)">
+                                        Xóa
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
                 } else {
                     document.getElementById('requests-badge').classList.add('d-none');
-                    container.innerHTML = '<div class="text-center py-5 text-muted">Không có lời mời kết bạn nào.</div>';
-                    return;
+                    renderEmptyState(container, 'Không có lời mời nào.', 'Bạn dường như đã bắt kịp mọi thứ!');
                 }
 
-                container.innerHTML = data.map(r => `
-                    <div class="list-group-item p-3 border-0 border-bottom d-flex align-items-center">
-                        <img src="${r.requesterAvatar}" class="rounded-circle me-3" width="60" height="60" style="object-fit:cover;">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1 fw-bold"><a href="/Profile/PublicProfile?userId=${r.requesterEmail}" class="text-decoration-none text-dark">${r.requesterName}</a></h6>
-                            <small class="text-muted"><i class="bi bi-clock"></i> ${new Date(r.sentAt).toLocaleDateString()}</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                             <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="respondRequest(${r.connectionId}, 'accept', this)">
-                                Chấp nhận
-                             </button>
-                             <button class="btn btn-light btn-sm rounded-pill px-3" onclick="respondRequest(${r.connectionId}, 'reject', this)">
-                                Từ chối
-                             </button>
-                        </div>
-                    </div>
-                `).join('');
-
-             } catch (error) { console.error(error); }
+            } catch (error) { console.error(error); }
         }
 
+        // ----------------------------------------------------
+        // Helper: Search
+        // ----------------------------------------------------
         async function searchUsers(query) {
             const dropdown = document.getElementById('search-results-dropdown');
             const list = document.getElementById('search-list');
-            
+
             if (!query || query.length < 2) {
                 dropdown.classList.add('d-none');
                 return;
@@ -254,82 +533,105 @@
                 const data = res.data;
 
                 if (data.length === 0) {
-                     list.innerHTML = '<div class="p-3 text-muted text-center">Không tìm thấy kết quả.</div>';
+                    list.innerHTML = '<div class="p-4 text-muted text-center">Không tìm thấy người dùng.</div>';
                 } else {
                     list.innerHTML = data.map(u => `
-                        <a href="/Profile/PublicProfile?userId=${u.id}" class="list-group-item list-group-item-action d-flex align-items-center p-2">
-                            <img src="${u.avatarUrl}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover;">
-                            <div>
-                                <div class="fw-bold text-dark">${u.name}</div>
-                                <div class="small text-muted">${u.email}</div>
-                            </div>
-                        </a>
-                    `).join('');
+                            <a href="/Profile/PublicProfile?userId=${u.id}" class="list-group-item list-group-item-action bg-transparent border-0 d-flex align-items-center p-3 border-bottom">
+                                <img src="${u.avatarUrl}" class="rounded-circle me-3 shadow-sm" width="40" height="40" style="object-fit:cover;">
+                                <div>
+                                    <div class="fw-bold text-dark">${u.name}</div>
+                                    <div class="small text-muted">${u.email}</div>
+                                </div>
+                                ${getSearchAction(u)}
+                            </a>
+                        `).join('');
                 }
                 dropdown.classList.remove('d-none');
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
-        
-        // Send connection request
+
+        function getSearchAction(u) {
+            if (u.connectionStatus === 'accepted') return '<span class="ms-auto badge bg-success-subtle text-success">Bạn Bè</span>';
+            if (u.connectionStatus === 'pending_sent') return '<span class="ms-auto badge bg-warning-subtle text-warning">Đã gửi</span>';
+            return '<i class="bi bi-chevron-right ms-auto text-muted"></i>';
+        }
+
+        // ----------------------------------------------------
+        // Actions
+        // ----------------------------------------------------
         async function sendRequest(userId, btn) {
+            const originalContent = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-            
+
             try {
                 const res = await fetch('/api/connections/request', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ targetUserId: userId })
                 });
-                
+
                 if (res.ok) {
                     btn.className = 'btn btn-success rounded-pill btn-sm text-white';
                     btn.innerHTML = '<i class="bi bi-check"></i> Đã gửi';
                 } else {
                     const data = await res.json();
-                    alert(data.message);
+                    alert(data.message); // Server keeps untranslated messages for errors usually
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i> Kết bạn';
+                    btn.innerHTML = originalContent;
                 }
             } catch (e) {
-                alert('Có lỗi xảy ra.');
+                alert('Lỗi kết nối.');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i> Kết bạn';
+                btn.innerHTML = originalContent;
             }
         }
 
         async function respondRequest(connId, action, btn) {
-            const container = btn.closest('.list-group-item');
+            const container = btn.closest('.d-flex.align-items-center.justify-content-between');
             btn.disabled = true;
 
             try {
                 const res = await fetch('/api/connections/respond', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ connectionId: connId, action: action })
                 });
 
                 if (res.ok) {
                     container.style.opacity = '0.5';
-                    btn.parentElement.innerHTML = action == 'accept' 
-                        ? '<span class="text-success fw-bold">Đã chấp nhận</span>' 
-                        : '<span class="text-muted">Đã từ chối</span>';
-                    
-                    setTimeout(() => container.remove(), 2000);
-                    // Reload friends count if accepted
-                    if(action === 'accept') loadFriends();
+                    // Reload friends if accepted
+                    if (action === 'accept') loadFriends();
+
+                    setTimeout(() => {
+                        container.remove();
+                        // Check if list is empty
+                        const list = document.getElementById('requests-container');
+                        if (!list.children.length) loadPendingRequests();
+                    }, 500);
+
                 } else {
-                     alert('Lỗi xử lý yêu cầu.');
-                     btn.disabled = false;
+                    alert('Thao tác thất bại.');
+                    btn.disabled = false;
                 }
-            } catch(e) {
-                 alert('Lỗi kết nối.');
-                 btn.disabled = false;
+            } catch (e) {
+                alert('Lỗi mạng.');
+                btn.disabled = false;
             }
         }
-        
 
+        // ----------------------------------------------------
+        // Utils
+        // ----------------------------------------------------
+        function renderEmptyState(container, title, subtitle) {
+            container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="mb-3">
+                             <i class="bi bi-people display-1 text-muted opacity-25"></i>
+                        </div>
+                        <h5 class="text-dark fw-bold">${title}</h5>
+                        <p class="text-muted">${subtitle}</p>
+                    </div>`;
+        }
     </script>
 }
