@@ -28,7 +28,6 @@ namespace Unistay_Web.Controllers
             return View();
         }
 
-        [HttpGet("chat")]
         public IActionResult Chat([FromQuery] string? friendId)
         {
              ViewBag.SelectedFriendId = friendId;
@@ -214,6 +213,7 @@ namespace Unistay_Web.Controllers
             if (currentUserId == null) return Unauthorized();
 
             var friends = await _context.Connections
+                .AsNoTracking()
                 .Where(c => (c.RequesterId == currentUserId || c.AddresseeId == currentUserId) && c.Status == ConnectionStatus.Accepted)
                 .Include(c => c.Requester)
                 .Include(c => c.Addressee)
@@ -223,16 +223,27 @@ namespace Unistay_Web.Controllers
 
             foreach (var c in friends)
             {
-                var friendId = c.RequesterId == currentUserId ? c.AddresseeId : c.RequesterId;
+                // Determine which user is the friend
                 var friend = c.RequesterId == currentUserId ? c.Addressee : c.Requester;
+
+                // Safety check: ensure friend entity was loaded
+                if (friend == null) continue;
+
+                var friendId = friend.Id;
                 
-                var unreadCount = await _context.Messages
-                    .CountAsync(m => m.SenderId == friendId && m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen);
+                // Count unread messages (wrapped in try-catch in case messages are not set up yet)
+                int unreadCount = 0;
+                try 
+                {
+                    unreadCount = await _context.Messages
+                        .CountAsync(m => m.SenderId == friendId && m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen);
+                }
+                catch { /* Ignore message count error if system not ready */ }
 
                 result.Add(new
                 {
                     friendId = friendId,
-                    friendName = friend.FullName,
+                    friendName = friend.FullName ?? "Người dùng",
                     friendAvatar = friend.AvatarUrl ?? "/images/default-avatar.png",
                     connectedSince = c.UpdatedAt ?? c.CreatedAt,
                     unreadCount = unreadCount
