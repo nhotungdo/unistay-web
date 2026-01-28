@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Unistay_Web.Data;
 using Unistay_Web.Models.Roommate;
 using Unistay_Web.Models.User;
+using Unistay_Web.Models.Connection;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Unistay_Web.Controllers
@@ -106,6 +107,34 @@ namespace Unistay_Web.Controllers
                 // Default / Placeholder data for self-view or guest
                 viewModel.CompatibilityScore = 0;
                 viewModel.AiAnalysisReport = "Đăng nhập để xem phân tích mức độ phù hợp.";
+            }
+
+            // Check Connection Status
+            if (currentUser != null)
+            {
+                if (currentUser.Id == user.Id)
+                {
+                    viewModel.ConnectionState = "self";
+                }
+                else
+                {
+                    var connection = await _context.Connections
+                        .FirstOrDefaultAsync(c => (c.RequesterId == currentUser.Id && c.AddresseeId == user.Id) ||
+                                                  (c.RequesterId == user.Id && c.AddresseeId == currentUser.Id));
+
+                    if (connection != null)
+                    {
+                        viewModel.ConnectionId = connection.Id;
+                        if (connection.Status == ConnectionStatus.Accepted)
+                        {
+                            viewModel.ConnectionState = "accepted";
+                        }
+                        else if (connection.Status == ConnectionStatus.Pending)
+                        {
+                            viewModel.ConnectionState = connection.RequesterId == currentUser.Id ? "pending_sent" : "pending_received";
+                        }
+                    }
+                }
             }
 
             ViewBag.CurrentPriority = priority;
@@ -250,6 +279,7 @@ namespace Unistay_Web.Controllers
             return View(profile);
         }
 
+    
         public async Task<IActionResult> Match()
         {
             var user = await _userManager.GetUserAsync(User);

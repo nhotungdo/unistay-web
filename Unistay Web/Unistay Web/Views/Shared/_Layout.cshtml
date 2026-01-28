@@ -43,10 +43,10 @@
             <ul class="nav-links">
                 <li><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
                 <li><a class="nav-link" asp-controller="Rooms" asp-action="Index">Tìm trọ</a></li>
-                <li><a class="nav-link" asp-controller="Roommates" asp-action="Index">Tìm bạn</a></li>
+                <li><a class="nav-link" asp-controller="Roommates" asp-action="Index">Tìm ở ghép</a></li>
+                <li><a class="nav-link" asp-controller="Connections" asp-action="Index">Bạn bè</a></li>
                 <li><a class="nav-link" asp-controller="RentalAdvice" asp-action="Index">Tư vấn AI</a></li>
                 <li><a class="nav-link" asp-controller="Marketplace" asp-action="Index">Chợ đồ cũ</a></li>
-                <li><a class="nav-link" asp-controller="Messages" asp-action="Index">Tin nhắn</a></li>
             </ul>
 
             <div class="nav-actions">
@@ -64,7 +64,7 @@
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="font-weight-medium me-2 text-dark">@User.Identity.Name</span>
                             <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=random"
-                                class="avatar-sm rounded-circle" />
+                                 class="avatar-sm rounded-circle" />
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Hồ sơ cá nhân</a>

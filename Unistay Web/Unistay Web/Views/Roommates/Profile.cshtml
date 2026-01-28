@@ -141,14 +141,46 @@
                 </div>
             </div>
             <div class="col-md-4 text-center text-md-end mt-4 mt-md-0">
-                <a href="/Messages/Index?userId=@Model.Id" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm mb-2"
+                <a href="@Url.Action("Chat", "Connections", new { friendId = Model.UserId })" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm mb-2"
                     style="background: var(--primary-gradient); border: none;">
                     <i class="bi bi-chat-dots-fill me-2"></i>Nhắn tin
                 </a>
                 <br>
-                <button class="btn btn-outline-secondary rounded-pill px-4 border-2 fw-bold">
+                <button class="btn btn-outline-secondary rounded-pill px-4 border-2 fw-bold mb-2">
                     <i class="bi bi-heart me-1"></i> Quan tâm
                 </button>
+                <br>
+                <div id="friend-action-container" class="d-inline-block">
+                    @if (Model.ConnectionState == "none")
+                    {
+                        <button onclick="sendFriendRequest('@Model.UserId', this)" class="btn btn-outline-primary rounded-pill px-4 border-2 fw-bold">
+                            <i class="bi bi-person-plus-fill me-1"></i> Thêm bạn
+                        </button>
+                    }
+                    else if (Model.ConnectionState == "pending_sent")
+                    {
+                        <button class="btn btn-secondary rounded-pill px-4 border-2 fw-bold" disabled>
+                            <i class="bi bi-clock-history me-1"></i> Đã gửi
+                        </button>
+                    }
+                    else if (Model.ConnectionState == "pending_received")
+                    {
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button onclick="respondFriendRequest('@Model.ConnectionId', 'accept', this)" class="btn btn-success rounded-pill px-3 fw-bold">
+                                Chấp nhận
+                            </button>
+                            <button onclick="respondFriendRequest('@Model.ConnectionId', 'reject', this)" class="btn btn-outline-danger rounded-pill px-3 fw-bold">
+                                Từ chối
+                            </button>
+                        </div>
+                    }
+                    else if (Model.ConnectionState == "accepted")
+                    {
+                        <button class="btn btn-success rounded-pill px-4 border-2 fw-bold" disabled>
+                            <i class="bi bi-check-circle-fill me-1"></i> Bạn bè
+                        </button>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -319,4 +351,76 @@
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        async function sendFriendRequest(targetUserId, btnElement) {
+            try {
+                const originalContent = btnElement.innerHTML;
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                const response = await fetch('/api/connections/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ targetUserId: targetUserId })
+                });
+
+                if (response.ok) {
+                    const container = document.getElementById('friend-action-container');
+                    container.innerHTML = `<button class="btn btn-secondary rounded-pill px-4 border-2 fw-bold" disabled>
+                                <i class="bi bi-clock-history me-1"></i> Đã gửi
+                            </button>`;
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Có lỗi xảy ra');
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalContent;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi kết nối');
+                btnElement.disabled = false;
+            }
+        }
+
+        async function respondFriendRequest(connectionId, action, btnElement) {
+            try {
+                const originalContent = btnElement.innerHTML;
+                const container = document.getElementById('friend-action-container');
+                // Disable all buttons in container
+                const buttons = container.querySelectorAll('button');
+                buttons.forEach(b => b.disabled = true);
+                btnElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                const response = await fetch('/api/connections/respond', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ connectionId: parseInt(connectionId), action: action })
+                });
+
+                if (response.ok) {
+                    if (action === 'accept') {
+                        container.innerHTML = `<button class="btn btn-success rounded-pill px-4 border-2 fw-bold" disabled>
+                                <i class="bi bi-check-circle-fill me-1"></i> Bạn bè
+                            </button>`;
+                    } else {
+                        // If rejected, we can reload or show "Add Friend" again
+                         location.reload();
+                    }
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Có lỗi xảy ra');
+                    buttons.forEach(b => b.disabled = false);
+                    btnElement.innerHTML = originalContent;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi kết nối');
+                location.reload();
+            }
+        }
+    </script>
 }

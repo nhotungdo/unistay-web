@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using Unistay_Web.Data;
-using Unistay_Web.Models.Chat;
-using System.Linq;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Concurrent;
+using Unistay_Web.Data;
+using Unistay_Web.Models.Connection;
+using System.Security.Claims;
+using Unistay_Web.Models.User;
 
 namespace Unistay_Web.Hubs
 {
@@ -20,97 +18,138 @@ namespace Unistay_Web.Hubs
             _context = context;
         }
 
-        public async Task SendMessage(string receiverId, string messageContent, string attachmentUrl = null, string type = "Text")
-        {
-             var senderId = Context.UserIdentifier;
-             if (string.IsNullOrEmpty(senderId)) return;
-
-             // Logic to find or create conversation
-             var conversationId = await GetOrCreateConversationId(senderId, receiverId);
-             
-             // Save Message
-             var message = new Message
-             {
-                 SenderId = senderId,
-                 ReceiverId = receiverId,
-                 ConversationId = conversationId,
-                 Content = messageContent ?? "",
-                 AttachmentUrl = attachmentUrl,
-                 Type = type,
-                 CreatedAt = DateTime.UtcNow,
-                 IsRead = false
-             };
-             _context.Messages.Add(message);
-             await _context.SaveChangesAsync();
-             
-             // Load sender details
-             var sender = await _context.Users.FindAsync(senderId);
-
-             var messageDto = new {
-                 id = message.Id,
-                 senderId = senderId,
-                 receiverId = receiverId,
-                 senderName = sender?.FullName ?? "Unknown",
-                 senderAvatar = sender?.AvatarUrl ?? "/images/default-avatar.png",
-                 content = message.Content,
-                 attachmentUrl = message.AttachmentUrl,
-                 type = message.Type,
-                 createdAt = message.CreatedAt,
-                 conversationId = conversationId
-             };
-
-             // Notify Receiver
-             await Clients.User(receiverId).SendAsync("ReceiveMessage", messageDto);
-             
-             // Notify Sender (ack)
-             await Clients.Caller.SendAsync("MessageSent", messageDto);
-        }
-
-        public async Task MarkAsRead(int conversationId)
+        public override async Task OnConnectedAsync()
         {
             var userId = Context.UserIdentifier;
-            var messages = await _context.Messages
-                .Where(m => m.ConversationId == conversationId && m.ReceiverId == userId && !m.IsRead)
-                .ToListAsync();
-
-            if (messages.Any())
+            if (!string.IsNullOrEmpty(userId))
             {
-                foreach (var msg in messages) msg.IsRead = true;
-                await _context.SaveChangesAsync();
+                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
                 
-                // Notify sender that messages are read
-                var senderId = messages.First().SenderId;
-                await Clients.User(senderId).SendAsync("MessagesRead", conversationId);
+                // Notify friends that user is online
+                var friendIds = await _context.Connections
+                    .Where(c => (c.RequesterId == userId || c.AddresseeId == userId) && c.Status == ConnectionStatus.Accepted)
+                    .Select(c => c.RequesterId == userId ? c.AddresseeId : c.RequesterId)
+                    .ToListAsync();
+
+                if (friendIds.Any())
+                {
+                    await Clients.Groups(friendIds).SendAsync("UserOnline", userId);
+                }
+            }
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var userId = Context.UserIdentifier;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);
+                
+                // Notify friends that user is offline
+                var friendIds = await _context.Connections
+                    .Where(c => (c.RequesterId == userId || c.AddresseeId == userId) && c.Status == ConnectionStatus.Accepted)
+                    .Select(c => c.RequesterId == userId ? c.AddresseeId : c.RequesterId)
+                    .ToListAsync();
+
+                if (friendIds.Any())
+                {
+                    await Clients.Groups(friendIds).SendAsync("UserOffline", userId);
+                }
+            }
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task SendMessage(string receiverId, string content)
+        {
+            var senderId = Context.UserIdentifier;
+            if (string.IsNullOrEmpty(senderId) || string.IsNullOrEmpty(receiverId) || string.IsNullOrEmpty(content))
+                return;
+
+            // Verify connection
+            var isConnected = await _context.Connections.AnyAsync(c => 
+                ((c.RequesterId == senderId && c.AddresseeId == receiverId) || 
+                 (c.RequesterId == receiverId && c.AddresseeId == senderId)) && 
+                c.Status == ConnectionStatus.Accepted);
+
+            if (!isConnected)
+            {
+                return;
+            }
+
+            var message = new Message
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Content = content,
+                Timestamp = DateTime.UtcNow,
+                Status = MessageStatus.Sent
+            };
+
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+
+            // Send to receiver
+            await Clients.Group(receiverId).SendAsync("ReceiveMessage", new {
+                id = message.Id,
+                senderId = message.SenderId,
+                content = message.Content,
+                timestamp = message.Timestamp,
+                status = "sent"
+            });
+
+            // Send confirmation to sender
+            await Clients.Group(senderId).SendAsync("MessageSent", new {
+                id = message.Id,
+                receiverId = message.ReceiverId,
+                content = message.Content,
+                timestamp = message.Timestamp,
+                status = "sent"
+            });
+        }
+
+        public async Task Typing(string receiverId)
+        {
+            var senderId = Context.UserIdentifier;
+            if (!string.IsNullOrEmpty(senderId))
+            {
+                await Clients.Group(receiverId).SendAsync("UserTyping", senderId);
             }
         }
 
-        private async Task<int> GetOrCreateConversationId(string userId1, string userId2)
+        public async Task StopTyping(string receiverId)
         {
-            // Try to find existing conversation between these two users
-             var conversation = await _context.UserConversations
-                 .Where(uc => uc.UserId == userId1)
-                 .Select(uc => uc.Conversation)
-                 .Where(c => c.UserConversations.Any(uc => uc.UserId == userId2))
-                 .FirstOrDefaultAsync();
-
-            if (conversation != null)
+            var senderId = Context.UserIdentifier;
+            if (!string.IsNullOrEmpty(senderId))
             {
-                conversation.UpdatedAt = DateTime.UtcNow;
-                _context.Entry(conversation).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return conversation.Id;
+                await Clients.Group(receiverId).SendAsync("UserStoppedTyping", senderId);
             }
+        }
+        
+        public async Task MessageRead(int messageId)
+        {
+             var userId = Context.UserIdentifier;
+             var message = await _context.Messages.FindAsync(messageId);
+             if (message != null && message.ReceiverId == userId && message.Status != MessageStatus.Seen)
+             {
+                 message.Status = MessageStatus.Seen;
+                 await _context.SaveChangesAsync();
+                 
+                 await Clients.Group(message.SenderId).SendAsync("MessageSeen", messageId);
+             }
+        }
 
-            // Create new
-            var newConv = new Conversation { CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
-            _context.Conversations.Add(newConv);
-            await _context.SaveChangesAsync();
-
-            _context.UserConversations.Add(new UserConversation { UserId = userId1, ConversationId = newConv.Id });
-            _context.UserConversations.Add(new UserConversation { UserId = userId2, ConversationId = newConv.Id });
-            await _context.SaveChangesAsync();
-
-            return newConv.Id;
+        public async Task MessageDelivered(int messageId)
+        {
+             var userId = Context.UserIdentifier;
+             var message = await _context.Messages.FindAsync(messageId);
+             if (message != null && message.ReceiverId == userId && message.Status == MessageStatus.Sent)
+             {
+                 message.Status = MessageStatus.Delivered;
+                 await _context.SaveChangesAsync();
+                 
+                 await Clients.Group(message.SenderId).SendAsync("MessageDelivered", messageId);
+             }
         }
     }
 }

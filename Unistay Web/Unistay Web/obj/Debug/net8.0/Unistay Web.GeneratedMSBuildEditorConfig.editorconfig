@@ -40,6 +40,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va2luZ1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Connections/Chat.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29ubmVjdGlvbnNcQ2hhdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Connections/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29ubmVjdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -58,10 +66,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Marketplace/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFya2V0cGxhY2VcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Messages/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [F:/EXE101-REVIEW/unistay-web/Unistay Web/Unistay Web/Views/Onboarding/LandlordReview.cshtml]

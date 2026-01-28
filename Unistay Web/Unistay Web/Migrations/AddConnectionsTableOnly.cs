@@ -6,44 +6,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Unistay_Web.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConnectionsTable : Migration
+    public partial class AddConnectionsTableOnly : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            /*
-            migrationBuilder.CreateTable(
-                name: "RoommateProfiles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PreferredArea = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MoveInDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Habits = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoommateProfiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RoommateProfiles_UserProfiles_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UserProfiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_RoommateProfiles_UserId",
-                table: "RoommateProfiles",
-                column: "UserId");
-            */
 
             migrationBuilder.AlterColumn<string>(
                 name: "SenderId",
@@ -228,8 +196,45 @@ namespace Unistay_Web.Migrations
                 name: "IX_Messages_SenderId",
                 table: "Messages");
 
-            migrationBuilder.DropTable(
-                name: "RoommateProfiles");
+            migrationBuilder.DropColumn(
+                name: "CompatibilityAnalysis",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "CoverPhotoUrl",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "DateOfBirth",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "HouseNumber",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "IsAddressVerified",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "IsOnboardingComplete",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "LandlordVerificationStatus",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "OnboardingStep",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "StreetName",
+                table: "UserProfiles");
+
+            migrationBuilder.DropColumn(
+                name: "ZodiacSign",
+                table: "UserProfiles");
 
             migrationBuilder.DropColumn(
                 name: "ConversationId",
