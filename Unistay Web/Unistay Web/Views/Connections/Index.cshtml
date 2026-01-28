@@ -1,0 +1,335 @@
+@using Unistay_Web.Models.Connection
+@{
+    ViewData["Title"] = "Kết nối & Bạn bè";
+}
+
+<!-- Header -->
+<div class="container py-5">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold mb-2">Kết nối cộng đồng</h1>
+            <p class="text-muted lead">Tìm bạn bè, bạn cùng phòng và người cùng sở thích trên Unistay.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="position-relative">
+                <input type="text" class="form-control rounded-pill ps-5" id="global-search" placeholder="Tìm kiếm người dùng...">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            </div>
+            <div id="search-results-dropdown" class="card position-absolute w-100 shadow-lg mt-2 d-none" style="z-index: 1000; max-height: 400px; overflow-y: auto;">
+                <div class="list-group list-group-flush" id="search-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 nav-justified bg-white rounded-pill p-1 border shadow-sm" id="pills-tab" role="tablist" style="max-width: 600px; margin: 0 auto;">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill" id="pills-discover-tab" data-bs-toggle="pill" data-bs-target="#pills-discover" type="button" role="tab">
+                <i class="bi bi-stars me-2"></i>Gợi ý
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill" id="pills-friends-tab" data-bs-toggle="pill" data-bs-target="#pills-friends" type="button" role="tab">
+                <i class="bi bi-people-fill me-2"></i>Bạn bè
+                <span class="badge bg-secondary ms-1" id="friends-count">0</span>
+            </button>
+        </li>
+         <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill position-relative" id="pills-requests-tab" data-bs-toggle="pill" data-bs-target="#pills-requests" type="button" role="tab">
+                <i class="bi bi-person-plus-fill me-2"></i>Lời mời
+                <span class="badg bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1 border border-light rounded-circle d-none" id="requests-badge">
+                    <span class="visually-hidden">New alerts</span>
+                </span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="pills-tabContent">
+        
+        <!-- Discover Tab -->
+        <div class="tab-pane fade show active" id="pills-discover" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold">Gợi ý cho bạn</h4>
+                <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="loadSuggestions()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+                </button>
+            </div>
+            
+            <div class="row g-4" id="suggestions-container">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friends Tab -->
+        <div class="tab-pane fade" id="pills-friends" role="tabpanel">
+             <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold">Danh sách bạn bè</h4>
+                <input type="text" class="form-control form-control-sm w-auto" placeholder="Lọc bạn bè..." id="filter-friends">
+            </div>
+            
+            <div class="row g-3" id="friends-container">
+                <!-- Content loaded via JS -->
+            </div>
+        </div>
+
+        <!-- Requests Tab -->
+        <div class="tab-pane fade" id="pills-requests" role="tabpanel">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                     <h4 class="fw-bold mb-4">Lời mời kết bạn</h4>
+                     <div class="list-group shadow-sm rounded-3 overflow-hidden" id="requests-container">
+                         <!-- Content loaded via JS -->
+                     </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSuggestions();
+            loadFriends();
+            loadPendingRequests();
+
+            // Search debounce
+            let timeout = null;
+            document.getElementById('global-search').addEventListener('input', function(e) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => searchUsers(e.target.value), 500);
+            });
+
+            // Close search dropdown on click outside
+            document.addEventListener('click', function(e) {
+                if (!document.getElementById('search-results-dropdown').contains(e.target) && e.target.id !== 'global-search') {
+                    document.getElementById('search-results-dropdown').classList.add('d-none');
+                }
+            });
+        });
+
+        async function loadSuggestions() {
+            const container = document.getElementById('suggestions-container');
+            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>'; // Loading
+
+            try {
+                const response = await fetch('/api/connections/suggestions');
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">
+                        <i class="bi bi-emoji-frown fs-1 mb-3"></i>
+                        <p>Không có gợi ý nào phù hợp lúc này.</p>
+                    </div>`;
+                    return;
+                }
+
+                container.innerHTML = data.map(u => `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm hover-shadow transition-base">
+                            <div class="card-body p-4 text-center position-relative">
+                                <span class="badge bg-light text-primary position-absolute top-0 end-0 m-3 rounded-pill border">${u.score > 0 ? u.score + ' điểm' : 'Mới'}</span>
+                                <img src="${u.avatarUrl}" class="rounded-circle mb-3 border border-4 border-light shadow-sm" width="90" height="90" style="object-fit:cover;">
+                                <h5 class="fw-bold mb-1 text-truncate">${u.name}</h5>
+                                <p class="text-muted small mb-3 text-truncate">${u.mutualInfo}</p>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary rounded-pill btn-sm" onclick="sendRequest('${u.id}', this)">
+                                        <i class="bi bi-person-plus-fill me-1"></i> Kết bạn
+                                    </button>
+                                    <a href="/Profile/PublicProfile?userId=${u.id}" class="btn btn-outline-secondary rounded-pill btn-sm">Xem hồ sơ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="col-12 text-center text-danger">Lỗi tải dữ liệu.</div>';
+            }
+        }
+
+        async function loadFriends() {
+             const container = document.getElementById('friends-container');
+             try {
+                const response = await fetch('/api/connections/friends');
+                const data = await response.json();
+                
+                document.getElementById('friends-count').textContent = data.length;
+
+                if (data.length === 0) {
+                    container.innerHTML = `<div class="col-12 text-center py-5 text-muted">
+                        <p>Bạn chưa có bạn bè nào.</p>
+                        <button class="btn btn-link" onclick="document.getElementById('pills-discover-tab').click()">Tìm bạn mới</button>
+                    </div>`;
+                    return;
+                }
+
+                container.innerHTML = data.map(u => `
+                    <div class="col-md-6 col-lg-4 friend-item">
+                        <div class="d-flex align-items-center bg-white p-3 rounded shadow-sm border">
+                            <img src="${u.friendAvatar}" class="rounded-circle me-3" width="50" height="50" style="object-fit:cover;">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h6 class="mb-0 text-truncate fw-bold">${u.friendName}</h6>
+                                <small class="text-muted">Bạn bè</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                    <li><a class="dropdown-item" href="/Profile/PublicProfile?userId=${u.friendId}"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                                    <li><a class="dropdown-item" href="/Connections/Chat?friendId=${u.friendId}"><i class="bi bi-chat-dots me-2"></i>Nhắn tin</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Filter logic
+                document.getElementById('filter-friends').addEventListener('input', function(e) {
+                    const term = e.target.value.toLowerCase();
+                    document.querySelectorAll('.friend-item').forEach(el => {
+                        const name = el.querySelector('h6').textContent.toLowerCase();
+                        el.style.display = name.includes(term) ? 'block' : 'none';
+                    });
+                });
+
+             } catch (error) { console.error(error); }
+        }
+
+        async function loadPendingRequests() {
+            const container = document.getElementById('requests-container');
+             try {
+                const response = await fetch('/api/connections/pending');
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    document.getElementById('requests-badge').classList.remove('d-none');
+                } else {
+                    document.getElementById('requests-badge').classList.add('d-none');
+                    container.innerHTML = '<div class="text-center py-5 text-muted">Không có lời mời kết bạn nào.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(r => `
+                    <div class="list-group-item p-3 border-0 border-bottom d-flex align-items-center">
+                        <img src="${r.requesterAvatar}" class="rounded-circle me-3" width="60" height="60" style="object-fit:cover;">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold"><a href="/Profile/PublicProfile?userId=${r.requesterEmail}" class="text-decoration-none text-dark">${r.requesterName}</a></h6>
+                            <small class="text-muted"><i class="bi bi-clock"></i> ${new Date(r.sentAt).toLocaleDateString()}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                             <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="respondRequest(${r.connectionId}, 'accept', this)">
+                                Chấp nhận
+                             </button>
+                             <button class="btn btn-light btn-sm rounded-pill px-3" onclick="respondRequest(${r.connectionId}, 'reject', this)">
+                                Từ chối
+                             </button>
+                        </div>
+                    </div>
+                `).join('');
+
+             } catch (error) { console.error(error); }
+        }
+
+        async function searchUsers(query) {
+            const dropdown = document.getElementById('search-results-dropdown');
+            const list = document.getElementById('search-list');
+            
+            if (!query || query.length < 2) {
+                dropdown.classList.add('d-none');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/users/search?query=${query}`);
+                const res = await response.json();
+                const data = res.data;
+
+                if (data.length === 0) {
+                     list.innerHTML = '<div class="p-3 text-muted text-center">Không tìm thấy kết quả.</div>';
+                } else {
+                    list.innerHTML = data.map(u => `
+                        <a href="/Profile/PublicProfile?userId=${u.id}" class="list-group-item list-group-item-action d-flex align-items-center p-2">
+                            <img src="${u.avatarUrl}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover;">
+                            <div>
+                                <div class="fw-bold text-dark">${u.name}</div>
+                                <div class="small text-muted">${u.email}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                }
+                dropdown.classList.remove('d-none');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        // Send connection request
+        async function sendRequest(userId, btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            
+            try {
+                const res = await fetch('/api/connections/request', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ targetUserId: userId })
+                });
+                
+                if (res.ok) {
+                    btn.className = 'btn btn-success rounded-pill btn-sm text-white';
+                    btn.innerHTML = '<i class="bi bi-check"></i> Đã gửi';
+                } else {
+                    const data = await res.json();
+                    alert(data.message);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i> Kết bạn';
+                }
+            } catch (e) {
+                alert('Có lỗi xảy ra.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-person-plus-fill me-1"></i> Kết bạn';
+            }
+        }
+
+        async function respondRequest(connId, action, btn) {
+            const container = btn.closest('.list-group-item');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/connections/respond', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ connectionId: connId, action: action })
+                });
+
+                if (res.ok) {
+                    container.style.opacity = '0.5';
+                    btn.parentElement.innerHTML = action == 'accept' 
+                        ? '<span class="text-success fw-bold">Đã chấp nhận</span>' 
+                        : '<span class="text-muted">Đã từ chối</span>';
+                    
+                    setTimeout(() => container.remove(), 2000);
+                    // Reload friends count if accepted
+                    if(action === 'accept') loadFriends();
+                } else {
+                     alert('Lỗi xử lý yêu cầu.');
+                     btn.disabled = false;
+                }
+            } catch(e) {
+                 alert('Lỗi kết nối.');
+                 btn.disabled = false;
+            }
+        }
+        
+
+    </script>
+}

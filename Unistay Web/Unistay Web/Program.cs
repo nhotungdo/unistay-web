@@ -6,13 +6,11 @@ using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using System.Security.Claims;
 using Unistay_Web.Data;
 using Unistay_Web.Models.User;
-using Unistay_Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSignalR();
 
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -45,7 +43,7 @@ builder.Services.AddIdentity<UserProfile, IdentityRole>(options =>
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
 {
@@ -80,6 +78,9 @@ builder.Services.AddSession(options =>
 // Add memory cache
 builder.Services.AddMemoryCache();
 
+// Add SignalR
+builder.Services.AddSignalR();
+
 // Register Custom Services
 builder.Services.AddScoped<Unistay_Web.Services.RentalAdvice.IRentalAdviceService, Unistay_Web.Services.RentalAdvice.RentalAdviceService>();
 builder.Services.AddScoped<Unistay_Web.Services.IFileUploadService, Unistay_Web.Services.LocalFileUploadService>();
@@ -104,6 +105,9 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        DatabaseSeeder.EnsureTablesExist(context);
+
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await SeedRolesAsync(roleManager);
     }
@@ -130,11 +134,11 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<Unistay_Web.Hubs.ChatHub>("/chatHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
 

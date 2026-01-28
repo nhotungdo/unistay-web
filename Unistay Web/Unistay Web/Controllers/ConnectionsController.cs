@@ -25,7 +25,14 @@ namespace Unistay_Web.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Index", "Messages");
+            return View();
+        }
+
+        [HttpGet("chat")]
+        public IActionResult Chat([FromQuery] string? friendId)
+        {
+             ViewBag.SelectedFriendId = friendId;
+             return View();
         }
 
         [HttpGet("api/users/search")]
@@ -210,16 +217,29 @@ namespace Unistay_Web.Controllers
                 .Where(c => (c.RequesterId == currentUserId || c.AddresseeId == currentUserId) && c.Status == ConnectionStatus.Accepted)
                 .Include(c => c.Requester)
                 .Include(c => c.Addressee)
-                .Select(c => new
-                {
-                    friendId = c.RequesterId == currentUserId ? c.AddresseeId : c.RequesterId,
-                    friendName = c.RequesterId == currentUserId ? c.Addressee.FullName : c.Requester.FullName,
-                    friendAvatar = (c.RequesterId == currentUserId ? c.Addressee.AvatarUrl : c.Requester.AvatarUrl) ?? "/images/default-avatar.png",
-                    connectedSince = c.UpdatedAt ?? c.CreatedAt
-                })
                 .ToListAsync();
 
-            return Ok(friends);
+            var result = new List<object>();
+
+            foreach (var c in friends)
+            {
+                var friendId = c.RequesterId == currentUserId ? c.AddresseeId : c.RequesterId;
+                var friend = c.RequesterId == currentUserId ? c.Addressee : c.Requester;
+                
+                var unreadCount = await _context.Messages
+                    .CountAsync(m => m.SenderId == friendId && m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen);
+
+                result.Add(new
+                {
+                    friendId = friendId,
+                    friendName = friend.FullName,
+                    friendAvatar = friend.AvatarUrl ?? "/images/default-avatar.png",
+                    connectedSince = c.UpdatedAt ?? c.CreatedAt,
+                    unreadCount = unreadCount
+                });
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("api/connections/suggestions")]

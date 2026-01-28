@@ -25,5 +25,8 @@ namespace Unistay_Web.Models.Roommate
         public string AiAnalysisReport { get; set; } // Text summary
         public List<string> SharedInterests { get; set; } = new List<string>();
         public List<string> PotentialConflicts { get; set; } = new List<string>();
+        public List<string> ConnectionStatus { get; set; } = new List<string>();
+        public string ConnectionState { get; set; } = "none"; // none, pending_sent, pending_received, accepted, self
+        public int? ConnectionId { get; set; }
     }
 }

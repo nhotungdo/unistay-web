@@ -6,6 +6,7 @@ using Unistay_Web.Models.User;
 using Unistay_Web.Data;
 using System.Security.Claims;
 using Unistay_Web.Helpers;
+using Unistay_Web.Models.Connection;
 
 namespace Unistay_Web.Controllers
 {
@@ -302,6 +303,43 @@ namespace Unistay_Web.Controllers
                 .ToListAsync();
 
             ViewBag.Activities = activities;
+
+            // Connection Status Logic
+            var currentUserId = _userManager.GetUserId(User);
+            string status = "None"; // None, Pending_Sent, Pending_Received, Accepted, Declined, Blocked, Self
+            int connectionId = 0;
+
+            if (currentUserId != null)
+            {
+                if (currentUserId == userId)
+                {
+                    status = "Self";
+                }
+                else
+                {
+                    var connection = await _context.Connections
+                        .FirstOrDefaultAsync(c => (c.RequesterId == currentUserId && c.AddresseeId == userId) ||
+                                                  (c.RequesterId == userId && c.AddresseeId == currentUserId));
+                    
+                    if (connection != null)
+                    {
+                        connectionId = connection.Id;
+                        if (connection.Status == ConnectionStatus.Accepted) status = "Accepted";
+                        else if (connection.Status == ConnectionStatus.Pending)
+                        {
+                            status = connection.RequesterId == currentUserId ? "Pending_Sent" : "Pending_Received";
+                        }
+                        else if (connection.Status == ConnectionStatus.Declined)
+                        {
+                            status = "Declined";
+                        }
+                    }
+                }
+            }
+
+            ViewBag.ConnectionStatus = status;
+            ViewBag.ConnectionId = connectionId;
+
             return View(user);
         }
 
