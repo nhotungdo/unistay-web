@@ -1,0 +1,399 @@
+@model List<Unistay_Web.Models.ZodiacSign>
+
+@{
+    ViewData["Title"] = "12 Cung Hoàng Đạo";
+}
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --fire-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --earth-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --air-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --water-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .zodiac-hero {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 50px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .zodiac-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .zodiac-hero p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .element-filter {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .filter-btn.all {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .filter-btn.fire {
+        background: var(--fire-gradient);
+        color: white;
+    }
+
+    .filter-btn.earth {
+        background: var(--earth-gradient);
+        color: white;
+    }
+
+    .filter-btn.air {
+        background: var(--air-gradient);
+        color: white;
+    }
+
+    .filter-btn.water {
+        background: var(--water-gradient);
+        color: white;
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .filter-btn.active {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    }
+
+    .zodiac-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .zodiac-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .zodiac-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .zodiac-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .zodiac-card.fire::before {
+        background: var(--fire-gradient);
+    }
+
+    .zodiac-card.earth::before {
+        background: var(--earth-gradient);
+    }
+
+    .zodiac-card.air::before {
+        background: var(--air-gradient);
+    }
+
+    .zodiac-card.water::before {
+        background: var(--water-gradient);
+    }
+
+    .zodiac-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .zodiac-symbol {
+        font-size: 5rem;
+        margin-bottom: 15px;
+        display: block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .zodiac-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #2d3748;
+    }
+
+    .zodiac-english {
+        font-size: 1.1rem;
+        color: #718096;
+        margin-bottom: 12px;
+        font-style: italic;
+    }
+
+    .zodiac-dates {
+        font-size: 0.95rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding: 8px 16px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .zodiac-element {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .element-fire {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .element-earth {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .element-air {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+
+    .element-water {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+
+    .search-section {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 40px 20px;
+        border-radius: 30px;
+        max-width: 800px;
+        margin: 50px auto;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .search-section h3 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #2d3748;
+    }
+
+    .search-section p {
+        color: #4a5568;
+        margin-bottom: 25px;
+        font-size: 1.1rem;
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 30px;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 40px;
+        font-size: 1.2rem;
+        color: #667eea;
+    }
+
+    .loading-spinner.show {
+        display: block;
+    }
+
+    @@media (max-width: 768px) {
+        .zodiac-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .zodiac-hero p {
+            font-size: 1.1rem;
+        }
+
+        .zodiac-grid {
+            grid-template-columns: 1fr;
+            padding: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="zodiac-hero">
+    <h1>✨ 12 Cung Hoàng Đạo ✨</h1>
+    <p>Khám phá bí mật về tính cách, vận mệnh và tình duyên của bạn qua 12 cung hoàng đạo</p>
+</div>
+
+<div class="container">
+    <div class="element-filter">
+        <button class="filter-btn all active" onclick="filterByElement('all')">Tất Cả</button>
+        <button class="filter-btn fire" onclick="filterByElement('fire')">🔥 Lửa</button>
+        <button class="filter-btn earth" onclick="filterByElement('earth')">🌍 Đất</button>
+        <button class="filter-btn air" onclick="filterByElement('air')">💨 Khí</button>
+        <button class="filter-btn water" onclick="filterByElement('water')">💧 Nước</button>
+    </div>
+
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Đang tải...</span>
+        </div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <div class="zodiac-grid" id="zodiacGrid">
+        @foreach (var sign in Model)
+        {
+            var elementClass = sign.Element.ToString().ToLower();
+            var elementName = sign.Element switch
+            {
+                Unistay_Web.Models.ZodiacElement.Fire => "Lửa",
+                Unistay_Web.Models.ZodiacElement.Earth => "Đất",
+                Unistay_Web.Models.ZodiacElement.Air => "Khí",
+                Unistay_Web.Models.ZodiacElement.Water => "Nước",
+                _ => ""
+            };
+
+            <div class="zodiac-card @elementClass" data-element="@elementClass" onclick="location.href='@Url.Action("Details", "Zodiac", new { id = sign.Id })'">
+                <span class="zodiac-symbol">@sign.Symbol</span>
+                <h3 class="zodiac-name">@sign.Name</h3>
+                <p class="zodiac-english">@sign.EnglishName</p>
+                <div class="zodiac-dates">@sign.DateRange</div>
+                <span class="zodiac-element element-@elementClass">@elementName</span>
+            </div>
+        }
+    </div>
+
+    <div class="search-section">
+        <h3>🔮 Tìm Cung Hoàng Đạo Của Bạn</h3>
+        <p>Nhập ngày sinh để khám phá cung hoàng đạo và tử vi của bạn</p>
+        <button class="search-btn" onclick="location.href='@Url.Action("FindYourSign", "Zodiac")'">
+            Tìm Ngay
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterByElement(element) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter cards
+            const cards = document.querySelectorAll('.zodiac-card');
+            cards.forEach(card => {
+                if (element === 'all' || card.dataset.element === element) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 10);
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
+        // Add loading state simulation
+        window.addEventListener('load', function() {
+            const spinner = document.getElementById('loadingSpinner');
+            const grid = document.getElementById('zodiacGrid');
+            
+            // Simulate loading for demonstration
+            // In production, this would be tied to actual data fetching
+        });
+
+        // Add smooth scroll animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.zodiac-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,229 @@
+@{
+    ViewData["Title"] = "Tìm Cung Hoàng Đạo Của Bạn";
+}
+
+<style>
+    .search-container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+
+    .search-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 50px 30px;
+        text-align: center;
+        border-radius: 25px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .search-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .search-hero p {
+        font-size: 1.2rem;
+        opacity: 0.95;
+    }
+
+    .search-card {
+        background: white;
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .submit-btn:active {
+        transform: translateY(-1px);
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 25px;
+        border-radius: 20px;
+        margin-top: 30px;
+    }
+
+    .info-box h3 {
+        font-size: 1.3rem;
+        color: #2d3748;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .info-box p {
+        color: #4a5568;
+        line-height: 1.7;
+        margin-bottom: 10px;
+    }
+
+    .zodiac-icons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        font-size: 2rem;
+    }
+
+    .zodiac-icons span {
+        transition: transform 0.3s ease;
+        cursor: default;
+    }
+
+    .zodiac-icons span:hover {
+        transform: scale(1.3);
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .alert-info {
+        background: #e0f2fe;
+        color: #075985;
+        border: 2px solid #7dd3fc;
+    }
+
+    @@media (max-width: 768px) {
+        .search-hero h1 {
+            font-size: 2rem;
+        }
+
+        .search-card {
+            padding: 25px;
+        }
+
+        .zodiac-icons {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="search-container">
+    <div class="search-hero">
+        <h1>🔮 Tìm Cung Hoàng Đạo</h1>
+        <p>Nhập ngày sinh của bạn để khám phá cung hoàng đạo</p>
+    </div>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info">
+            @ViewBag.Message
+        </div>
+    }
+
+    <div class="search-card">
+        <form asp-action="FindYourSign" method="post">
+            <div class="form-group">
+                <label for="birthDate">📅 Ngày Sinh Của Bạn</label>
+                <input type="date" 
+                       id="birthDate" 
+                       name="birthDate" 
+                       class="form-control" 
+                       required 
+                       max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                       value="@DateTime.Today.AddYears(-20).ToString("yyyy-MM-dd")">
+            </div>
+
+            <button type="submit" class="submit-btn">
+                ✨ Khám Phá Ngay
+            </button>
+        </form>
+
+        <div class="info-box">
+            <h3>💫 Tại sao cần biết cung hoàng đạo?</h3>
+            <p>🌟 <strong>Hiểu rõ bản thân:</strong> Khám phá tính cách, điểm mạnh và điểm yếu của mình</p>
+            <p>💕 <strong>Tình duyên:</strong> Tìm hiểu độ tương thích với người ấy</p>
+            <p>🎯 <strong>Sự nghiệp:</strong> Định hướng nghề nghiệp phù hợp với thiên hướng</p>
+            <p>🔮 <strong>Tử vi hàng ngày:</strong> Nhận dự đoán và lời khuyên cho mỗi ngày</p>
+        </div>
+
+        <div class="zodiac-icons">
+            <span title="Bạch Dương">♈</span>
+            <span title="Kim Ngưu">♉</span>
+            <span title="Song Tử">♊</span>
+            <span title="Cự Giải">♋</span>
+            <span title="Sư Tử">♌</span>
+            <span title="Xử Nữ">♍</span>
+            <span title="Thiên Bình">♎</span>
+            <span title="Thiên Yết">♏</span>
+            <span title="Nhân Mã">♐</span>
+            <span title="Ma Kết">♑</span>
+            <span title="Bảo Bình">♒</span>
+            <span title="Song Ngư">♓</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Set default date to 20 years ago for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('birthDate');
+            
+            // Add animation on focus
+            dateInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+
+            dateInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+}

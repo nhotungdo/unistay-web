@@ -33,9 +33,16 @@ namespace Unistay_Web.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<LoginHistory> LoginHistories { get; set; }
         public DbSet<ActivityHistory> ActivityHistories { get; set; }
+        
+        // Messaging & Connection
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Message> Messages { get; set; }
-
+        public DbSet<MessageAttachment> MessageAttachments { get; set; }
+        public DbSet<ChatGroup> ChatGroups { get; set; }
+        public DbSet<ChatGroupMember> ChatGroupMembers { get; set; }
+        public DbSet<BlockedUser> BlockedUsers { get; set; }
+        public DbSet<MessageReport> MessageReports { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -43,6 +50,7 @@ namespace Unistay_Web.Data
             // Customize Identity table names if needed
             builder.Entity<UserProfile>().ToTable("UserProfiles");
 
+            // Connection relationships
             builder.Entity<Connection>()
                 .HasOne(c => c.Requester)
                 .WithMany()
@@ -55,6 +63,7 @@ namespace Unistay_Web.Data
                 .HasForeignKey(c => c.AddresseeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Message relationships
             builder.Entity<Message>()
                 .HasOne(m => m.Sender)
                 .WithMany()
@@ -66,6 +75,60 @@ namespace Unistay_Web.Data
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Self-referencing for reply feature
+            builder.Entity<Message>()
+                .HasOne(m => m.ReplyToMessage)
+                .WithMany()
+                .HasForeignKey(m => m.ReplyToMessageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // MessageAttachment relationships
+            builder.Entity<MessageAttachment>()
+                .HasOne(ma => ma.Message)
+                .WithMany(m => m.Attachments)
+                .HasForeignKey(ma => ma.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // BlockedUser relationships
+            builder.Entity<BlockedUser>()
+                .HasOne(bu => bu.Blocker)
+                .WithMany()
+                .HasForeignKey(bu => bu.BlockerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<BlockedUser>()
+                .HasOne(bu => bu.BlockedUserProfile)
+                .WithMany()
+                .HasForeignKey(bu => bu.BlockedUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // MessageReport relationships
+            builder.Entity<MessageReport>()
+                .HasOne(mr => mr.Reporter)
+                .WithMany()
+                .HasForeignKey(mr => mr.ReporterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<MessageReport>()
+                .HasOne(mr => mr.Message)
+                .WithMany()
+                .HasForeignKey(mr => mr.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes for performance
+            builder.Entity<Message>()
+                .HasIndex(m => new { m.SenderId, m.ReceiverId });
+            
+            builder.Entity<Message>()
+                .HasIndex(m => m.ChatGroupId);
+
+            builder.Entity<Message>()
+                .HasIndex(m => m.CreatedAt);
+
+            builder.Entity<BlockedUser>()
+                .HasIndex(bu => new { bu.BlockerId, bu.BlockedUserId })
+                .IsUnique();
         }
     }
 }

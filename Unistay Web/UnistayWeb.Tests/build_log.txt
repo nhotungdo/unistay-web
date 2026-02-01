@@ -1,0 +1,28 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Unistay Web -> F:\EXE101-REVIEW\unistay-web\Unistay Web\Unistay Web\bin\Debug\net8.0\Unistay Web.dll
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(90,20): warning CS8603: Possible null reference return. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(121,61): warning CS8625: Cannot convert null literal to non-nullable reference type. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(136,24): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(150,26): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<object> Enumerable.Cast<object>(IEnumerable source)'. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(164,34): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(165,29): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(178,26): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<object> Enumerable.Cast<object>(IEnumerable source)'. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatHubTests.cs(246,46): warning CS8602: Dereference of a possibly null reference. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+
+Build FAILED.
+
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(90,20): warning CS8603: Possible null reference return. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(121,61): warning CS8625: Cannot convert null literal to non-nullable reference type. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(150,26): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<object> Enumerable.Cast<object>(IEnumerable source)'. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(178,26): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<object> Enumerable.Cast<object>(IEnumerable source)'. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatHubTests.cs(246,46): warning CS8602: Dereference of a possibly null reference. [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(136,24): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(164,34): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\ChatControllerTests.cs(165,29): error CS1061: 'ApplicationDbContext' does not contain a definition for 'UserProfiles' and no accessible extension method 'UserProfiles' accepting a first argument of type 'ApplicationDbContext' could be found (are you missing a using directive or an assembly reference?) [F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\UnistayWeb.Tests.csproj]
+    5 Warning(s)
+    3 Error(s)
+
+Time Elapsed 00:00:03.15
+
+Workload updates are available. Run `dotnet workload list` for more information.

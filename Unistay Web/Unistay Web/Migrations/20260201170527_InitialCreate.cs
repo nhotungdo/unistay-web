@@ -45,6 +45,34 @@ namespace Unistay_Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatGroupMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChatGroupId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatGroupMembers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatGroups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MarketplaceItems",
                 columns: table => new
                 {
@@ -450,6 +478,34 @@ namespace Unistay_Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BlockedUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BlockerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    BlockedUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BlockedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlockedUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlockedUsers_UserProfiles_BlockedUserId",
+                        column: x => x.BlockedUserId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BlockedUsers_UserProfiles_BlockerId",
+                        column: x => x.BlockerId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Connections",
                 columns: table => new
                 {
@@ -513,15 +569,36 @@ namespace Unistay_Web.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ChatGroupId = table.Column<int>(type: "int", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsEncrypted = table.Column<bool>(type: "bit", nullable: false),
+                    IsEdited = table.Column<bool>(type: "bit", nullable: false),
+                    EditedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ReplyToMessageId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeliveredAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SeenAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_ChatGroups_ChatGroupId",
+                        column: x => x.ChatGroupId,
+                        principalTable: "ChatGroups",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_Messages_ReplyToMessageId",
+                        column: x => x.ReplyToMessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Messages_UserProfiles_ReceiverId",
                         column: x => x.ReceiverId,
@@ -531,6 +608,63 @@ namespace Unistay_Web.Migrations
                     table.ForeignKey(
                         name: "FK_Messages_UserProfiles_SenderId",
                         column: x => x.SenderId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MessageAttachments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MessageId = table.Column<int>(type: "int", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileSize = table.Column<long>(type: "bigint", nullable: false),
+                    ThumbnailPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MessageAttachments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MessageAttachments_Messages_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MessageReports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReporterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    MessageId = table.Column<int>(type: "int", nullable: false),
+                    Reason = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ReportedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdminNote = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MessageReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MessageReports_Messages_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Messages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MessageReports_UserProfiles_ReporterId",
+                        column: x => x.ReporterId,
                         principalTable: "UserProfiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -569,6 +703,18 @@ namespace Unistay_Web.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlockedUsers_BlockedUserId",
+                table: "BlockedUsers",
+                column: "BlockedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlockedUsers_BlockerId_BlockedUserId",
+                table: "BlockedUsers",
+                columns: new[] { "BlockerId", "BlockedUserId" },
+                unique: true,
+                filter: "[BlockerId] IS NOT NULL AND [BlockedUserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Connections_AddresseeId",
                 table: "Connections",
                 column: "AddresseeId");
@@ -584,14 +730,44 @@ namespace Unistay_Web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MessageAttachments_MessageId",
+                table: "MessageAttachments",
+                column: "MessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessageReports_MessageId",
+                table: "MessageReports",
+                column: "MessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessageReports_ReporterId",
+                table: "MessageReports",
+                column: "ReporterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ChatGroupId",
+                table: "Messages",
+                column: "ChatGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_CreatedAt",
+                table: "Messages",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ReceiverId",
                 table: "Messages",
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_SenderId",
+                name: "IX_Messages_ReplyToMessageId",
                 table: "Messages",
-                column: "SenderId");
+                column: "ReplyToMessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId_ReceiverId",
+                table: "Messages",
+                columns: new[] { "SenderId", "ReceiverId" });
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -631,6 +807,12 @@ namespace Unistay_Web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BlockedUsers");
+
+            migrationBuilder.DropTable(
+                name: "ChatGroupMembers");
+
+            migrationBuilder.DropTable(
                 name: "Connections");
 
             migrationBuilder.DropTable(
@@ -640,7 +822,10 @@ namespace Unistay_Web.Migrations
                 name: "MarketplaceItems");
 
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "MessageAttachments");
+
+            migrationBuilder.DropTable(
+                name: "MessageReports");
 
             migrationBuilder.DropTable(
                 name: "MovingRequests");
@@ -668,6 +853,12 @@ namespace Unistay_Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "ChatGroups");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");

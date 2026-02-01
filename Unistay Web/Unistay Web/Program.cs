@@ -78,14 +78,23 @@ builder.Services.AddSession(options =>
 // Add memory cache
 builder.Services.AddMemoryCache();
 
-// Add SignalR
-builder.Services.AddSignalR();
+// Add SignalR for real-time messaging
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB for file uploads
+}).AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null; // Keep PascalCase
+});
+
 
 // Register Custom Services
 builder.Services.AddScoped<Unistay_Web.Services.RentalAdvice.IRentalAdviceService, Unistay_Web.Services.RentalAdvice.RentalAdviceService>();
 builder.Services.AddScoped<Unistay_Web.Services.IFileUploadService, Unistay_Web.Services.LocalFileUploadService>();
 builder.Services.AddScoped<Unistay_Web.Services.IAiMatchingService, Unistay_Web.Services.AiMatchingService>();
 builder.Services.AddScoped<Unistay_Web.Services.IEmailService, Unistay_Web.Services.EmailService>();
+builder.Services.AddScoped<Unistay_Web.Services.IZodiacService, Unistay_Web.Services.ZodiacService>();
 
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>
@@ -134,7 +143,9 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Map SignalR Hub
 app.MapHub<Unistay_Web.Hubs.ChatHub>("/chatHub");
+
 
 app.MapControllerRoute(
     name: "default",
