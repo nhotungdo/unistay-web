@@ -28,11 +28,11 @@ namespace Unistay_Web.Controllers
             return View();
         }
 
-        public IActionResult Chat([FromQuery] string? friendId)
+        public IActionResult Chat()
         {
-             ViewBag.SelectedFriendId = friendId;
-             return View();
+            return View();
         }
+
 
         [HttpGet("api/users/search")]
         public async Task<IActionResult> SearchUsers([FromQuery] string? query, [FromQuery] int page = 1)
@@ -231,14 +231,7 @@ namespace Unistay_Web.Controllers
 
                 var friendId = friend.Id;
                 
-                // Count unread messages (wrapped in try-catch in case messages are not set up yet)
                 int unreadCount = 0;
-                try 
-                {
-                    unreadCount = await _context.Messages
-                        .CountAsync(m => m.SenderId == friendId && m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen);
-                }
-                catch { /* Ignore message count error if system not ready */ }
 
                 result.Add(new
                 {

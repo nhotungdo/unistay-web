@@ -1,0 +1,428 @@
+@{
+    ViewData["Title"] = "Messages";
+    var currentUser = ViewBag.CurrentUserId as string;
+    var selectedFriendId = ViewBag.SelectedFriendId as string;
+}
+
+<link rel="stylesheet" href="~/css/chat-redesign.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<div class="chat-container" id="chatContainer">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <h2 style="font-size: 20px; font-weight: 700; margin:0;">Chats</h2>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-icon" onclick="showCreateGroupModal()" title="New Group">
+                    <i class="bi bi-people-fill"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search" id="searchContacts">
+        </div>
+
+        <div class="contact-list" id="contactsList">
+            <!-- Groups Section -->
+            @if (ViewBag.Groups != null)
+            {
+                foreach (var group in ViewBag.Groups)
+                {
+                    <div class="contact-card" onclick="selectGroup(@group.Id, '@group.Name')" data-group-id="@group.Id" data-name="@group.Name">
+                        <div class="avatar-wrapper">
+                            <img src="@(group.AvatarUrl ?? "/images/default-group.png")" alt="Group" class="contact-avatar">
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-top-row">
+                                <span class="contact-name">@group.Name</span>
+                                <span class="message-time"></span>
+                            </div>
+                            <div class="contact-bottom-row">
+                                <span class="message-preview">Group Chat</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <!-- Friends Section -->
+            @if (ViewBag.Friends != null)
+            {
+                foreach (var friend in ViewBag.Friends)
+                {
+                    <div class="contact-card" onclick="selectUser('@friend.Id', '@friend.FullName', '@friend.AvatarUrl')" data-user-id="@friend.Id" data-name="@friend.FullName">
+                        <div class="avatar-wrapper">
+                            <img src="@(friend.AvatarUrl ?? "/images/default-user.png")" alt="User" class="contact-avatar">
+                            <span class="online-status" id="status-@friend.Id" style="display:none;"></span>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-top-row">
+                                <span class="contact-name">@friend.FullName</span>
+                                <span class="message-time"></span>
+                            </div>
+                            <div class="contact-bottom-row">
+                                <span class="message-preview">Start a conversation</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+        <!-- Chat Header -->
+        <div class="chat-header" id="chatHeader" style="visibility: hidden;"> <!-- Hidden initially -->
+            <div class="header-user-info">
+                <button class="back-button" onclick="backToSidebar()">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <img src="/images/default-user.png" id="activeAvatar" class="current-user-avatar" style="margin-right: 12px;">
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;" id="activeName">User Name</div>
+                    <div style="font-size: 12px; color: var(--text-light-secondary); display:flex; align-items:center;" id="headerStatus">
+                        <span id="typingIndicator"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon"><i class="bi bi-search"></i></button>
+                <button class="btn-icon"><i class="bi bi-three-dots-vertical"></i></button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages-area" id="messagesList">
+             <div class="empty-state" style="text-align:center; margin-top: 40%; color: #999;">
+                <i class="bi bi-chat-square-text" style="font-size: 48px;"></i>
+                <p>Select a chat to start messaging</p>
+             </div>
+        </div>
+
+        <!-- Compose Bar -->
+        <div class="compose-bar" id="inputArea" style="display:none;">
+            <button class="btn-icon" onclick="document.getElementById('fileInput').click()">
+                <i class="bi bi-plus-circle"></i>
+            </button>
+            <input type="file" id="fileInput" hidden multiple onchange="handleFileSelect(this)">
+            
+            <div class="input-wrapper">
+                <textarea id="messageInput" class="message-input" rows="1" placeholder="Message..." oninput="autoResize(this)"></textarea>
+                <button class="btn-icon" style="width:30px; height:30px; margin-left:8px;" onclick="toggleEmojiPicker()">
+                    <i class="bi bi-emoji-smile"></i>
+                </button>
+            </div>
+            
+            <button class="btn-icon" id="voiceBtn">
+                 <i class="bi bi-mic"></i>
+            </button>
+
+            <button class="btn-send" onclick="sendMessage()">
+                <i class="bi bi-send-fill" style="color:white; font-size: 18px;"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Create Group -->
+<div id="createGroupModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+    <div style="background:white; padding:20px; border-radius:12px; width:300px;">
+        <h3>Create Group</h3>
+        <input type="text" id="newGroupName" placeholder="Group Name" style="width:100%; padding:8px; margin-bottom:10px;">
+        <div id="modalFriendList" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="document.getElementById('createGroupModal').style.display='none'">Cancel</button>
+            <button onclick="createGroup()" style="background:var(--primary-color); color:white; border:none; padding:8px 16px; border-radius:4px;">Create</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const currentUserId = '@currentUser';
+        const initialFriendId = '@selectedFriendId';
+        let activeChat = { type: null, id: null };
+        let connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // --- SignalR Events ---
+        connection.on("UserOnline", (userId) => {
+            const el = document.getElementById(`status-${userId}`);
+            if(el) el.style.display = 'block';
+        });
+        
+        connection.on("UserOffline", (userId) => {
+             const el = document.getElementById(`status-${userId}`);
+            if(el) el.style.display = 'none';
+        });
+
+        connection.on("ReceiveMessage", (msg) => {
+            // Only append if viewing that chat
+            if ((activeChat.type === 'user' && msg.senderId === activeChat.id) ||
+                (activeChat.type === 'group' && msg.groupId === activeChat.id) || 
+                (msg.senderId === currentUserId && ((activeChat.type === 'user' && msg.receiverId === activeChat.id) || 
+                                                  (activeChat.type === 'group' && msg.groupId === activeChat.id)))) {
+                appendMessage(msg, msg.senderId === currentUserId);
+                scrollToBottom();
+            } else {
+                // Update preview and badge in sidebar
+                updateSidebarPreview(msg.groupId ? msg.groupId : msg.senderId, msg.content, !!msg.groupId);
+            }
+        });
+
+        connection.on("UserTyping", (userId, groupId) => {
+            if(activeChat.type === 'user' && activeChat.id === userId) showTyping(true);
+            if(activeChat.type === 'group' && activeChat.id === groupId && userId !== currentUserId) showTyping(true);
+        });
+
+        connection.on("UserStoppedTyping", (userId, groupId) => {
+             // Simplify: just hide if it matches
+             showTyping(false);
+        });
+
+        connection.start().then(() => {
+            console.log("Connected");
+            if(initialFriendId) {
+                const card = document.querySelector(`.contact-card[data-user-id="${initialFriendId}"]`);
+                if(card) card.click();
+            }
+        }).catch(err => console.error(err));
+
+        // --- UI Logic ---
+
+        function autoResize(textarea) {
+             textarea.style.height = 'auto';
+             textarea.style.height = textarea.scrollHeight + 'px';
+             if(textarea.value === '') textarea.style.height = 'auto';
+        }
+
+        function selectUser(id, name, avatar) {
+            activeChat = { type: 'user', id: id };
+            loadChatUI(name, avatar);
+        }
+
+        function selectGroup(id, name) {
+            activeChat = { type: 'group', id: id };
+            loadChatUI(name, null); // Use default group avatar
+        }
+
+        function loadChatUI(name, avatar) {
+            // Update Header
+            document.getElementById('activeName').innerText = name;
+            document.getElementById('activeAvatar').src = avatar || '/images/default-user.png';
+            document.getElementById('chatHeader').style.visibility = 'visible';
+            document.getElementById('inputArea').style.display = 'flex';
+            
+            // Hide empty state
+            document.querySelector('.empty-state').style.display = 'none';
+
+            // Styling active card
+            document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('active'));
+            // Find the card (simple query)
+            const activeCard = document.querySelector(`.contact-card[data-user-id="${activeChat.id}"]`) || 
+                              document.querySelector(`.contact-card[data-group-id="${activeChat.id}"]`);
+            if(activeCard) activeCard.classList.add('active');
+
+            // Mobile responsive switch
+            document.getElementById('chatContainer').classList.add('show-chat');
+
+            loadHistory();
+        }
+
+        function backToSidebar() {
+            document.getElementById('chatContainer').classList.remove('show-chat');
+            activeChat = { type: null, id: null };
+        }
+
+        async function loadHistory() {
+            const list = document.getElementById('messagesList');
+            list.innerHTML = '<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>'; 
+            
+            const url = activeChat.type === 'user' 
+                ? `/Chat/GetHistory?otherUserId=${activeChat.id}`
+                : `/Chat/GetHistory?groupId=${activeChat.id}`;
+
+            try {
+                const res = await fetch(url);
+                if(res.ok) {
+                    const msgs = await res.json();
+                    list.innerHTML = ''; // Clear spinner
+                    msgs.reverse().forEach(m => appendMessage(m, m.isMine));
+                    scrollToBottom();
+                } else {
+                    list.innerHTML = '<div class="text-center text-danger mt-5">Failed to load history</div>';
+                }
+            } catch(e) {
+                list.innerHTML = '<div class="text-center text-danger mt-5">Error loading history</div>';
+            }
+        }
+
+        function appendMessage(msg, isMine) {
+            const list = document.getElementById('messagesList');
+            const row = document.createElement('div');
+            row.className = `message-row ${isMine ? 'sent' : 'received'}`;
+            
+            // Content
+            let contentHtml = `<p style="margin:0;">${escapeHtml(msg.content)}</p>`;
+            if(msg.type === 'Image') {
+                 contentHtml = `<img src="${msg.attachmentUrl}" style="max-width:200px; border-radius:8px; margin-bottom:4px;">` + contentHtml;
+            } else if (msg.type === 'File') {
+                 contentHtml = `<a href="${msg.attachmentUrl}" target="_blank" style="display:flex; align-items:center; gap:5px; color:inherit; text-decoration:none; background:rgba(0,0,0,0.05); padding:8px; border-radius:8px; margin-bottom:4px;">
+                    <i class="bi bi-file-earmark-fill"></i> File Attachment</a>` + contentHtml;
+            }
+
+            const timeStr = formatTime(msg.timestamp);
+            
+            row.innerHTML = `
+                <div class="message-bubble">
+                    ${!isMine && activeChat.type === 'group' ? `<div style="font-size:10px; color:#888; margin-bottom:2px;">${msg.senderName}</div>` : ''}
+                    ${contentHtml}
+                    <div class="msg-meta">
+                        ${timeStr} ${isMine ? '<i class="bi bi-check2-all"></i>' : ''}
+                    </div>
+                </div>
+            `;
+            list.appendChild(row);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            const fileInput = document.getElementById('fileInput');
+
+            if(!text && fileInput.files.length === 0) return;
+
+            // Reset UI immediately (Optimistic)
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Check for file
+            let attachmentUrl = null;
+            let type = 'Text';
+
+            if(fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                try {
+                    const uploadRes = await fetch('/Chat/UploadAttachment', { method:'POST', body: formData });
+                    if(uploadRes.ok) {
+                        const data = await uploadRes.json();
+                        attachmentUrl = data.url;
+                        type = data.type; // Image or File
+                    }
+                } catch(e) { console.error("Upload failed", e); }
+                fileInput.value = ''; // clear
+            }
+
+            // Send to Hub
+            if(activeChat.type === 'user') {
+                await connection.invoke("SendMessage", activeChat.id, null, text, attachmentUrl, type);
+            } else {
+                await connection.invoke("SendMessage", null, activeChat.id, text, attachmentUrl, type);
+            }
+        }
+        
+        // Typing Emitter
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+                return;
+            }
+            if(activeChat.id) {
+                if(activeChat.type === 'user') connection.invoke("Typing", activeChat.id, null);
+                else connection.invoke("Typing", null, activeChat.id);
+            }
+        });
+
+        // --- Helpers ---
+        function scrollToBottom() {
+            const list = document.getElementById('messagesList');
+            list.scrollTop = list.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            if(!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function formatTime(dateStr) {
+            if(!dateStr) return 'Just now';
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function updateSidebarPreview(id, text, isGroup) {
+             const selector = isGroup ? `.contact-card[data-group-id="${id}"]` : `.contact-card[data-user-id="${id}"]`;
+             const card = document.querySelector(selector);
+             if(card) {
+                 const preview = card.querySelector('.message-preview');
+                 if(preview) preview.innerText = text;
+                 // maybe move to top
+                 const list = document.getElementById('contactsList');
+                 list.prepend(card);
+             }
+        }
+
+        let typingTimeout;
+        function showTyping(isTyping) {
+            const container = document.getElementById('typingIndicator');
+            if(isTyping) {
+                container.innerHTML = 'Typing...';
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    container.innerHTML = '';
+                }, 3000);
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        // Search Filter
+        document.getElementById('searchContacts').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.contact-card').forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        // Create Group Modal
+        function showCreateGroupModal() {
+            document.getElementById('createGroupModal').style.display = 'flex';
+            const list = document.getElementById('modalFriendList');
+            list.innerHTML = '';
+            document.querySelectorAll('.contact-card[data-user-id]').forEach(c => {
+                const uid = c.getAttribute('data-user-id');
+                const name = c.getAttribute('data-name');
+                const d = document.createElement('div');
+                d.style.padding = '5px';
+                d.innerHTML = `<input type="checkbox" value="${uid}" style="margin-right:10px;"> ${name}`;
+                list.appendChild(d);
+            });
+        }
+
+        async function createGroup() {
+            const name = document.getElementById('newGroupName').value;
+            const checks = document.querySelectorAll('#modalFriendList input:checked');
+            const ids = Array.from(checks).map(cb => cb.value);
+            
+            if(!name || ids.length === 0) return alert("Name and members required");
+            
+            await connection.invoke("CreateGroup", name, ids);
+            location.reload();
+        }
+        
+        function handleFileSelect(input) {
+             if(input.files.length > 0) {
+                 // optionally show preview before sending
+                 alert("File selected: " + input.files[0].name + "\nPress Enter or Send button to upload and send.");
+             }
+        }
+    </script>
+}

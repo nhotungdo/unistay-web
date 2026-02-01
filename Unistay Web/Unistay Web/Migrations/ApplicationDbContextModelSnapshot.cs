@@ -191,6 +191,76 @@ namespace Unistay_Web.Migrations
                     b.ToTable("Appointments");
                 });
 
+            modelBuilder.Entity("Unistay_Web.Models.Connection.BlockedUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BlockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BlockedUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BlockerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlockedUserId");
+
+                    b.HasIndex("BlockerId", "BlockedUserId")
+                        .IsUnique()
+                        .HasFilter("[BlockerId] IS NOT NULL AND [BlockedUserId] IS NOT NULL");
+
+                    b.ToTable("BlockedUsers");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.ChatGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatGroups");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.ChatGroupMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChatGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ChatGroupMembers");
+                });
+
             modelBuilder.Entity("Unistay_Web.Models.Connection.Connection", b =>
                 {
                     b.Property<int>("Id")
@@ -233,31 +303,141 @@ namespace Unistay_Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChatGroupId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEncrypted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ReceiverId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("ReplyToMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SeenAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SenderId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Timestamp")
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatGroupId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("ReplyToMessageId");
+
+                    b.HasIndex("SenderId", "ReceiverId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.MessageAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ThumbnailPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("MessageId");
 
-                    b.HasIndex("SenderId");
+                    b.ToTable("MessageAttachments");
+                });
 
-                    b.ToTable("Messages");
+            modelBuilder.Entity("Unistay_Web.Models.Connection.MessageReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reason")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReporterId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("ReporterId");
+
+                    b.ToTable("MessageReports");
                 });
 
             modelBuilder.Entity("Unistay_Web.Models.Marketplace.MarketplaceItem", b =>
@@ -1045,6 +1225,23 @@ namespace Unistay_Web.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Unistay_Web.Models.Connection.BlockedUser", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "BlockedUserProfile")
+                        .WithMany()
+                        .HasForeignKey("BlockedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "Blocker")
+                        .WithMany()
+                        .HasForeignKey("BlockerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BlockedUserProfile");
+
+                    b.Navigation("Blocker");
+                });
+
             modelBuilder.Entity("Unistay_Web.Models.Connection.Connection", b =>
                 {
                     b.HasOne("Unistay_Web.Models.User.UserProfile", "Addressee")
@@ -1066,21 +1263,61 @@ namespace Unistay_Web.Migrations
 
             modelBuilder.Entity("Unistay_Web.Models.Connection.Message", b =>
                 {
+                    b.HasOne("Unistay_Web.Models.Connection.ChatGroup", "ChatGroup")
+                        .WithMany()
+                        .HasForeignKey("ChatGroupId");
+
                     b.HasOne("Unistay_Web.Models.User.UserProfile", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Unistay_Web.Models.Connection.Message", "ReplyToMessage")
+                        .WithMany()
+                        .HasForeignKey("ReplyToMessageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Unistay_Web.Models.User.UserProfile", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ChatGroup");
 
                     b.Navigation("Receiver");
 
+                    b.Navigation("ReplyToMessage");
+
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.MessageAttachment", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.Connection.Message", "Message")
+                        .WithMany("Attachments")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.MessageReport", b =>
+                {
+                    b.HasOne("Unistay_Web.Models.Connection.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Unistay_Web.Models.User.UserProfile", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Message");
+
+                    b.Navigation("Reporter");
                 });
 
             modelBuilder.Entity("Unistay_Web.Models.User.ActivityHistory", b =>
@@ -1103,6 +1340,11 @@ namespace Unistay_Web.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Unistay_Web.Models.Connection.Message", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }
