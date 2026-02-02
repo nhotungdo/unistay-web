@@ -40,26 +40,43 @@ namespace Unistay_Web.Controllers
         }
 
         // GET: api/messages/conversations
-        // GET: api/messages/conversations
         [HttpGet("conversations")]
         public async Task<IActionResult> GetConversations()
         {
             try
             {
                 var currentUserId = _userManager.GetUserId(User);
-                if (currentUserId == null) return Unauthorized();
+                if (currentUserId == null)
+                {
+                    _logger.LogWarning("GetConversations called with no authenticated user");
+                    return Unauthorized(new { message = "Bạn cần đăng nhập để xem tin nhắn" });
+                }
+
+                _logger.LogInformation("Loading conversations for user {UserId}", currentUserId);
 
                 // 1. Get recent DIRECT conversations
-                var directStats = await _context.Messages
-                    .Where(m => !m.IsDeleted && m.ChatGroupId == null && (m.SenderId == currentUserId || m.ReceiverId == currentUserId))
-                    .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
-                    .Select(g => new
-                    {
-                        UserId = g.Key,
-                        LastMessage = g.OrderByDescending(m => m.CreatedAt).FirstOrDefault(),
-                        UnreadCount = g.Count(m => m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen)
-                    })
-                    .ToListAsync();
+                var directStats = new List<(string? UserId, Message? LastMessage, int UnreadCount)>();
+                try
+                {
+                    var tempDirectStats = await _context.Messages
+                        .Where(m => !m.IsDeleted && m.ChatGroupId == null && (m.SenderId == currentUserId || m.ReceiverId == currentUserId))
+                        .GroupBy(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
+                        .Select(g => new
+                        {
+                            UserId = g.Key,
+                            LastMessage = g.OrderByDescending(m => m.CreatedAt).FirstOrDefault(),
+                            UnreadCount = g.Count(m => m.ReceiverId == currentUserId && m.Status != MessageStatus.Seen)
+                        })
+                        .ToListAsync();
+                    
+                    directStats = tempDirectStats.Select(x => (x.UserId, x.LastMessage, x.UnreadCount)).ToList();
+                    _logger.LogInformation("Found {Count} direct conversations", directStats.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error loading direct conversations for user {UserId}. Messages table may not exist or be accessible.", currentUserId);
+                    // Continue with empty list - don't fail the entire request
+                }
 
                 // 2. Get GROUP conversations (with error handling for missing tables)
                 List<int> userGroupIds = new List<int>();
@@ -72,6 +89,8 @@ namespace Unistay_Web.Controllers
                         .Where(m => m.UserId == currentUserId)
                         .Select(m => m.ChatGroupId)
                         .ToListAsync();
+
+                    _logger.LogInformation("User is member of {Count} groups", userGroupIds.Count);
 
                     if (userGroupIds.Any())
                     {
@@ -91,6 +110,8 @@ namespace Unistay_Web.Controllers
                         groups = await _context.ChatGroups
                             .Where(g => userGroupIds.Contains(g.Id))
                             .ToDictionaryAsync(g => g.Id);
+                        
+                        _logger.LogInformation("Loaded {Count} group conversations", groupStats.Count);
                     }
                 }
                 catch (Exception ex)
@@ -100,23 +121,56 @@ namespace Unistay_Web.Controllers
                 }
 
                 // 3. Get User & Group Details
-                var directUserIds = directStats.Select(c => c.UserId).Where(id => id != null).Distinct().ToList();
+                var directUserIds = directStats
+                    .Select(c => c.UserId)
+                    .Where(id => !string.IsNullOrEmpty(id))
+                    .Distinct()
+                    .ToList();
 
-                // Friends (always show)
-                var friendIds = await _context.Connections
-                    .Where(c => (c.RequesterId == currentUserId || c.AddresseeId == currentUserId) && c.Status == ConnectionStatus.Accepted)
-                    .Select(c => c.RequesterId == currentUserId ? c.AddresseeId : c.RequesterId)
-                    .ToListAsync();
+                // Friends (always show) - with error handling
+                List<string?> friendIds = new List<string?>();
+                try
+                {
+                    friendIds = await _context.Connections
+                        .Where(c => (c.RequesterId == currentUserId || c.AddresseeId == currentUserId) && c.Status == ConnectionStatus.Accepted)
+                        .Select(c => c.RequesterId == currentUserId ? c.AddresseeId : c.RequesterId)
+                        .ToListAsync();
+                    
+                    _logger.LogInformation("Found {Count} friends", friendIds.Count);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error loading friends for user {UserId}. Connections table may not exist.", currentUserId);
+                    // Continue with empty list
+                }
 
-                var allUserIds = directUserIds.Union(friendIds).Distinct().ToList();
+                var allUserIds = directUserIds
+                    .Union(friendIds)
+                    .Where(id => !string.IsNullOrEmpty(id))
+                    .Distinct()
+                    .Cast<string>()
+                    .ToList();
 
                 var users = new Dictionary<string, (string FullName, string AvatarUrl)>();
                 if (allUserIds.Any())
                 {
-                    users = await _context.Users
-                        .Where(u => allUserIds.Contains(u.Id))
-                        .Select(u => new { u.Id, u.FullName, u.AvatarUrl })
-                        .ToDictionaryAsync(u => u.Id, u => (u.FullName ?? "Người dùng", u.AvatarUrl ?? "/images/default-avatar.png"));
+                    try
+                    {
+                        users = await _context.Users
+                            .Where(u => allUserIds.Contains(u.Id))
+                            .Select(u => new { u.Id, u.FullName, u.AvatarUrl })
+                            .ToDictionaryAsync(
+                                u => u.Id, 
+                                u => (u.FullName ?? "Người dùng", u.AvatarUrl ?? "/images/default-avatar.png")
+                            );
+                        
+                        _logger.LogInformation("Loaded {Count} user profiles", users.Count);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error loading user profiles. Users table may be missing columns.");
+                        // Continue with empty dictionary
+                    }
                 }
 
                 var result = new List<ConversationViewModel>();
@@ -124,90 +178,126 @@ namespace Unistay_Web.Controllers
                 // Process Direct
                 foreach (var stat in directStats)
                 {
-                    if (stat.UserId == null || !users.ContainsKey(stat.UserId)) continue;
-                    var user = users[stat.UserId];
-                    var lm = stat.LastMessage;
-
-                    result.Add(new ConversationViewModel
+                    try
                     {
-                        UserId = stat.UserId,
-                        IsGroup = false,
-                        UserName = user.FullName,
-                        UserAvatar = user.AvatarUrl,
-                        LastMessage = lm != null ? new MessageViewModel
+                        string? userId = stat.UserId;
+                        if (string.IsNullOrEmpty(userId) || !users.ContainsKey(userId)) continue;
+                        
+                        var user = users[userId];
+                        Message? lm = stat.LastMessage;
+
+                        result.Add(new ConversationViewModel
                         {
-                            Content = lm.IsDeleted ? "Tin nhắn đã bị xóa" : (lm.IsEncrypted ? DecryptMessage(lm.Content) : lm.Content),
-                            Type = lm.Type.ToString(),
-                            CreatedAt = lm.CreatedAt,
-                            IsSent = lm.SenderId == currentUserId
-                        } : null,
-                        UnreadCount = stat.UnreadCount,
-                        IsOnline = false
-                    });
+                            UserId = userId,
+                            IsGroup = false,
+                            UserName = user.FullName,
+                            UserAvatar = user.AvatarUrl,
+                            LastMessage = lm != null ? new MessageViewModel
+                            {
+                                Content = lm.IsDeleted ? "Tin nhắn đã bị xóa" : (lm.IsEncrypted ? DecryptMessage(lm.Content) : lm.Content),
+                                Type = lm.Type.ToString(),
+                                CreatedAt = lm.CreatedAt,
+                                IsSent = lm.SenderId == currentUserId
+                            } : null,
+                            UnreadCount = stat.UnreadCount,
+                            IsOnline = false
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error processing direct conversation");
+                        continue;
+                    }
                 }
 
                 // Process Groups (only if we have group data)
                 foreach (var stat in groupStats)
                 {
-                    if (stat.GroupId == null || !groups.ContainsKey(stat.GroupId.Value)) continue;
-                    var grp = groups[stat.GroupId.Value];
-                    var lm = stat.LastMessage;
-
-                    result.Add(new ConversationViewModel
+                    try
                     {
-                        GroupId = grp.Id,
-                        IsGroup = true,
-                        UserName = grp.Name ?? "Nhóm chat",
-                        UserAvatar = "/images/group-default.png",
-                        LastMessage = lm != null ? new MessageViewModel
+                        if (stat.GroupId == null || !groups.ContainsKey(stat.GroupId.Value)) continue;
+                        var grp = groups[stat.GroupId.Value];
+                        var lm = stat.LastMessage;
+
+                        result.Add(new ConversationViewModel
                         {
-                            Content = lm.IsDeleted ? "T/N đã xóa" : (lm.SenderId == currentUserId ? "Bạn: " : "") + (lm.IsEncrypted ? DecryptMessage(lm.Content) : lm.Content),
-                            Type = lm.Type.ToString(),
-                            CreatedAt = lm.CreatedAt,
-                            IsSent = lm.SenderId == currentUserId
-                        } : null,
-                        UnreadCount = stat.UnreadCount
-                    });
+                            GroupId = grp.Id,
+                            IsGroup = true,
+                            UserName = grp.Name ?? "Nhóm chat",
+                            UserAvatar = "/images/group-default.png",
+                            LastMessage = lm != null ? new MessageViewModel
+                            {
+                                Content = lm.IsDeleted ? "T/N đã xóa" : (lm.SenderId == currentUserId ? "Bạn: " : "") + (lm.IsEncrypted ? DecryptMessage(lm.Content) : lm.Content),
+                                Type = lm.Type.ToString(),
+                                CreatedAt = lm.CreatedAt,
+                                IsSent = lm.SenderId == currentUserId
+                            } : null,
+                            UnreadCount = stat.UnreadCount
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error processing group conversation");
+                        continue;
+                    }
                 }
 
                 // Add empty friends
                 foreach (var friendId in friendIds)
                 {
-                    if (result.Any(r => !r.IsGroup && r.UserId == friendId) || friendId == null || !users.ContainsKey(friendId)) continue;
-                    var user = users[friendId];
-                    result.Add(new ConversationViewModel
+                    try
                     {
-                        UserId = friendId,
-                        IsGroup = false,
-                        UserName = user.FullName,
-                        UserAvatar = user.AvatarUrl,
-                        LastMessage = null,
-                        UnreadCount = 0
-                    });
+                        if (string.IsNullOrEmpty(friendId) || result.Any(r => !r.IsGroup && r.UserId == friendId) || !users.ContainsKey(friendId)) continue;
+                        var user = users[friendId];
+                        result.Add(new ConversationViewModel
+                        {
+                            UserId = friendId,
+                            IsGroup = false,
+                            UserName = user.FullName,
+                            UserAvatar = user.AvatarUrl,
+                            LastMessage = null,
+                            UnreadCount = 0,
+                            IsOnline = false
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error adding friend to conversations");
+                        continue;
+                    }
                 }
 
                 // Add empty groups (only if we have group data)
                 foreach (var gid in userGroupIds)
                 {
-                    if (result.Any(r => r.IsGroup && r.GroupId == gid) || !groups.ContainsKey(gid)) continue;
-                    var grp = groups[gid];
-                    result.Add(new ConversationViewModel
+                    try
                     {
-                        GroupId = grp.Id,
-                        IsGroup = true,
-                        UserName = grp.Name,
-                        UserAvatar = "/images/group-default.png",
-                        LastMessage = null,
-                        UnreadCount = 0
-                    });
+                        if (result.Any(r => r.IsGroup && r.GroupId == gid) || !groups.ContainsKey(gid)) continue;
+                        var grp = groups[gid];
+                        result.Add(new ConversationViewModel
+                        {
+                            GroupId = grp.Id,
+                            IsGroup = true,
+                            UserName = grp.Name ?? "Nhóm chat",
+                            UserAvatar = "/images/group-default.png",
+                            LastMessage = null,
+                            UnreadCount = 0
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Error adding group to conversations");
+                        continue;
+                    }
                 }
 
+                _logger.LogInformation("Returning {Count} total conversations for user {UserId}", result.Count, currentUserId);
                 return Ok(result.OrderByDescending(c => c.LastMessage?.CreatedAt ?? DateTime.MinValue).ToList());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in GetConversations");
-                return StatusCode(500, new { message = "Lỗi khi tải danh sách cuộc trò chuyện", error = ex.Message });
+                _logger.LogError(ex, "Critical error in GetConversations");
+                return StatusCode(500, new { message = "Lỗi khi tải danh sách cuộc trò chuyện", error = ex.Message, details = ex.StackTrace });
             }
         }
 
