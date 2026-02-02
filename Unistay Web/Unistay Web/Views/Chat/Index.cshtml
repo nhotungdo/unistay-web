@@ -7,6 +7,37 @@
 <link rel="stylesheet" href="~/css/chat-redesign.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
+<style>
+    .emoji-picker {
+        position: absolute;
+        bottom: 50px;
+        right: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        width: 250px;
+        height: 200px;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+    .emoji-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+    }
+    .emoji-btn:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+
 <div class="chat-container" id="chatContainer">
     <!-- Sidebar -->
     <div class="chat-sidebar">
@@ -18,7 +49,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="search-container">
             <input type="text" class="search-input" placeholder="Search" id="searchContacts">
         </div>
@@ -29,20 +60,20 @@
             {
                 foreach (var group in ViewBag.Groups)
                 {
-                    <div class="contact-card" onclick="selectGroup(@group.Id, '@group.Name')" data-group-id="@group.Id" data-name="@group.Name">
-                        <div class="avatar-wrapper">
-                            <img src="@(group.AvatarUrl ?? "/images/default-group.png")" alt="Group" class="contact-avatar">
-                        </div>
-                        <div class="contact-info">
-                            <div class="contact-top-row">
-                                <span class="contact-name">@group.Name</span>
-                                <span class="message-time"></span>
+                            <div class="contact-card" onclick="selectGroup(@group.Id, '@group.Name')" data-group-id="@group.Id" data-name="@group.Name">
+                                <div class="avatar-wrapper">
+                                    <img src="@(group.AvatarUrl ?? "/images/default-group.png")" alt="Group" class="contact-avatar">
+                                </div>
+                                <div class="contact-info">
+                                    <div class="contact-top-row">
+                                        <span class="contact-name">@group.Name</span>
+                                        <span class="message-time"></span>
+                                    </div>
+                                    <div class="contact-bottom-row">
+                                        <span class="message-preview">Group Chat</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="contact-bottom-row">
-                                <span class="message-preview">Group Chat</span>
-                            </div>
-                        </div>
-                    </div>
                 }
             }
 
@@ -51,21 +82,21 @@
             {
                 foreach (var friend in ViewBag.Friends)
                 {
-                    <div class="contact-card" onclick="selectUser('@friend.Id', '@friend.FullName', '@friend.AvatarUrl')" data-user-id="@friend.Id" data-name="@friend.FullName">
-                        <div class="avatar-wrapper">
-                            <img src="@(friend.AvatarUrl ?? "/images/default-user.png")" alt="User" class="contact-avatar">
-                            <span class="online-status" id="status-@friend.Id" style="display:none;"></span>
-                        </div>
-                        <div class="contact-info">
-                            <div class="contact-top-row">
-                                <span class="contact-name">@friend.FullName</span>
-                                <span class="message-time"></span>
+                            <div class="contact-card" onclick="selectUser('@friend.Id', '@friend.FullName', '@friend.AvatarUrl')" data-user-id="@friend.Id" data-name="@friend.FullName">
+                                <div class="avatar-wrapper">
+                                    <img src="@(friend.AvatarUrl ?? "/images/default-user.png")" alt="User" class="contact-avatar">
+                                    <span class="online-status" id="status-@friend.Id" style="display:none;"></span>
+                                </div>
+                                <div class="contact-info">
+                                    <div class="contact-top-row">
+                                        <span class="contact-name">@friend.FullName</span>
+                                        <span class="message-time"></span>
+                                    </div>
+                                    <div class="contact-bottom-row">
+                                        <span class="message-preview">Start a conversation</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="contact-bottom-row">
-                                <span class="message-preview">Start a conversation</span>
-                            </div>
-                        </div>
-                    </div>
                 }
             }
         </div>
@@ -107,14 +138,17 @@
                 <i class="bi bi-plus-circle"></i>
             </button>
             <input type="file" id="fileInput" hidden multiple onchange="handleFileSelect(this)">
-            
-            <div class="input-wrapper">
+
+            <div class="input-wrapper" style="position:relative;">
+                <div id="emojiPicker" class="emoji-picker" style="display:none;">
+                    <!-- Emojis will be injected here -->
+                </div>
                 <textarea id="messageInput" class="message-input" rows="1" placeholder="Message..." oninput="autoResize(this)"></textarea>
                 <button class="btn-icon" style="width:30px; height:30px; margin-left:8px;" onclick="toggleEmojiPicker()">
                     <i class="bi bi-emoji-smile"></i>
                 </button>
             </div>
-            
+
             <button class="btn-icon" id="voiceBtn">
                  <i class="bi bi-mic"></i>
             </button>
@@ -140,289 +174,356 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
-    <script>
-        const currentUserId = '@currentUser';
-        const initialFriendId = '@selectedFriendId';
-        let activeChat = { type: null, id: null };
-        let connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chatHub")
-            .withAutomaticReconnect()
-            .build();
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+        <script>
+            const currentUserId = '@currentUser';
+            const initialFriendId = '@selectedFriendId';
+            let activeChat = { type: null, id: null };
+            let pendingMessages = JSON.parse(localStorage.getItem('pending_messages') || '[]');
 
-        // --- SignalR Events ---
-        connection.on("UserOnline", (userId) => {
-            const el = document.getElementById(`status-${userId}`);
-            if(el) el.style.display = 'block';
-        });
-        
-        connection.on("UserOffline", (userId) => {
-             const el = document.getElementById(`status-${userId}`);
-            if(el) el.style.display = 'none';
-        });
+            // Emoji List
+            const emojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾'];
 
-        connection.on("ReceiveMessage", (msg) => {
-            // Only append if viewing that chat
-            if ((activeChat.type === 'user' && msg.senderId === activeChat.id) ||
-                (activeChat.type === 'group' && msg.groupId === activeChat.id) || 
-                (msg.senderId === currentUserId && ((activeChat.type === 'user' && msg.receiverId === activeChat.id) || 
-                                                  (activeChat.type === 'group' && msg.groupId === activeChat.id)))) {
-                appendMessage(msg, msg.senderId === currentUserId);
-                scrollToBottom();
-            } else {
-                // Update preview and badge in sidebar
-                updateSidebarPreview(msg.groupId ? msg.groupId : msg.senderId, msg.content, !!msg.groupId);
-            }
-        });
+            let connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
 
-        connection.on("UserTyping", (userId, groupId) => {
-            if(activeChat.type === 'user' && activeChat.id === userId) showTyping(true);
-            if(activeChat.type === 'group' && activeChat.id === groupId && userId !== currentUserId) showTyping(true);
-        });
+            // --- SignalR Events ---
+            connection.on("UserOnline", (userId) => {
+                const el = document.getElementById(`status-${userId}`);
+                if(el) el.style.display = 'block';
+            });
 
-        connection.on("UserStoppedTyping", (userId, groupId) => {
-             // Simplify: just hide if it matches
-             showTyping(false);
-        });
+            connection.on("UserOffline", (userId) => {
+                 const el = document.getElementById(`status-${userId}`);
+                if(el) el.style.display = 'none';
+            });
 
-        connection.start().then(() => {
-            console.log("Connected");
-            if(initialFriendId) {
-                const card = document.querySelector(`.contact-card[data-user-id="${initialFriendId}"]`);
-                if(card) card.click();
-            }
-        }).catch(err => console.error(err));
+            connection.on("ReceiveMessage", (msg) => {
+                // Only append if viewing that chat
+                if ((activeChat.type === 'user' && msg.senderId === activeChat.id) ||
+                    (activeChat.type === 'group' && msg.groupId === activeChat.id) || 
+                    (msg.senderId === currentUserId && ((activeChat.type === 'user' && msg.receiverId === activeChat.id) || 
+                                                      (activeChat.type === 'group' && msg.groupId === activeChat.id)))) {
 
-        // --- UI Logic ---
+                    // If message is from others and we are viewing the chat, mark as seen
+                    if (msg.senderId !== currentUserId) {
+                        connection.invoke("MessageRead", msg.id);
+                    }
 
-        function autoResize(textarea) {
-             textarea.style.height = 'auto';
-             textarea.style.height = textarea.scrollHeight + 'px';
-             if(textarea.value === '') textarea.style.height = 'auto';
-        }
-
-        function selectUser(id, name, avatar) {
-            activeChat = { type: 'user', id: id };
-            loadChatUI(name, avatar);
-        }
-
-        function selectGroup(id, name) {
-            activeChat = { type: 'group', id: id };
-            loadChatUI(name, null); // Use default group avatar
-        }
-
-        function loadChatUI(name, avatar) {
-            // Update Header
-            document.getElementById('activeName').innerText = name;
-            document.getElementById('activeAvatar').src = avatar || '/images/default-user.png';
-            document.getElementById('chatHeader').style.visibility = 'visible';
-            document.getElementById('inputArea').style.display = 'flex';
-            
-            // Hide empty state
-            document.querySelector('.empty-state').style.display = 'none';
-
-            // Styling active card
-            document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('active'));
-            // Find the card (simple query)
-            const activeCard = document.querySelector(`.contact-card[data-user-id="${activeChat.id}"]`) || 
-                              document.querySelector(`.contact-card[data-group-id="${activeChat.id}"]`);
-            if(activeCard) activeCard.classList.add('active');
-
-            // Mobile responsive switch
-            document.getElementById('chatContainer').classList.add('show-chat');
-
-            loadHistory();
-        }
-
-        function backToSidebar() {
-            document.getElementById('chatContainer').classList.remove('show-chat');
-            activeChat = { type: null, id: null };
-        }
-
-        async function loadHistory() {
-            const list = document.getElementById('messagesList');
-            list.innerHTML = '<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>'; 
-            
-            const url = activeChat.type === 'user' 
-                ? `/Chat/GetHistory?otherUserId=${activeChat.id}`
-                : `/Chat/GetHistory?groupId=${activeChat.id}`;
-
-            try {
-                const res = await fetch(url);
-                if(res.ok) {
-                    const msgs = await res.json();
-                    list.innerHTML = ''; // Clear spinner
-                    msgs.reverse().forEach(m => appendMessage(m, m.isMine));
+                    appendMessage(msg, msg.senderId === currentUserId);
                     scrollToBottom();
                 } else {
-                    list.innerHTML = '<div class="text-center text-danger mt-5">Failed to load history</div>';
+                    // Update preview and badge in sidebar
+                    updateSidebarPreview(msg.groupId ? msg.groupId : msg.senderId, msg.content, !!msg.groupId);
+                    playNotificationSound();
                 }
-            } catch(e) {
-                list.innerHTML = '<div class="text-center text-danger mt-5">Error loading history</div>';
+            });
+
+            connection.on("MessageSent", (msg) => {
+                 // Confirm message sent
+                 console.log("Message sent confirmed", msg);
+            });
+
+            connection.on("ConversationSeen", (data) => {
+                if (activeChat.type === 'user' && activeChat.id === data.userId) {
+                    // Update UI to show 'Seen' status for last messages
+                    document.querySelectorAll('.msg-status').forEach(el => el.innerHTML = '<i class="bi bi-check2-all text-primary"></i> Seen');
+                }
+            });
+
+            connection.on("UserTyping", (userId, groupId) => {
+                if(activeChat.type === 'user' && activeChat.id === userId) showTyping(true);
+                if(activeChat.type === 'group' && activeChat.id === groupId && userId !== currentUserId) showTyping(true);
+            });
+
+            connection.on("UserStoppedTyping", (userId, groupId) => {
+                 showTyping(false);
+            });
+
+            connection.start().then(() => {
+                console.log("Connected");
+                processPendingMessages(); // Retry failed messages
+                if(initialFriendId) {
+                    const card = document.querySelector(`.contact-card[data-user-id="${initialFriendId}"]`);
+                    if(card) card.click();
+                }
+            }).catch(err => console.error(err));
+
+            // --- UI Logic ---
+
+            function initEmojiPicker() {
+                const container = document.getElementById('emojiPicker');
+                container.innerHTML = emojis.map(e => `<button class="emoji-btn" onclick="addEmoji('${e}')">${e}</button>`).join('');
             }
-        }
 
-        function appendMessage(msg, isMine) {
-            const list = document.getElementById('messagesList');
-            const row = document.createElement('div');
-            row.className = `message-row ${isMine ? 'sent' : 'received'}`;
-            
-            // Content
-            let contentHtml = `<p style="margin:0;">${escapeHtml(msg.content)}</p>`;
-            if(msg.type === 'Image') {
-                 contentHtml = `<img src="${msg.attachmentUrl}" style="max-width:200px; border-radius:8px; margin-bottom:4px;">` + contentHtml;
-            } else if (msg.type === 'File') {
-                 contentHtml = `<a href="${msg.attachmentUrl}" target="_blank" style="display:flex; align-items:center; gap:5px; color:inherit; text-decoration:none; background:rgba(0,0,0,0.05); padding:8px; border-radius:8px; margin-bottom:4px;">
-                    <i class="bi bi-file-earmark-fill"></i> File Attachment</a>` + contentHtml;
+            function toggleEmojiPicker() {
+                const picker = document.getElementById('emojiPicker');
+                if(picker.innerHTML === '') initEmojiPicker();
+                picker.style.display = picker.style.display === 'none' ? 'grid' : 'none';
             }
 
-            const timeStr = formatTime(msg.timestamp);
-            
-            row.innerHTML = `
-                <div class="message-bubble">
-                    ${!isMine && activeChat.type === 'group' ? `<div style="font-size:10px; color:#888; margin-bottom:2px;">${msg.senderName}</div>` : ''}
-                    ${contentHtml}
-                    <div class="msg-meta">
-                        ${timeStr} ${isMine ? '<i class="bi bi-check2-all"></i>' : ''}
-                    </div>
-                </div>
-            `;
-            list.appendChild(row);
-        }
+            function addEmoji(emoji) {
+                const input = document.getElementById('messageInput');
+                input.value += emoji;
+                toggleEmojiPicker();
+                input.focus();
+            }
 
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            const fileInput = document.getElementById('fileInput');
+            function autoResize(textarea) {
+                 textarea.style.height = 'auto';
+                 textarea.style.height = textarea.scrollHeight + 'px';
+                 if(textarea.value === '') textarea.style.height = 'auto';
+            }
 
-            if(!text && fileInput.files.length === 0) return;
+            function handleFileSelect(input) {
+                if(input.files.length > 0) {
+                    // Visual feedback that files are selected
+                    const count = input.files.length;
+                    const msg = count === 1 ? input.files[0].name : `${count} files selected`;
+                    // Maybe update placeholder or show a badge
+                    document.getElementById('messageInput').placeholder = msg;
+                }
+            }
 
-            // Reset UI immediately (Optimistic)
-            input.value = '';
-            input.style.height = 'auto';
+            function selectUser(id, name, avatar) {
+                activeChat = { type: 'user', id: id };
+                loadChatUI(name, avatar);
+                // Mark conversation as seen
+                connection.invoke("MarkConversationAsSeen", id).catch(e => console.error(e));
+            }
 
-            // Check for file
-            let attachmentUrl = null;
-            let type = 'Text';
+            function selectGroup(id, name) {
+                activeChat = { type: 'group', id: id };
+                loadChatUI(name, null); 
+            }
 
-            if(fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
+            function loadChatUI(name, avatar) {
+                // Update Header
+                document.getElementById('activeName').innerText = name;
+                document.getElementById('activeAvatar').src = avatar || '/images/default-user.png';
+                document.getElementById('chatHeader').style.visibility = 'visible';
+                document.getElementById('inputArea').style.display = 'flex';
+
+                // Hide empty state
+                document.querySelector('.empty-state').style.display = 'none';
+
+                // Styling active card
+                document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('active'));
+                const activeCard = document.querySelector(`.contact-card[data-user-id="${activeChat.id}"]`) || 
+                                  document.querySelector(`.contact-card[data-group-id="${activeChat.id}"]`);
+                if(activeCard) activeCard.classList.add('active');
+
+                // Mobile responsive switch
+                document.getElementById('chatContainer').classList.add('show-chat');
+
+                loadHistory();
+            }
+
+            function backToSidebar() {
+                document.getElementById('chatContainer').classList.remove('show-chat');
+                activeChat = { type: null, id: null };
+            }
+
+            async function loadHistory() {
+                const list = document.getElementById('messagesList');
+                list.innerHTML = '<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>'; 
+
+                // Correct API endpoints
+                const url = activeChat.type === 'user' 
+                    ? `/api/messages/${activeChat.id}` 
+                    : `/api/messages/group/${activeChat.id}`;
+
                 try {
-                    const uploadRes = await fetch('/Chat/UploadAttachment', { method:'POST', body: formData });
-                    if(uploadRes.ok) {
-                        const data = await uploadRes.json();
-                        attachmentUrl = data.url;
-                        type = data.type; // Image or File
+                    const res = await fetch(url);
+                    if(res.ok) {
+                        const data = await res.json();
+                        const msgs = data.data; // API returns { data: [], total: ... }
+
+                        list.innerHTML = ''; // Clear spinner
+
+                        msgs.forEach(m => {
+                            // Normalize attachments
+                            if(m.attachments && (!m.attachmentPaths || m.attachmentPaths.length === 0)) {
+                                m.attachmentPaths = m.attachments.map(a => a.filePath);
+                            }
+                            appendMessage(m, m.senderId === currentUserId);
+                        });
+
+                        scrollToBottom();
+                    } else {
+                        list.innerHTML = '';
                     }
-                } catch(e) { console.error("Upload failed", e); }
+                } catch(e) {
+                    console.error("Error loading history:", e);
+                    list.innerHTML = '';
+                }
+            }
+
+            function appendMessage(msg, isMine) {
+                const list = document.getElementById('messagesList');
+                const row = document.createElement('div');
+                row.className = `message-row ${isMine ? 'sent' : 'received'}`;
+
+                // Content
+                let contentHtml = `<p style="margin:0;">${escapeHtml(msg.content)}</p>`;
+
+                // Handle attachments (array of paths)
+                if (msg.attachmentPaths && msg.attachmentPaths.length > 0) {
+                    msg.attachmentPaths.forEach(path => {
+                        const ext = path.split('.').pop().toLowerCase();
+                        const isImage = ['jpg','jpeg','png','gif'].includes(ext);
+
+                        if(isImage) {
+                             contentHtml = `<img src="${path}" style="max-width:200px; border-radius:8px; margin-bottom:4px; display:block;">` + contentHtml;
+                        } else {
+                             contentHtml = `<a href="${path}" target="_blank" style="display:flex; align-items:center; gap:5px; color:inherit; text-decoration:none; background:rgba(0,0,0,0.05); padding:8px; border-radius:8px; margin-bottom:4px;">
+                                <i class="bi bi-file-earmark-fill"></i> ${path.split('/').pop()}</a>` + contentHtml;
+                        }
+                    });
+                } else if(msg.type === 'Image') { // Legacy support
+                     contentHtml = `<img src="${msg.attachmentUrl}" style="max-width:200px; border-radius:8px; margin-bottom:4px;">` + contentHtml;
+                }
+
+                const timeStr = formatTime(msg.createdAt || msg.timestamp);
+                const statusIcon = msg.status === 'Seen' ? '<i class="bi bi-check2-all text-primary"></i>' : '<i class="bi bi-check2"></i>';
+
+                row.innerHTML = `
+                    <div class="message-bubble">
+                        ${!isMine && activeChat.type === 'group' ? `<div style="font-size:10px; color:#888; margin-bottom:2px;">${msg.senderName || 'Member'}</div>` : ''}
+                        ${contentHtml}
+                        <div class="msg-meta">
+                            ${timeStr} ${isMine ? `<span class="msg-status">${statusIcon}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                list.appendChild(row);
+            }
+
+            async function sendMessage() {
+                const input = document.getElementById('messageInput');
+                const text = input.value.trim();
+                const fileInput = document.getElementById('fileInput');
+
+                if(!text && fileInput.files.length === 0) return;
+
+                // Reset UI immediately (Optimistic UI)
+                input.value = '';
+                input.style.height = 'auto';
+                input.placeholder = "Message...";
+                const files = Array.from(fileInput.files);
                 fileInput.value = ''; // clear
+
+                // Upload files first
+                let attachmentPaths = [];
+                let type = 'Text';
+
+                if(files.length > 0) {
+                    type = 'File';
+                    for (let file of files) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        try {
+                            const uploadRes = await fetch('/api/upload/message-attachment', { method:'POST', body: formData });
+                            if(uploadRes.ok) {
+                                const data = await uploadRes.json();
+                                attachmentPaths.push(data.url);
+                            }
+                        } catch(e) { console.error("Upload failed", e); }
+                    }
+                }
+
+                // Prepare payload
+                const receiverId = activeChat.type === 'user' ? activeChat.id : null;
+                const groupId = activeChat.type === 'group' ? activeChat.id : null;
+
+                try {
+                    await connection.invoke("SendMessage", receiverId, groupId, text, attachmentPaths, type, null, false);
+
+                    // Optimistic append
+                    appendMessage({
+                        content: text,
+                        attachmentPaths: attachmentPaths,
+                        type: type,
+                        createdAt: new Date(),
+                        senderId: currentUserId,
+                        status: 'Sent'
+                    }, true);
+                    scrollToBottom();
+
+                } catch (err) {
+                    console.error("Send failed, queuing", err);
+                    // Queue for retry
+                    const payload = { receiverId, groupId, text, attachmentPaths, type, timestamp: new Date().getTime() };
+                    pendingMessages.push(payload);
+                    savePendingMessages();
+                    alert("Message failed to send. Queued for retry.");
+                }
             }
 
-            // Send to Hub
-            if(activeChat.type === 'user') {
-                await connection.invoke("SendMessage", activeChat.id, null, text, attachmentUrl, type);
-            } else {
-                await connection.invoke("SendMessage", null, activeChat.id, text, attachmentUrl, type);
+            function savePendingMessages() {
+                localStorage.setItem('pending_messages', JSON.stringify(pendingMessages));
             }
-        }
-        
-        // Typing Emitter
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-                return;
+
+            async function processPendingMessages() {
+                if (pendingMessages.length === 0) return;
+
+                const messagesToRetry = [...pendingMessages];
+                pendingMessages = []; // Clear and re-add if fail
+                savePendingMessages();
+
+                for (const msg of messagesToRetry) {
+                    try {
+                        await connection.invoke("SendMessage", msg.receiverId, msg.groupId, msg.text, msg.attachmentPaths, msg.type, null, false);
+                    } catch (err) {
+                        pendingMessages.push(msg); // Add back
+                    }
+                }
+                savePendingMessages();
             }
-            if(activeChat.id) {
-                if(activeChat.type === 'user') connection.invoke("Typing", activeChat.id, null);
-                else connection.invoke("Typing", null, activeChat.id);
-            }
-        });
 
-        // --- Helpers ---
-        function scrollToBottom() {
-            const list = document.getElementById('messagesList');
-            list.scrollTop = list.scrollHeight;
-        }
-
-        function escapeHtml(text) {
-            if(!text) return '';
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        function formatTime(dateStr) {
-            if(!dateStr) return 'Just now';
-            const date = new Date(dateStr);
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        function updateSidebarPreview(id, text, isGroup) {
-             const selector = isGroup ? `.contact-card[data-group-id="${id}"]` : `.contact-card[data-user-id="${id}"]`;
-             const card = document.querySelector(selector);
-             if(card) {
-                 const preview = card.querySelector('.message-preview');
-                 if(preview) preview.innerText = text;
-                 // maybe move to top
-                 const list = document.getElementById('contactsList');
-                 list.prepend(card);
-             }
-        }
-
-        let typingTimeout;
-        function showTyping(isTyping) {
-            const container = document.getElementById('typingIndicator');
-            if(isTyping) {
-                container.innerHTML = 'Typing...';
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    container.innerHTML = '';
-                }, 3000);
-            } else {
-                container.innerHTML = '';
-            }
-        }
-
-        // Search Filter
-        document.getElementById('searchContacts').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.contact-card').forEach(card => {
-                const name = card.getAttribute('data-name').toLowerCase();
-                card.style.display = name.includes(term) ? 'flex' : 'none';
+            // Typing Emitter
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                    return;
+                }
+                if(activeChat.id) {
+                    if(activeChat.type === 'user') connection.invoke("Typing", activeChat.id, null);
+                    else connection.invoke("Typing", null, activeChat.id);
+                }
             });
-        });
 
-        // Create Group Modal
-        function showCreateGroupModal() {
-            document.getElementById('createGroupModal').style.display = 'flex';
-            const list = document.getElementById('modalFriendList');
-            list.innerHTML = '';
-            document.querySelectorAll('.contact-card[data-user-id]').forEach(c => {
-                const uid = c.getAttribute('data-user-id');
-                const name = c.getAttribute('data-name');
-                const d = document.createElement('div');
-                d.style.padding = '5px';
-                d.innerHTML = `<input type="checkbox" value="${uid}" style="margin-right:10px;"> ${name}`;
-                list.appendChild(d);
-            });
-        }
+            // --- Helpers ---
+            function scrollToBottom() {
+                const list = document.getElementById('messagesList');
+                list.scrollTop = list.scrollHeight;
+            }
 
-        async function createGroup() {
-            const name = document.getElementById('newGroupName').value;
-            const checks = document.querySelectorAll('#modalFriendList input:checked');
-            const ids = Array.from(checks).map(cb => cb.value);
-            
-            if(!name || ids.length === 0) return alert("Name and members required");
-            
-            await connection.invoke("CreateGroup", name, ids);
-            location.reload();
-        }
-        
-        function handleFileSelect(input) {
-             if(input.files.length > 0) {
-                 // optionally show preview before sending
-                 alert("File selected: " + input.files[0].name + "\nPress Enter or Send button to upload and send.");
-             }
-        }
-    </script>
+            function escapeHtml(text) {
+                if(!text) return '';
+                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+
+            function formatTime(dateStr) {
+                if(!dateStr) return 'Just now';
+                const date = new Date(dateStr);
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function showTyping(isTyping) {
+                const ind = document.getElementById('typingIndicator');
+                ind.innerText = isTyping ? 'Typing...' : '';
+            }
+
+            function playNotificationSound() {
+                // Optional: Implement sound
+            }
+
+            function updateSidebarPreview(id, text, isGroup) {
+                // Optional: Update sidebar list preview text
+            }
+        </script>
 }

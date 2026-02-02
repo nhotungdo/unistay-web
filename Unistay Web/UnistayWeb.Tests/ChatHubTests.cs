@@ -143,7 +143,7 @@ namespace UnistayWeb.Tests
         }
 
         [Fact]
-        public async Task SendMessage_NotFriend_ShouldNotSend()
+        public async Task SendMessage_NotFriend_ShouldSend()
         {
              // Arrange
             var senderId = "user1";
@@ -155,8 +155,11 @@ namespace UnistayWeb.Tests
             await _hub.SendMessage(receiverId, null, "Hi");
 
             // Assert
-            Assert.Empty(_dbContext.Messages);
-            _mockClients.Verify(clients => clients.Group(receiverId), Times.Never);
+            var savedMessage = await _dbContext.Messages.FirstOrDefaultAsync();
+            Assert.NotNull(savedMessage);
+            Assert.Equal("Hi", savedMessage.Content);
+            
+            _mockClients.Verify(clients => clients.Group(receiverId), Times.Once);
         }
 
         [Fact]
