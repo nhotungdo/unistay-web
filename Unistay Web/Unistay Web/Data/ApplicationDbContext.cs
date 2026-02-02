@@ -129,6 +129,46 @@ namespace Unistay_Web.Data
             builder.Entity<BlockedUser>()
                 .HasIndex(bu => new { bu.BlockerId, bu.BlockedUserId })
                 .IsUnique();
+
+            // Configure Decimal properties
+            builder.Entity<Room>(entity =>
+            {
+                entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Deposit).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Area).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<RoommateProfile>(entity =>
+            {
+                entity.Property(e => e.Budget).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<MarketplaceItem>(entity =>
+            {
+                entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<MovingRequest>(entity =>
+            {
+                entity.Property(e => e.EstimatedCost).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<RoomFinderRequest>(entity =>
+            {
+                entity.Property(e => e.Budget).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.ServiceFee).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<Transaction>(entity =>
+            {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
+            });
+
+            builder.Entity<UserProfile>(entity =>
+            {
+                entity.Property(e => e.Budget).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.AverageRating).HasColumnType("decimal(18,2)");
+            });
         }
     }
 }

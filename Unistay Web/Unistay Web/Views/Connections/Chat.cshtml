@@ -688,10 +688,132 @@ async function initializeSignalR() {
 async function loadConversations() {
     try {
         const response = await fetch('/api/messages/conversations');
-        const conversations = await response.json();
         
+        if (!response.ok) {
+            let errorMessage = 'Failed to load conversations';
+            let errorDetails = '';
+            
+            try {
+                const errorData = await response.json();
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+                if (errorData.error) {
+                    errorDetails = errorData.error;
+                }
+            } catch (e) {
+                // If response is not JSON, use status text
+                errorDetails = response.statusText;
+            }
+            
+            console.error('API Error:', {
+                status: response.status,
+                message: errorMessage,
+                details: errorDetails
+            });
+            
+            // Show user-friendly error based on status code
+            const container = document.getElementById('conversationsList');
+            if (response.status === 401) {
+                container.innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: #dc3545;">
+                        <i class="fas fa-lock" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p style="margin-bottom: 1rem;"><strong>Bạn cần đăng nhập</strong></p>
+                        <p style="font-size: 0.9rem; color: #6c757d;">Vui lòng đăng nhập để xem tin nhắn</p>
+                        <button onclick="window.location.href='/Identity/Account/Login'" 
+                                style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                       color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Đăng nhập
+                        </button>
+                    </div>
+                `;
+            } else if (response.status === 500) {
+                container.innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p style="margin-bottom: 0.5rem;"><strong>Lỗi máy chủ</strong></p>
+                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">${errorMessage}</p>
+                        <details style="text-align: left; background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <summary style="cursor: pointer; font-weight: 600; color: #495057;">Chi tiết lỗi (cho developer)</summary>
+                            <pre style="margin-top: 0.5rem; font-size: 0.8rem; color: #6c757d; white-space: pre-wrap;">${errorDetails}</pre>
+                        </details>
+                        <button onclick="loadConversations()" 
+                                style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                       color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-redo"></i> Thử lại
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="padding: 2rem; text-align: center; color: #dc3545;">
+                        <i class="fas fa-wifi" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p style="margin-bottom: 0.5rem;"><strong>Không thể tải cuộc trò chuyện</strong></p>
+                        <p style="font-size: 0.9rem; color: #6c757d;">${errorMessage}</p>
+                        <button onclick="loadConversations()" 
+                                style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                       color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-redo"></i> Thử lại
+                        </button>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
+        let conversations = await response.json();
         const container = document.getElementById('conversationsList');
         container.innerHTML = '';
+
+        // Check for friendId in URL
+        const params = new URLSearchParams(window.location.search);
+        const friendId = params.get('friendId');
+
+        // If friendId exists but is not in conversations check if we need to fetch info
+        if (friendId) {
+            const existing = conversations.find(c => c.userId === friendId);
+            if (!existing) {
+                try {
+                    // Fetch user info to create a temp conversation item
+                    const userRes = await fetch(`/api/profile/publicprofile/${friendId}`);
+                    if (userRes.ok) {
+                        // Determine if we can fetch JSON or if it returns HTML (View).
+                        // Note: The PublicProfile endpoint returns a view. We need an API for user info.
+                        // Let's use the SearchUsers API or create a small helper request.
+                        // For now, let's try to assume we can get basic info if we had an endpoint.
+                        // Workaround: We will redirect or show a placeholder if we can't get info easily.
+                        // BETTER: Use SearchUsers with query=friendId or just proceed.
+                        // Let's look at the available APIs. api/users/search?query=...
+                        
+                        // However, let's just create a dummy item and let the OpenChat load the rest?
+                        // But we need name and avatar.
+                        // Let's rely on the chat being opened.
+                        
+                        // Actually, let's try to find them or add a temporary item if we can't find them.
+                        // Since we don't have a direct "GetUserInfo" API, we might be limited.
+                        // But wait! We can just fetch the messages for that user. GetMessages returns user info!
+                        
+                        const msgRes = await fetch(`/api/messages/${friendId}?page=1&pageSize=1`);
+                        if (msgRes.ok) {
+                            // If we can fetch messages (even if empty), we might not get user info if list is empty.
+                            // But GetMessages returns: senderName, senderAvatar in the messages list.
+                            // If list is empty, we don't get it.
+                            
+                            // Let's construct a temp conversation with "Loading..."
+                            const newConv = {
+                                userId: friendId,
+                                userName: "Người dùng mới",
+                                userAvatar: "/images/default-avatar.png",
+                                lastMessage: null,
+                                unreadCount: 0,
+                                isOnline: false
+                            };
+                            conversations.unshift(newConv);
+                        }
+                    }
+                } catch(e) { console.error(e); }
+            }
+        }
 
         if (conversations.length === 0) {
             container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #6c757d;"><i class="fas fa-inbox"></i><p style="margin-top: 1rem;">Chưa có cuộc trò chuyện nào</p></div>';
@@ -702,10 +824,45 @@ async function loadConversations() {
             const item = createConversationItem(conv);
             container.appendChild(item);
         });
+
+        if (friendId) {
+            const item = document.querySelector(`.conversation-item[data-user-id="${friendId}"]`);
+            if (item) {
+                // Remove active class from others
+                document.querySelectorAll('.conversation-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Trigger click to open chat
+                item.click();
+            }
+        }
     } catch (error) {
         console.error('Error loading conversations:', error);
+        const container = document.getElementById('conversationsList');
+        container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: #dc3545;">
+                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin-bottom: 0.5rem;"><strong>Lỗi kết nối</strong></p>
+                <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">Không thể kết nối đến máy chủ</p>
+                <details style="text-align: left; background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; color: #495057;">Chi tiết lỗi</summary>
+                    <pre style="margin-top: 0.5rem; font-size: 0.8rem; color: #6c757d; white-space: pre-wrap;">${error.message}\n${error.stack || ''}</pre>
+                </details>
+                <button onclick="loadConversations()" 
+                        style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                               color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-redo"></i> Thử lại
+                </button>
+            </div>
+        `;
     }
 }
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadConversations();
+    initializeSignalR();
+});
 
 function createConversationItem(conv) {
     const div = document.createElement('div');
@@ -876,13 +1033,16 @@ async function sendMessage() {
             const message = await response.json();
             input.value = '';
             input.style.height = 'auto';
+            input.focus();
             
-            // Message will be added via SignalR
-            await connection.invoke("SendMessage", currentChatUserId, null, content, null, "Text");
+            // Message will be received via ReceiveMessage event
+        } else {
+            console.error('Failed to send message:', response.statusText);
+            alert('Không thể gửi tin nhắn: ' + response.statusText);
         }
     } catch (error) {
         console.error('Error sending message:', error);
-        alert('Không thể gửi tin nhắn');
+        alert('Không thể gửi tin nhắn (lỗi mạng)');
     }
 }
 

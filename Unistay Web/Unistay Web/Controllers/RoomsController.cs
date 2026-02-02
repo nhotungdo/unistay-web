@@ -142,9 +142,11 @@ namespace Unistay_Web.Controllers
             return View(room);
         }
 
-        public IActionResult Search()
+        public IActionResult Search(string? location, string? type, string? price)
         {
-            return View();
+            // Redirect to Index page with search parameters
+            // The new Index page has integrated search functionality
+            return RedirectToAction(nameof(Index), new { location, type, price });
         }
     }
 }

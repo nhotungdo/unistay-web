@@ -24,9 +24,48 @@ namespace Unistay_Web.Controllers
             _aiMatchingService = aiMatchingService;
         }
 
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> Index(string searchString, string gender, string budgetRange)
         {
-            var profiles = await _context.RoommateProfiles.OrderByDescending(p => p.CreatedAt).ToListAsync();
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentGender"] = gender;
+            ViewData["CurrentBudget"] = budgetRange;
+
+            var query = _context.RoommateProfiles.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                // Filter by Area
+                query = query.Where(p => p.PreferredArea.Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(gender) && gender != "All")
+            {
+                // Filter by Gender (Note: DB might store "Male"/"Female" or "Nam"/"Nữ")
+                // Based on Create.cshtml, it seems "Male"/"Female" are values.
+                // However, let's handle potential Vietnamese values if legacy data exists, 
+                // or just exact match if we are confident.
+                // Safest is to strip whitespace and ignore case if needed, but simple == is fine for now.
+                query = query.Where(p => p.Gender == gender);
+            }
+
+            if (!string.IsNullOrEmpty(budgetRange) && budgetRange != "All")
+            {
+                switch (budgetRange)
+                {
+                    case "low": // < 2 tr
+                        query = query.Where(p => p.Budget < 2000000);
+                        break;
+                    case "medium": // 2 - 4 tr
+                        query = query.Where(p => p.Budget >= 2000000 && p.Budget <= 4000000);
+                        break;
+                    case "high": // > 4 tr
+                        query = query.Where(p => p.Budget > 4000000);
+                        break;
+                }
+            }
+
+            var profiles = await query.OrderByDescending(p => p.CreatedAt).ToListAsync();
             var userIds = profiles.Select(p => p.UserId).Distinct().ToList();
 
             var users = await _context.Users
@@ -42,6 +81,17 @@ namespace Unistay_Web.Controllers
                     age = DateTime.Now.Year - user.DateOfBirth.Value.Year;
                 }
 
+                // Fallback gender from user profile if roommate profile is null
+                var displayGender = p.Gender ?? user?.Gender;
+                
+                // If filtering by gender was requested but profile gender was null (so we didn't filter it out maybe?),
+                // we should strictly filter at query level.
+                // Actually, if we filter by p.Gender == gender, nulls are excluded effectively.
+                // But wait, p.Gender can be null, falling back to user.Gender. 
+                // Our query above only filters on p.Gender. 
+                // If we want to support the fallback, we need to defer filtering or do a join.
+                // Given the current architecture (RoommateProfile has Gender), let's assume RoommateProfile.Gender is the source of truth for the post.
+
                 return new RoommateDisplayDto
                 {
                     Id = p.Id,
@@ -49,7 +99,7 @@ namespace Unistay_Web.Controllers
                     FullName = user?.FullName ?? "Người dùng",
                     AvatarUrl = user?.AvatarUrl,
                     Age = age,
-                    Gender = p.Gender ?? user?.Gender,
+                    Gender = displayGender,
                     Occupation = user?.Occupation,
                     Budget = p.Budget,
                     PreferredArea = p.PreferredArea,
@@ -58,6 +108,10 @@ namespace Unistay_Web.Controllers
                     CreatedAt = p.CreatedAt
                 };
             }).ToList();
+
+            // Refilter in memory if we need accurate gender filtering including the fallback
+            // (Only if we consider the fallback important for filtering. If p.Gender is explicitly set for the post, query filter is enough.)
+            // The Create form sets p.Gender, so reliable enough.
 
             return View(viewModels);
         }

@@ -7,5 +7,6 @@ namespace Unistay_Web.Services
         Task<string> UploadAvatarAsync(IFormFile file, string userId);
         Task<string> UploadCoverPhotoAsync(IFormFile file, string userId);
         Task<string> UploadImageAsync(IFormFile file, string folder);
+        Task<string> UploadFileAsync(IFormFile file, string folder);
     }
 }

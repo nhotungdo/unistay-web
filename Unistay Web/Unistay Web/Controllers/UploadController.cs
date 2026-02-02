@@ -61,7 +61,7 @@ namespace Unistay_Web.Controllers.Api
                 }
 
                 var url = await _fileUploadService.UploadAvatarAsync(file, user.Id);
-                
+
                 user.AvatarUrl = url;
                 await _userManager.UpdateAsync(user);
 
@@ -92,7 +92,7 @@ namespace Unistay_Web.Controllers.Api
                 }
 
                 var url = await _fileUploadService.UploadCoverPhotoAsync(file, user.Id);
-                
+
                 user.CoverPhotoUrl = url;
                 await _userManager.UpdateAsync(user);
 
@@ -106,6 +106,31 @@ namespace Unistay_Web.Controllers.Api
             {
                 _logger.LogError(ex, "Error uploading cover photo");
                 return StatusCode(500, new { success = false, message = "Lỗi hệ thống khi tải ảnh bìa." });
+            }
+        }
+
+        [HttpPost("message-attachment")]
+        public async Task<IActionResult> UploadMessageAttachment([FromForm] IFormFile file)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return Unauthorized();
+
+                // Relaxed rate limit for messages or separate limit
+                // For now, using same limit but we might want to increase it
+
+                var url = await _fileUploadService.UploadFileAsync(file, "chat-attachments");
+                return Ok(new { success = true, url, fileName = file.FileName, fileSize = file.Length });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading message attachment");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống khi tải tệp." });
             }
         }
     }

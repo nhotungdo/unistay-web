@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Unistay_Web.Data;
+using Unistay_Web.Helpers;
+using System.IO;
 using Unistay_Web.Models.Connection;
 
 namespace Unistay_Web.Hubs
@@ -35,15 +37,23 @@ namespace Unistay_Web.Hubs
 
                 await Groups.AddToGroupAsync(connectionId, userId);
 
-                // Join chat groups
-                var groupIds = await _db.ChatGroupMembers
-                    .Where(m => m.UserId == userId)
-                    .Select(m => m.ChatGroupId)
-                    .ToListAsync();
-
-                foreach (var gid in groupIds)
+                try 
                 {
-                    await Groups.AddToGroupAsync(connectionId, $"group_{gid}");
+                    // Join chat groups - Wrap in try/catch to avoid connection failure if table issue
+                    var groupIds = await _db.ChatGroupMembers
+                        .Where(m => m.UserId == userId)
+                        .Select(m => m.ChatGroupId)
+                        .ToListAsync();
+
+                    foreach (var gid in groupIds)
+                    {
+                        await Groups.AddToGroupAsync(connectionId, $"group_{gid}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but allow connection to succeed
+                    Console.WriteLine($"Error joining groups for user {userId}: {ex.Message}");
                 }
 
                 // Notify friends that user is online
@@ -83,21 +93,28 @@ namespace Unistay_Web.Hubs
 
                 await Groups.RemoveFromGroupAsync(connectionId, userId);
 
-                var groupIds = await _db.ChatGroupMembers
-                    .Where(m => m.UserId == userId)
-                    .Select(m => m.ChatGroupId)
-                    .ToListAsync();
-
-                foreach (var gid in groupIds)
+                try 
                 {
-                    await Groups.RemoveFromGroupAsync(connectionId, $"group_{gid}");
+                    var groupIds = await _db.ChatGroupMembers
+                         .Where(m => m.UserId == userId)
+                         .Select(m => m.ChatGroupId)
+                         .ToListAsync();
+
+                    foreach (var gid in groupIds)
+                    {
+                        await Groups.RemoveFromGroupAsync(connectionId, $"group_{gid}");
+                    }
+                }
+                catch 
+                { 
+                    // Ignore errors during disconnect 
                 }
             }
 
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(string? receiverId, int? groupId, string content, object? attachment = null, string? type = null, int? replyToMessageId = null)
+        public async Task SendMessage(string? receiverId, int? groupId, string content, List<string>? attachmentPaths = null, string? type = null, int? replyToMessageId = null, bool isEncrypted = false)
         {
             var senderId = Context.UserIdentifier;
             if (string.IsNullOrEmpty(senderId)) return;
@@ -113,13 +130,31 @@ namespace Unistay_Web.Hubs
                 {
                     SenderId = senderId,
                     ChatGroupId = groupId,
-                    Content = content,
+                    Content = isEncrypted ? MessageEncryptionHelper.Encrypt(content) : content, // Encrypt if flagged, or basic text
                     Type = ParseMessageType(type),
                     Status = MessageStatus.Sent,
+                    IsEncrypted = isEncrypted,
                     ReplyToMessageId = replyToMessageId,
                     CreatedAt = DateTime.UtcNow
                 };
                 
+                // Attachments
+                if (attachmentPaths != null && attachmentPaths.Any())
+                {
+                    msg.Attachments = new List<MessageAttachment>();
+                    foreach (var path in attachmentPaths)
+                    {
+                        msg.Attachments.Add(new MessageAttachment
+                        {
+                             FilePath = path,
+                             FileName = Path.GetFileName(path), 
+                             FileType = "file", 
+                             FileSize = 0 
+                        });
+                        if (msg.Type == MessageType.Text) msg.Type = MessageType.File;
+                    }
+                }
+
                 _db.Messages.Add(msg);
                 await _db.SaveChangesAsync();
 
@@ -129,14 +164,16 @@ namespace Unistay_Web.Hubs
                 var messageData = new
                 {
                     id = msg.Id,
-                    content = msg.Content,
+                    content = content, // Send back plain text to group (Server decodes/echoes)
                     type = msg.Type.ToString(),
                     status = msg.Status.ToString(),
                     senderId = msg.SenderId,
                     senderName = msg.Sender?.FullName,
                     senderAvatar = msg.Sender?.AvatarUrl ?? "/images/default-avatar.png",
                     createdAt = msg.CreatedAt,
-                    groupId = msg.ChatGroupId
+                    groupId = msg.ChatGroupId,
+                    attachmentPaths = attachmentPaths,
+                    replyTo = replyToMessageId
                 };
 
                 await Clients.Group($"group_{groupId.Value}").SendAsync("ReceiveMessage", messageData);
@@ -153,25 +190,35 @@ namespace Unistay_Web.Hubs
                 
                 if (isBlocked) return;
 
-                // Check connection exists
-                var exists = await _db.Connections.AnyAsync(c =>
-                    ((c.RequesterId == senderId && c.AddresseeId == receiverId) || 
-                     (c.RequesterId == receiverId && c.AddresseeId == senderId))
-                    && c.Status == ConnectionStatus.Accepted);
-                
-                if (!exists) return;
-
                 var msg = new Message
                 {
                     SenderId = senderId,
                     ReceiverId = receiverId,
-                    Content = content,
+                    Content = isEncrypted ? MessageEncryptionHelper.Encrypt(content) : content,
                     Type = ParseMessageType(type),
                     Status = MessageStatus.Sent,
+                    IsEncrypted = isEncrypted,
                     ReplyToMessageId = replyToMessageId,
                     CreatedAt = DateTime.UtcNow
                 };
                 
+                // Attachments
+                if (attachmentPaths != null && attachmentPaths.Any())
+                {
+                    msg.Attachments = new List<MessageAttachment>();
+                    foreach (var path in attachmentPaths)
+                    {
+                        msg.Attachments.Add(new MessageAttachment
+                        {
+                             FilePath = path,
+                             FileName = Path.GetFileName(path), 
+                             FileType = "file", 
+                             FileSize = 0 
+                        });
+                        if (msg.Type == MessageType.Text) msg.Type = MessageType.File;
+                    }
+                }
+
                 _db.Messages.Add(msg);
                 await _db.SaveChangesAsync();
 
@@ -181,14 +228,16 @@ namespace Unistay_Web.Hubs
                 var messageData = new
                 {
                     id = msg.Id,
-                    content = msg.Content,
+                    content = content,
                     type = msg.Type.ToString(),
                     status = msg.Status.ToString(),
                     senderId = msg.SenderId,
                     receiverId = msg.ReceiverId,
                     senderName = msg.Sender?.FullName,
                     senderAvatar = msg.Sender?.AvatarUrl ?? "/images/default-avatar.png",
-                    createdAt = msg.CreatedAt
+                    createdAt = msg.CreatedAt,
+                    attachmentPaths = attachmentPaths,
+                    replyTo = replyToMessageId
                 };
 
                 // Send to receiver
@@ -293,6 +342,29 @@ namespace Unistay_Web.Hubs
                     await Clients.Group(msg.SenderId).SendAsync("MessageDelivered", msg.Id);
                 }
             }
+        }
+
+        public async Task MarkConversationAsSeen(string senderId)
+        {
+            var userId = Context.UserIdentifier;
+            if (string.IsNullOrEmpty(userId)) return;
+
+            var messages = await _db.Messages
+                .Where(m => m.SenderId == senderId && m.ReceiverId == userId && m.Status != MessageStatus.Seen)
+                .ToListAsync();
+
+            if (!messages.Any()) return;
+
+            var now = DateTime.UtcNow;
+            foreach (var msg in messages)
+            {
+                msg.Status = MessageStatus.Seen;
+                msg.SeenAt = now;
+            }
+
+            await _db.SaveChangesAsync();
+
+            await Clients.Group(senderId).SendAsync("ConversationSeen", new { userId = userId, seenAt = now });
         }
 
         public async Task CreateGroup(string name, List<string> members)

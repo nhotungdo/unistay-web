@@ -134,33 +134,33 @@
 
         <!-- Filter Bar -->
         <div class="glass-filter">
-             <form class="row g-3 align-items-end">
+             <form asp-action="Index" method="get" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Khu vực</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-primary"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Nhập Quận/Huyện...">
+                        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control border-start-0 ps-0" placeholder="Nhập Quận/Huyện...">
                     </div>
                 </div>
                 <div class="col-md-2">
                      <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Giới tính</label>
-                     <select class="form-select">
-                         <option>Tất cả</option>
-                         <option>Nam</option>
-                         <option>Nữ</option>
+                     <select name="gender" class="form-select">
+                         <option value="All" selected="@(ViewData["CurrentGender"] as string == "All" || ViewData["CurrentGender"] == null ? "selected" : null)">Tất cả</option>
+                         <option value="Male" selected="@(ViewData["CurrentGender"] as string == "Male" ? "selected" : null)">Nam</option>
+                         <option value="Female" selected="@(ViewData["CurrentGender"] as string == "Female" ? "selected" : null)">Nữ</option>
                      </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Ngân sách</label>
-                    <select class="form-select">
-                        <option>Tất cả</option>
-                        <option>&lt; 2 triệu</option>
-                        <option>2 - 4 triệu</option>
-                        <option>&gt; 4 triệu</option>
+                    <select name="budgetRange" class="form-select">
+                        <option value="All" selected="@(ViewData["CurrentBudget"] as string == "All" || ViewData["CurrentBudget"] == null ? "selected" : null)">Tất cả</option>
+                        <option value="low" selected="@(ViewData["CurrentBudget"] as string == "low" ? "selected" : null)">&lt; 2 triệu</option>
+                        <option value="medium" selected="@(ViewData["CurrentBudget"] as string == "medium" ? "selected" : null)">2 - 4 triệu</option>
+                        <option value="high" selected="@(ViewData["CurrentBudget"] as string == "high" ? "selected" : null)">&gt; 4 triệu</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-primary w-100 fw-bold" style="background: var(--primary-gradient); border: none; height: 38px;">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold" style="background: var(--primary-gradient); border: none; height: 38px;">
                         Lọc kết quả
                     </button>
                 </div>

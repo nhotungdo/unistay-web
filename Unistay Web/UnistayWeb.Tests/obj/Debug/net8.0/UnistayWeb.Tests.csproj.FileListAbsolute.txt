@@ -1,0 +1,8 @@
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\bin\Debug\net8.0\.msCoverageSourceRootsMapping_UnistayWeb.Tests
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\bin\Debug\net8.0\CoverletSourceRootsMapping_UnistayWeb.Tests
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.csproj.AssemblyReference.cache
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.GeneratedMSBuildEditorConfig.editorconfig
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.AssemblyInfoInputs.cache
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.AssemblyInfo.cs
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.csproj.CoreCompileInputs.cache
+F:\EXE101-REVIEW\unistay-web\Unistay Web\UnistayWeb.Tests\obj\Debug\net8.0\UnistayWeb.Tests.sourcelink.json
