@@ -3,24 +3,408 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    /* Modern Gradient Background */
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+
+    /* Glass Panel with Enhanced Glassmorphism */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 24px;
+        padding: 4rem 2rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Modern Tab Pills */
+    .nav-pills .nav-link {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        padding: 0.875rem 2rem;
+    }
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transform: scale(1.02);
+    }
+
+    .nav-pills .nav-link:not(.active):hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Modern Input Styles */
+    .modern-input-group {
+        background: white;
+        border-radius: 16px;
+        padding: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .modern-input-group:focus-within {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .modern-input-group input,
+    .modern-input-group select {
+        border: none !important;
+        background: transparent !important;
+        height: 3rem;
+    }
+
+    .modern-input-group input:focus,
+    .modern-input-group select:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* Modern Buttons */
+    .btn-modern-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 0.875rem 2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-modern-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-modern-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border: none;
+        padding: 0.875rem 2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+    }
+
+    .btn-modern-success:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card:hover::before {
+        opacity: 1;
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Room Cards */
+    .room-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .room-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .room-card-image {
+        position: relative;
+        overflow: hidden;
+        height: 280px;
+    }
+
+    .room-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .room-card:hover .room-card-image img {
+        transform: scale(1.1);
+    }
+
+    .room-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .room-card:hover .room-card-overlay {
+        opacity: 1;
+    }
+
+    /* Badges */
+    .modern-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .badge-featured {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .badge-available {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    /* Price Tag */
+    .price-tag {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Amenity Tags */
+    .amenity-tag {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .amenity-tag:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-btn.active {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        border: none;
+        border-radius: 12px;
+        margin: 0 0.25rem;
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: white;
+        color: #667eea;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .pagination .page-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Compare Bar */
+    #compareBar {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #compareBar.show {
+        transform: translateY(0);
+    }
+
+    /* Animations */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Filter Panel */
+    .filter-panel {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 1rem;
+        }
+
+        .room-card-image {
+            height: 200px;
+        }
+
+        .price-tag {
+            font-size: 1.25rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+</style>
+
 <div class="container my-5">
-    <!-- Page Header -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bolder">Tìm không gian sống lý tưởng</h1>
-        <p class="lead text-muted">Khám phá hàng ngàn lựa chọn phòng trọ và căn hộ trên toàn quốc.</p>
+    <!-- Hero Section -->
+    <div class="hero-section text-center animate-fade-in-up">
+        <h1 class="display-3 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Tìm không gian sống lý tưởng
+        </h1>
+        <p class="lead text-muted mb-0">Khám phá hàng ngàn lựa chọn phòng trọ và căn hộ trên toàn quốc</p>
     </div>
 
-    <!-- Dual-Purpose Section (Seeker vs Poster) -->
-    <div class="glass-panel p-4 mb-5 animate-fade-in-up">
+    <!-- Search & Post Section -->
+    <div class="glass-panel p-4 mb-5 animate-fade-in-up" style="animation-delay: 0.1s;">
         <!-- Role Selection Tabs -->
-        <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-pill" id="pills-tab" role="tablist" style="max-width: 600px; margin: 0 auto; border: 1px solid var(--border-glass);">
+        <ul class="nav nav-pills nav-fill mb-4 p-2" id="pills-tab" role="tablist" style="max-width: 600px; margin: 0 auto; background: rgba(102, 126, 234, 0.05); border-radius: 16px;">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-pill fw-bold" id="pills-seeker-tab" data-bs-toggle="pill" data-bs-target="#pills-seeker" type="button" role="tab" aria-selected="true">
+                <button class="nav-link active" id="pills-seeker-tab" data-bs-toggle="pill" data-bs-target="#pills-seeker" type="button" role="tab">
                     <i class="bi bi-search me-2"></i>Tìm phòng
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill fw-bold" id="pills-poster-tab" data-bs-toggle="pill" data-bs-target="#pills-poster" type="button" role="tab" aria-selected="false">
+                <button class="nav-link" id="pills-poster-tab" data-bs-toggle="pill" data-bs-target="#pills-poster" type="button" role="tab">
                     <i class="bi bi-house-add me-2"></i>Đăng tin cho thuê
                 </button>
             </li>
@@ -28,71 +412,87 @@
 
         <div class="tab-content" id="pills-tabContent">
             <!-- Seeker Section -->
-            <div class="tab-pane fade show active" id="pills-seeker" role="tabpanel" aria-labelledby="pills-seeker-tab">
+            <div class="tab-pane fade show active" id="pills-seeker" role="tabpanel">
                 <div class="text-center mb-4">
-                     <p class="text-muted">Tìm kiếm chỗ ở lý tưởng phù hợp với nhu cầu và ngân sách của bạn.</p>
+                    <p class="text-muted">Tìm kiếm chỗ ở lý tưởng phù hợp với nhu cầu và ngân sách của bạn</p>
                 </div>
 
                 <form asp-action="Search" method="get">
-                    <div class="row g-3 align-items-center">
+                    <div class="row g-3">
                         <div class="col-lg-5">
-                            <div class="input-group">
-                                 <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
-                                <input type="text" name="location" class="form-control border-0 shadow-none" placeholder="Tìm kiếm theo địa điểm, quận hoặc trường đại học..." style="background: white;">
+                            <div class="modern-input-group">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-0">
+                                        <i class="bi bi-search" style="color: #667eea;"></i>
+                                    </span>
+                                    <input type="text" name="location" class="form-control" placeholder="Tìm kiếm theo địa điểm, quận hoặc trường đại học...">
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-4">
-                            <select name="type" class="form-select border-0 shadow-none text-muted" style="background: white;">
-                                <option value="">Loại hình</option>
-                                <option value="apartment">Căn hộ</option>
-                                <option value="studio">Studio</option>
-                                <option value="dorm">Ký túc xá</option>
-                                <option value="shared">Ở ghép</option>
-                            </select>
+                            <div class="modern-input-group">
+                                <select name="type" class="form-select">
+                                    <option value="">Loại hình</option>
+                                    <option value="apartment">Căn hộ</option>
+                                    <option value="studio">Studio</option>
+                                    <option value="dorm">Ký túc xá</option>
+                                    <option value="shared">Ở ghép</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-lg-2 col-md-4">
-                             <select name="price" class="form-select border-0 shadow-none text-muted" style="background: white;">
-                                <option value="">Mức giá</option>
-                                <option value="0-2">Dưới 2 triệu</option>
-                                <option value="2-5">2 - 5 triệu</option>
-                                <option value="5-10">5 - 10 triệu</option>
-                                <option value="10+">Trên 10 triệu</option>
-                            </select>
+                            <div class="modern-input-group">
+                                <select name="price" class="form-select">
+                                    <option value="">Mức giá</option>
+                                    <option value="0-2">Dưới 2 triệu</option>
+                                    <option value="2-5">2 - 5 triệu</option>
+                                    <option value="5-10">5 - 10 triệu</option>
+                                    <option value="10+">Trên 10 triệu</option>
+                                </select>
+                            </div>
                         </div>
-                         <div class="col-lg-1 col-md-4">
-                            <button type="button" class="btn btn-outline-primary w-100 border-0" data-bs-toggle="collapse" data-bs-target="#filters" style="background: rgba(var(--primary-rgb), 0.1);">
+                        <div class="col-lg-1 col-md-4">
+                            <button type="button" class="btn btn-modern-primary w-100" data-bs-toggle="collapse" data-bs-target="#filters" style="height: 4rem;">
                                 <i class="bi bi-sliders"></i>
                             </button>
                         </div>
                         <div class="col-lg-2">
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Tìm kiếm</button>
+                            <button type="submit" class="btn btn-modern-primary w-100" style="height: 4rem;">
+                                <i class="bi bi-search me-2"></i>Tìm kiếm
+                            </button>
                         </div>
                     </div>
+
                     <!-- Collapsible Filters -->
-                    <div class="collapse pt-3" id="filters">
-                        <hr class="text-muted opacity-25">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                 <label class="form-label fw-bold small text-muted">Tiện ích</label>
-                                 <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.5);">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="wifi">
-                                        <label class="form-check-label" for="wifi">Wifi</label>
+                    <div class="collapse pt-4" id="filters">
+                        <div class="filter-panel">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold mb-3" style="color: #667eea;">
+                                        <i class="bi bi-star me-2"></i>Tiện ích
+                                    </label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="wifi">
+                                            <label class="form-check-label" for="wifi">Wifi</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="ac">
+                                            <label class="form-check-label" for="ac">Máy lạnh</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="parking">
+                                            <label class="form-check-label" for="parking">Chỗ để xe</label>
+                                        </div>
                                     </div>
-                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="ac">
-                                        <label class="form-check-label" for="ac">Máy lạnh</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="parking">
-                                        <label class="form-check-label" for="parking">Chỗ để xe</label>
-                                    </div>
-                                 </div>
-                            </div>
-                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-muted">Số người</label>
-                                <input type="range" class="form-range" min="1" max="10" step="1" id="numPeople">
-                                 <div class="text-center small text-muted">Tối đa <span id="numPeopleValue">5</span> người</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold mb-3" style="color: #667eea;">
+                                        <i class="bi bi-people me-2"></i>Số người
+                                    </label>
+                                    <input type="range" class="form-range" min="1" max="10" step="1" id="numPeople">
+                                    <div class="text-center small text-muted mt-2">Tối đa <span id="numPeopleValue">5</span> người</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -100,69 +500,67 @@
             </div>
 
             <!-- Poster Section -->
-            <div class="tab-pane fade" id="pills-poster" role="tabpanel" aria-labelledby="pills-poster-tab">
-                 <div class="text-center mb-4">
-                    <p class="text-muted">Đăng tin miễn phí để tiếp cận hàng ngàn sinh viên đang tìm trọ.</p>
+            <div class="tab-pane fade" id="pills-poster" role="tabpanel">
+                <div class="text-center mb-4">
+                    <p class="text-muted">Đăng tin miễn phí để tiếp cận hàng ngàn sinh viên đang tìm trọ</p>
                 </div>
-                
+
                 <form asp-action="Create" method="get" class="row g-3 justify-content-center">
                     <div class="col-md-4">
-                        <select name="type" class="form-select border-0 shadow-none" style="height: 3.5rem; background: white;">
-                             <option value="">Chọn loại hình cho thuê</option>
-                             <option value="apartment">Căn hộ</option>
-                             <option value="studio">Studio</option>
-                             <option value="dorm">Ký túc xá</option>
-                             <option value="shared">Ở ghép</option>
-                        </select>
+                        <div class="modern-input-group">
+                            <select name="type" class="form-select">
+                                <option value="">Chọn loại hình cho thuê</option>
+                                <option value="apartment">Căn hộ</option>
+                                <option value="studio">Studio</option>
+                                <option value="dorm">Ký túc xá</option>
+                                <option value="shared">Ở ghép</option>
+                            </select>
+                        </div>
                     </div>
-                     <div class="col-md-5">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-0"><i class="bi bi-geo-alt text-success"></i></span>
-                            <input type="text" name="address" class="form-control border-0 shadow-none" style="height: 3.5rem; background: white;" placeholder="Nhập địa chỉ bất động sản...">
+                    <div class="col-md-5">
+                        <div class="modern-input-group">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-0">
+                                    <i class="bi bi-geo-alt" style="color: #11998e;"></i>
+                                </span>
+                                <input type="text" name="address" class="form-control" placeholder="Nhập địa chỉ bất động sản...">
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold h-100">
+                        <button type="submit" class="btn btn-modern-success w-100" style="height: 4rem;">
                             <i class="bi bi-arrow-right-circle me-2"></i>Đăng tin ngay
                         </button>
                     </div>
                 </form>
-                
-                <div class="row mt-5 g-4 text-center">
+
+                <!-- Features -->
+                <div class="row mt-5 g-4">
                     <div class="col-md-4">
-                        <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
-                            <div class="mb-3 text-primary">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-                                </svg>
+                        <div class="feature-card text-center h-100">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="bi bi-lightning-charge fs-3 text-white"></i>
                             </div>
-                            <h6 class="fw-bold">Nhanh chóng</h6>
-                            <small class="text-muted">Quy trình đăng tin đơn giản chỉ trong 2 phút</small>
+                            <h6 class="fw-bold mb-2">Nhanh chóng</h6>
+                            <p class="text-muted small mb-0">Quy trình đăng tin đơn giản chỉ trong 2 phút</p>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
-                            <div class="mb-3 text-info">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
+                        <div class="feature-card text-center h-100">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <i class="bi bi-people fs-3 text-white"></i>
                             </div>
-                            <h6 class="fw-bold">Hiệu quả cao</h6>
-                            <small class="text-muted">Tiếp cận hàng ngàn sinh viên mỗi ngày</small>
+                            <h6 class="fw-bold mb-2">Hiệu quả cao</h6>
+                            <p class="text-muted small mb-0">Tiếp cận hàng ngàn sinh viên mỗi ngày</p>
                         </div>
                     </div>
                     <div class="col-md-4">
-                         <div class="p-4 rounded-3 h-100" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6);">
-                            <div class="mb-3 text-success">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                                </svg>
+                        <div class="feature-card text-center h-100">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                <i class="bi bi-shield-check fs-3 text-white"></i>
                             </div>
-                            <h6 class="fw-bold">An toàn & Tin cậy</h6>
-                            <small class="text-muted">Hệ thống xác thực người dùng minh bạch</small>
+                            <h6 class="fw-bold mb-2">An toàn & Tin cậy</h6>
+                            <p class="text-muted small mb-0">Hệ thống xác thực người dùng minh bạch</p>
                         </div>
                     </div>
                 </div>
@@ -171,59 +569,91 @@
     </div>
 
     <!-- Results Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">Hiện có 124 phòng</h5>
-        <div>
-            <select class="form-select form-select-sm" style="width: auto;">
-                <option selected>Sắp xếp: Phổ biến nhất</option>
-                <option>Mới nhất</option>
-                <option>Giá: Thấp đến cao</option>
-                <option>Giá: Cao đến thấp</option>
-            </select>
+    <div class="glass-panel p-4 mb-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-house-door me-2" style="color: #667eea;"></i>
+                Hiện có <span style="color: #667eea;">124</span> phòng
+            </h5>
+            <div class="modern-input-group" style="width: auto;">
+                <select class="form-select">
+                    <option selected>Phổ biến nhất</option>
+                    <option>Mới nhất</option>
+                    <option>Giá: Thấp đến cao</option>
+                    <option>Giá: Cao đến thấp</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <!-- Room Listings -->
     <div class="row g-4">
         <!-- Room Card 1 -->
-        <div class="col-12">
-            <div class="card h-100 border-0 shadow-sm room-card-horizontal">
+        <div class="col-12 animate-fade-in-up" style="animation-delay: 0.3s;">
+            <div class="room-card">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <div class="img-container">
-                             <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80" class="img-fluid rounded-start" alt="Phòng trọ">
-                             <span class="badge bg-danger position-absolute top-0 start-0 m-3">Nổi bật</span>
-                             <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 shadow-sm"><i class="bi bi-heart"></i></button>
-                             <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 mt-5 shadow-sm btn-compare" data-id="1" title="So sánh">
+                        <div class="room-card-image">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80" alt="Phòng trọ">
+                            <div class="room-card-overlay"></div>
+                            <span class="modern-badge badge-featured position-absolute top-0 start-0 m-3">
+                                <i class="bi bi-star-fill me-1"></i>Nổi bật
+                            </span>
+                            <button class="action-btn position-absolute top-0 end-0 m-3">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            <button class="action-btn position-absolute top-0 end-0 m-3 mt-5 btn-compare" data-id="1">
                                 <i class="bi bi-arrow-left-right"></i>
-                             </button>
+                            </button>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card-body d-flex flex-column h-100">
+                        <div class="card-body d-flex flex-column h-100 p-4">
                             <div>
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="card-title fw-bold">Căn hộ studio gần trung tâm</h5>
-                                     <div class="text-end">
-                                        <h4 class="fw-bolder text-primary mb-0">4.5tr</h4>
-                                        <small class="text-muted">/ tháng</small>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="fw-bold mb-2">Căn hộ studio gần trung tâm</h5>
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-geo-alt-fill me-1" style="color: #667eea;"></i>
+                                            Quận 1, TP. Hồ Chí Minh
+                                        </p>
+                                    </div>
+                                    <div class="price-tag">
+                                        4.5tr<small class="fs-6 fw-normal">/tháng</small>
                                     </div>
                                 </div>
-                                <p class="card-text text-muted small"><i class="bi bi-geo-alt-fill"></i> Quận 1, TP. Hồ Chí Minh</p>
-                                <div class="d-flex flex-wrap gap-3 my-3">
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-aspect-ratio me-1"></i>25m²</span>
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-people me-1"></i>2 người</span>
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-wifi me-1"></i>Wifi</span>
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-wind me-1"></i>Máy lạnh</span>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-aspect-ratio me-1"></i>25m²
+                                    </span>
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-people me-1"></i>2 người
+                                    </span>
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-wifi me-1"></i>Wifi
+                                    </span>
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-wind me-1"></i>Máy lạnh
+                                    </span>
                                 </div>
-                                <p class="card-text small">Căn hộ đầy đủ tiện nghi, an ninh 24/7, giờ giấc tự do. Gần các trường đại học và khu văn phòng.</p>
+
+                                <p class="text-muted small mb-0">
+                                    Căn hộ đầy đủ tiện nghi, an ninh 24/7, giờ giấc tự do. Gần các trường đại học và khu văn phòng.
+                                </p>
                             </div>
-                            <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+
+                            <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-top">
                                 <div class="d-flex align-items-center">
-                                    <img src="https://i.pravatar.cc/150?u=a" class="rounded-circle" width="30" height="30" alt="Avatar">
-                                    <small class="ms-2 text-muted">Đăng bởi <strong>Hoàng An</strong></small>
+                                    <img src="https://i.pravatar.cc/150?u=a" class="rounded-circle" width="40" height="40" alt="Avatar">
+                                    <div class="ms-3">
+                                        <small class="text-muted d-block">Đăng bởi</small>
+                                        <strong class="small">Hoàng An</strong>
+                                    </div>
                                 </div>
-                                <a asp-action="Details" asp-route-id="1" class="btn btn-primary rounded-pill px-4">Xem chi tiết</a>
+                                <a asp-action="Details" asp-route-id="1" class="btn btn-modern-primary">
+                                    Xem chi tiết <i class="bi bi-arrow-right ms-2"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -232,115 +662,108 @@
         </div>
 
         <!-- Room Card 2 -->
-        <div class="col-12">
-            <div class="card h-100 border-0 shadow-sm room-card-horizontal">
+        <div class="col-12 animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="room-card">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <div class="img-container">
-                           <img src="https://images.unsplash.com/photo-1596276020587-8044fe049813?w=800&q=80" class="img-fluid rounded-start" alt="Phòng trọ">
-                           <span class="badge bg-success position-absolute top-0 start-0 m-3">Còn phòng</span>
-                           <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 shadow-sm"><i class="bi bi-heart"></i></button>
-                           <button class="btn btn-light btn-sm rounded-circle position-absolute top-0 end-0 m-3 mt-5 shadow-sm btn-compare" data-id="2" title="So sánh">
+                        <div class="room-card-image">
+                            <img src="https://images.unsplash.com/photo-1596276020587-8044fe049813?w=800&q=80" alt="Phòng trọ">
+                            <div class="room-card-overlay"></div>
+                            <span class="modern-badge badge-available position-absolute top-0 start-0 m-3">
+                                <i class="bi bi-check-circle-fill me-1"></i>Còn phòng
+                            </span>
+                            <button class="action-btn position-absolute top-0 end-0 m-3">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                            <button class="action-btn position-absolute top-0 end-0 m-3 mt-5 btn-compare" data-id="2">
                                 <i class="bi bi-arrow-left-right"></i>
-                           </button>
+                            </button>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card-body d-flex flex-column h-100">
-                             <div>
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="card-title fw-bold">Phòng KTX cao cấp gần RMIT</h5>
-                                     <div class="text-end">
-                                        <h4 class="fw-bolder text-primary mb-0">1.8tr</h4>
-                                        <small class="text-muted">/ giường</small>
+                        <div class="card-body d-flex flex-column h-100 p-4">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="fw-bold mb-2">Phòng KTX cao cấp gần RMIT</h5>
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-geo-alt-fill me-1" style="color: #667eea;"></i>
+                                            Quận 7, TP. Hồ Chí Minh
+                                        </p>
+                                    </div>
+                                    <div class="price-tag">
+                                        1.8tr<small class="fs-6 fw-normal">/giường</small>
                                     </div>
                                 </div>
-                                <p class="card-text text-muted small"><i class="bi bi-geo-alt-fill"></i> Quận 7, TP. Hồ Chí Minh</p>
-                                <div class="d-flex flex-wrap gap-3 my-3">
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-aspect-ratio me-1"></i>10m²</span>
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-people me-1"></i>4 người/phòng</span>
-                                    <span class="badge bg-light text-dark p-2"><i class="bi bi-building me-1"></i>Có thang máy</span>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-aspect-ratio me-1"></i>10m²
+                                    </span>
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-people me-1"></i>4 người/phòng
+                                    </span>
+                                    <span class="amenity-tag">
+                                        <i class="bi bi-building me-1"></i>Có thang máy
+                                    </span>
                                 </div>
-                                <p class="card-text small">Môi trường sống hiện đại, sạch sẽ. Khu vực chung rộng rãi, có bếp và máy giặt.
+
+                                <p class="text-muted small mb-0">
+                                    Môi trường sống hiện đại, sạch sẽ. Khu vực chung rộng rãi, có bếp và máy giặt.
                                 </p>
                             </div>
-                           
-                            <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
-                               <div class="d-flex align-items-center">
-                                    <img src="https://i.pravatar.cc/150?u=b" class="rounded-circle" width="30" height="30" alt="Avatar">
-                                    <small class="ms-2 text-muted">Đăng bởi <strong>KTX Life</strong></small>
+
+                            <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-top">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://i.pravatar.cc/150?u=b" class="rounded-circle" width="40" height="40" alt="Avatar">
+                                    <div class="ms-3">
+                                        <small class="text-muted d-block">Đăng bởi</small>
+                                        <strong class="small">KTX Life</strong>
+                                    </div>
                                 </div>
-                                <a asp-action="Details" asp-route-id="2" class="btn btn-primary rounded-pill px-4">Xem chi tiết</a>
+                                <a asp-action="Details" asp-route-id="2" class="btn btn-modern-primary">
+                                    Xem chi tiết <i class="bi bi-arrow-right ms-2"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Pagination -->
-    <nav class="mt-5 d-flex justify-content-center">
+    <nav class="mt-5 d-flex justify-content-center animate-fade-in-up" style="animation-delay: 0.5s;">
         <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
+            </li>
             <li class="page-item active"><a class="page-link" href="#">1</a></li>
             <li class="page-item"><a class="page-link" href="#">2</a></li>
             <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
+            </li>
         </ul>
     </nav>
 </div>
 
-    .room-card-horizontal {
-        transition: all 0.3s ease;
-        border-radius: 1rem !important;
-    }
-    .room-card-horizontal:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15)!important;
-    }
-    .room-card-horizontal .img-container {
-        position: relative;
-        height: 100%;
-    }
-    .room-card-horizontal .img-fluid {
-        object-fit: cover;
-        height: 100%;
-        border-radius: 1rem 0 0 1rem;
-    }
-     @@media (max-width: 767.98px) {
-        .room-card-horizontal .img-fluid {
-             border-radius: 1rem 1rem 0 0;
-        }
-    }
-    .form-select, .form-control {
-        height: calc(3rem - 2px);
-    }
-    
-    /* Floating Compare Bar */
-    #compareBar {
-        z-index: 1050;
-        backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.9);
-        border-top: 1px solid rgba(0,0,0,0.1);
-        transition: transform 0.3s ease-in-out;
-    }
-    #compareBar.show {
-        transform: translateY(0);
-    }
-</style>
-
 <!-- Floating Compare Bar -->
-<div id="compareBar" class="position-fixed bottom-0 start-0 w-100 py-3 shadow-lg" style="transform: translateY(100%);">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-             <span class="badge bg-primary rounded-pill fs-6" id="compareCount">0</span>
-             <span class="fw-bold text-dark">Phòng được chọn để so sánh</span>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-danger btn-sm rounded-pill" onclick="clearCompare()">Xóa tất cả</button>
-            <a href="#" id="compareLink" class="btn btn-primary rounded-pill px-4 shadow-sm">So sánh ngay <i class="bi bi-arrow-right"></i></a>
+<div id="compareBar" class="position-fixed bottom-0 start-0 w-100 py-4 shadow-lg" style="transform: translateY(100%); z-index: 1050;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge rounded-pill fs-5 px-3 py-2" id="compareCount" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">0</span>
+                <span class="fw-bold">Phòng được chọn để so sánh</span>
+            </div>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-danger rounded-pill px-4" onclick="clearCompare()">
+                    <i class="bi bi-x-circle me-2"></i>Xóa tất cả
+                </button>
+                <a href="#" id="compareLink" class="btn btn-modern-primary px-4">
+                    So sánh ngay <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -348,11 +771,11 @@
 @section Scripts {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Range Slider Logic
+        // Range Slider
         const range = document.getElementById('numPeople');
         const rangeValue = document.getElementById('numPeopleValue');
-        if(range) {
-            range.addEventListener('input', function() {
+        if (range) {
+            range.addEventListener('input', function () {
                 rangeValue.textContent = this.value;
             });
         }
@@ -364,19 +787,15 @@
         let selectedIds = JSON.parse(localStorage.getItem('compareIds')) || [];
 
         function updateUI() {
-            // Update buttons
             document.querySelectorAll('.btn-compare').forEach(btn => {
                 const id = parseInt(btn.dataset.id);
                 if (selectedIds.includes(id)) {
-                    btn.classList.add('btn-primary', 'text-white');
-                    btn.classList.remove('btn-light');
+                    btn.classList.add('active');
                 } else {
-                    btn.classList.remove('btn-primary', 'text-white');
-                    btn.classList.add('btn-light');
+                    btn.classList.remove('active');
                 }
             });
 
-            // Update Bar
             compareCount.textContent = selectedIds.length;
             if (selectedIds.length > 0) {
                 compareBar.classList.add('show');
@@ -384,17 +803,15 @@
             } else {
                 compareBar.classList.remove('show');
             }
-            
-            // Save
+
             localStorage.setItem('compareIds', JSON.stringify(selectedIds));
         }
 
-        // Click Handler
         document.querySelectorAll('.btn-compare').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const id = parseInt(this.dataset.id);
                 const index = selectedIds.indexOf(id);
-                
+
                 if (index === -1) {
                     if (selectedIds.length >= 3) {
                         alert('Bạn chỉ có thể so sánh tối đa 3 phòng cùng lúc.');
@@ -408,13 +825,27 @@
             });
         });
 
-        window.clearCompare = function() {
+        window.clearCompare = function () {
             selectedIds = [];
             updateUI();
         }
 
-        // Init
         updateUI();
+
+        // Heart button animation
+        document.querySelectorAll('.action-btn:not(.btn-compare)').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const icon = this.querySelector('i');
+                if (this.classList.contains('active')) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                } else {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
+            });
+        });
     });
 </script>
 }
