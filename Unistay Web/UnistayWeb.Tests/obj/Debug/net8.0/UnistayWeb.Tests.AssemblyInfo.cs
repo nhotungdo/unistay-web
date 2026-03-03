@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnistayWeb.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f03adbecda964cd8100635281ffac77bcd8c999c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fbf05a90ec717aa349afa38e76755c10b0aaaa5")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnistayWeb.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnistayWeb.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

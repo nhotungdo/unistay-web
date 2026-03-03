@@ -1,4 +1,6 @@
-﻿namespace UnistayWeb.Tests;
+namespace UnistayWeb.Tests;
+
+using Xunit;
 
 public class UnitTest1
 {
@@ -8,3 +10,4 @@ public class UnitTest1
 
     }
 }
+

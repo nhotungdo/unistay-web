@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Unistay Web\Unistay Web.csproj" />
   </ItemGroup>
 
