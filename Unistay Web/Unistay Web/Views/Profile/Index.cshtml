@@ -1,603 +1,1083 @@
 @model Unistay_Web.Models.User.UserProfile
 @{
-    ViewData["Title"] = "Hồ sơ của tôi";
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    ViewData["HideDefaultLayout"] = true;
 }
 
-<!-- Styles -->
+@section Styles {
 <style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #a855f7;
-        --bg-light: #f8fafc;
-        --text-dark: #1e293b;
-        --card-radius: 16px;
-        --transition: all 0.3s ease;
-    }
+/* ================================================
+   UNISTAY PROFILE PAGE - REDESIGN
+   Primary: #FF5C27 (Orange)
+   ================================================ */
+:root {
+    --pr-orange: #FF5C27;
+    --pr-orange-dark: #e64e1e;
+    --pr-orange-light: #fff1ec;
+    --pr-text: #1a1a2e;
+    --pr-muted: #6b7280;
+    --pr-light: #9ca3af;
+    --pr-border: #e5e7eb;
+    --pr-bg: #f7f8fa;
+    --pr-white: #ffffff;
+    --pr-radius: 12px;
+    --pr-shadow: 0 1px 8px rgba(0,0,0,0.07);
+}
 
-    body {
-        background-color: #f1f5f9;
-        font-family: 'Inter', sans-serif;
-    }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Cover & Header */
-    .profile-cover-section {
-        position: relative;
-        margin-bottom: 5rem;
-    }
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+    background: var(--pr-bg) !important;
+    color: var(--pr-text) !important;
+    padding-top: 0 !important;
+}
 
-    .profile-cover {
-        height: 280px;
-        background: linear-gradient(45deg, #1e1b4b, #4f46e5);
-        background-size: cover;
-        background-position: center;
-        border-radius: 0 0 24px 24px;
-        position: relative;
-        overflow: hidden;
-    }
+/* ===== PROFILE NAVBAR ===== */
+.pr-navbar {
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid var(--pr-border);
+    display: flex !important;
+    align-items: center;
+    padding: 0 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    gap: 1.5rem;
+}
 
-    .cover-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-    }
+.pr-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--pr-orange);
+    text-decoration: none;
+    flex-shrink: 0;
+}
 
-    .profile-header-card {
-        position: absolute;
-        bottom: -60px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 1000px;
-        background: white;
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        z-index: 10;
-    }
+.pr-nav-brand-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--pr-orange);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .avatar-box {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        flex-shrink: 0;
-    }
+.pr-nav-links-ul {
+    display: flex;
+    list-style: none;
+    gap: 0;
+    margin: 0 auto;
+    padding: 0;
+}
 
-    .avatar-img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 4px solid white;
-        object-fit: cover;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+.pr-nav-links-ul li a {
+    display: block;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--pr-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
 
-    .avatar-badge {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 32px;
-        height: 32px;
-        background: var(--primary-color);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
-        cursor: pointer;
-    }
+.pr-nav-links-ul li a:hover { color: var(--pr-orange); }
 
-    /* ESCAPED @@media here */
-    @@media (max-width: 768px) {
-        .profile-header-card {
-            flex-direction: column;
-            text-align: center;
-            bottom: -180px;
-            padding: 2rem 1rem;
-        }
-        .profile-cover-section {
-            margin-bottom: 12rem;
-        }
-    }
+.pr-nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
 
-    /* Actions Grid */
-    .quick-actions-card {
-        background: white;
-        border-radius: var(--card-radius);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+.pr-nav-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--pr-bg);
+    border: 1px solid var(--pr-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--pr-muted);
+    text-decoration: none;
+    transition: all 0.2s;
+}
 
-    .action-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        border-radius: 12px;
-        background: #f8fafc;
-        color: var(--text-dark);
-        text-decoration: none;
-        transition: var(--transition);
-        border: 1px solid transparent;
-        height: 100%;
-    }
+.pr-nav-icon-btn:hover {
+    background: var(--pr-orange-light);
+    border-color: var(--pr-orange);
+    color: var(--pr-orange);
+}
 
-    .action-btn:hover {
-        background: #e0e7ff;
-        color: var(--primary-color);
-        border-color: #c7d2fe;
-        transform: translateY(-2px);
-    }
+.pr-nav-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid var(--pr-border);
+}
 
-    .action-icon {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        color: var(--primary-color);
-    }
+/* ===== MAIN LAYOUT ===== */
+.pr-page {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.25rem;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem 2rem;
+    min-height: calc(100vh - 60px - 52px);
+    align-items: start;
+}
 
-    /* Content Tabs */
-    .nav-pills-custom .nav-link {
-        color: var(--text-dark);
-        background: white;
-        border-radius: 10px;
-        margin-bottom: 0.5rem;
-        padding: 1rem;
-        font-weight: 600;
-        text-align: left;
-        border: 1px solid transparent;
-        transition: var(--transition);
-    }
+/* ===== SIDEBAR ===== */
+.pr-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    position: sticky;
+    top: 76px;
+}
 
-    .nav-pills-custom .nav-link i {
-        margin-right: 0.75rem;
-        font-size: 1.1rem;
-        color: #94a3b8;
-    }
+.pr-profile-card {
+    background: white;
+    border: 1px solid var(--pr-border);
+    border-radius: var(--pr-radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: var(--pr-shadow);
+}
 
-    .nav-pills-custom .nav-link.active {
-        background: var(--primary-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
+.pr-avatar-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+}
 
-    .nav-pills-custom .nav-link.active i {
-        color: white;
-    }
+.pr-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
 
-    .nav-pills-custom .nav-link:hover:not(.active) {
-        background: #f1f5f9;
-        color: var(--primary-color);
-    }
+.pr-avatar-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    background: var(--pr-orange);
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
 
-    /* Info Cards */
-    .content-card {
-        background: white;
-        border-radius: var(--card-radius);
-        padding: 2rem;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        height: 100%;
-    }
+.pr-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--pr-text);
+    margin-bottom: 0.2rem;
+}
 
-    .section-title {
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #f1f5f9;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.pr-role {
+    font-size: 0.78rem;
+    color: var(--pr-muted);
+    margin-bottom: 0.2rem;
+    line-height: 1.4;
+}
 
-    .info-row {
-        display: flex;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px dashed #f1f5f9;
-    }
+.pr-school {
+    font-size: 0.78rem;
+    color: var(--pr-orange);
+    font-weight: 600;
+    text-decoration: none;
+}
 
-    .info-row:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
+.pr-school:hover { text-decoration: underline; }
 
-    .info-label {
-        width: 35%;
-        color: #64748b;
-        font-weight: 500;
-    }
+/* Sidebar Menu */
+.pr-menu {
+    background: white;
+    border: 1px solid var(--pr-border);
+    border-radius: var(--pr-radius);
+    overflow: hidden;
+    box-shadow: var(--pr-shadow);
+}
 
-    .info-value {
-        width: 65%;
-        color: var(--text-dark);
-        font-weight: 600;
-    }
+.pr-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--pr-text);
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #f3f4f6;
+}
 
-    .zodiac-card {
-        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
-        color: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        position: relative;
-        overflow: hidden;
-    }
+.pr-menu-item:last-child { border-bottom: none; }
 
-    .zodiac-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
+.pr-menu-item:hover {
+    background: var(--pr-bg);
+    color: var(--pr-orange);
+}
+
+.pr-menu-item.active {
+    background: var(--pr-orange-light);
+    color: var(--pr-orange);
+    font-weight: 600;
+}
+
+.pr-menu-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pr-menu-item.active .pr-menu-icon {
+    background: var(--pr-orange);
+    color: white;
+}
+
+.pr-menu-item.logout-item { color: var(--pr-muted); }
+.pr-menu-item.logout-item:hover { background: #fef2f2; color: #ef4444; }
+
+/* Trust Card */
+.pr-trust-card {
+    background: var(--pr-orange-light);
+    border: 1px solid #ffd5c8;
+    border-radius: var(--pr-radius);
+    padding: 0.9rem 1rem;
+    box-shadow: var(--pr-shadow);
+}
+
+.pr-trust-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--pr-orange);
+    margin-bottom: 0.5rem;
+}
+
+.pr-trust-bar {
+    height: 5px;
+    background: #ffd5c8;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.pr-trust-fill {
+    height: 100%;
+    width: 80%;
+    background: var(--pr-orange);
+    border-radius: 3px;
+}
+
+.pr-trust-text {
+    font-size: 0.76rem;
+    color: #9a3412;
+    line-height: 1.5;
+}
+
+/* ===== MAIN CONTENT ===== */
+.pr-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.pr-card {
+    background: white;
+    border: 1px solid var(--pr-border);
+    border-radius: var(--pr-radius);
+    padding: 1.35rem 1.5rem;
+    box-shadow: var(--pr-shadow);
+}
+
+.pr-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.pr-card-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--pr-text);
+}
+
+.pr-save-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--pr-orange);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pr-save-btn:hover { text-decoration: underline; color: var(--pr-orange-dark); }
+
+.pr-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+}
+
+.pr-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pr-field label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--pr-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pr-field input,
+.pr-field select,
+.pr-field textarea {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1.5px solid var(--pr-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--pr-text);
+    background: white;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.pr-field input:focus,
+.pr-field select:focus,
+.pr-field textarea:focus {
+    border-color: var(--pr-orange);
+    box-shadow: 0 0 0 3px rgba(255,92,39,0.08);
+}
+
+.pr-field textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.pr-field input[readonly] {
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* ===== SỞ THÍCH CHỖ Ở ===== */
+.pr-pref-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 1.1rem;
+}
+
+.pr-pref-item {
+    border: 1.5px solid var(--pr-border);
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.pr-pref-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--pr-orange);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 0.4rem;
+}
+
+.pr-pref-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--pr-text);
+}
+
+.pr-pref-sub {
+    font-size: 0.75rem;
+    color: var(--pr-muted);
+    margin-top: 2px;
+    line-height: 1.4;
+}
+
+.pr-amenity-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--pr-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.55rem;
+}
+
+.pr-amenity-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.pr-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.35rem 0.75rem;
+    background: var(--pr-orange-light);
+    color: var(--pr-orange);
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid #ffd5c8;
+}
+
+.pr-tag-add {
+    padding: 0.35rem 0.75rem;
+    background: white;
+    color: var(--pr-muted);
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1.5px dashed var(--pr-border);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pr-tag-add:hover {
+    border-color: var(--pr-orange);
+    color: var(--pr-orange);
+}
+
+/* ===== BOTTOM GRID ===== */
+.pr-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+}
+
+/* Security */
+.pr-security-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.pr-security-item:last-child { border-bottom: none; }
+
+.pr-security-info h5 {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--pr-text);
+    margin-bottom: 1px;
+}
+
+.pr-security-info p {
+    font-size: 0.75rem;
+    color: var(--pr-muted);
+    margin: 0;
+}
+
+/* Toggle */
+.pr-toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.pr-toggle input { opacity: 0; width: 0; height: 0; }
+
+.pr-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #d1d5db;
+    border-radius: 22px;
+    transition: 0.3s;
+}
+
+.pr-toggle-slider:before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.pr-toggle input:checked + .pr-toggle-slider { background: var(--pr-orange); }
+.pr-toggle input:checked + .pr-toggle-slider:before { transform: translateX(18px); }
+
+.pr-sec-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--pr-text);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.pr-sec-link:hover { color: var(--pr-orange); }
+
+.pr-delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #ef4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s;
+}
+
+.pr-delete-btn:hover { opacity: 0.7; }
+
+/* Listings */
+.pr-listing-row {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.pr-listing-row:last-child { border-bottom: none; }
+
+.pr-listing-img {
+    width: 58px;
+    height: 46px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pr-listing-info { flex: 1; min-width: 0; }
+
+.pr-listing-info h6 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--pr-text);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pr-listing-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+}
+
+.pr-badge-active {
+    background: #ecfdf5; color: #059669;
+    padding: 1px 7px; border-radius: 8px;
+    font-size: 0.7rem; font-weight: 700;
+}
+
+.pr-badge-expired {
+    background: #fef2f2; color: #ef4444;
+    padding: 1px 7px; border-radius: 8px;
+    font-size: 0.7rem; font-weight: 700;
+}
+
+.pr-listing-price {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--pr-muted);
+}
+
+.pr-view-all {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--pr-orange);
+    text-decoration: none;
+    letter-spacing: 0.3px;
+}
+
+.pr-view-all:hover { text-decoration: underline; }
+
+/* ===== FOOTER ===== */
+.pr-footer {
+    background: white;
+    border-top: 1px solid var(--pr-border);
+    padding: 0.9rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--pr-muted);
+    gap: 1rem;
+}
+
+.pr-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--pr-orange);
+    text-decoration: none;
+}
+
+.pr-footer-links { display: flex; gap: 1.5rem; }
+
+.pr-footer-links a {
+    color: var(--pr-muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+}
+
+.pr-footer-links a:hover { color: var(--pr-orange); }
+
+/* ===== RESPONSIVE ===== */
+@@media (max-width: 900px) {
+    .pr-page { grid-template-columns: 1fr; }
+    .pr-sidebar { position: static; }
+    .pr-pref-cards { grid-template-columns: 1fr 1fr; }
+    .pr-bottom-grid { grid-template-columns: 1fr; }
+}
+
+@@media (max-width: 600px) {
+    .pr-form-grid { grid-template-columns: 1fr; }
+    .pr-pref-cards { grid-template-columns: 1fr; }
+    .pr-nav-links-ul { display: none; }
+    .pr-footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
 </style>
+}
 
-<!-- Cover Section -->
-<div class="profile-cover-section">
-    <div class="profile-cover" style="@(string.IsNullOrEmpty(Model.CoverPhotoUrl) ? "" : $"background-image: url('{Model.CoverPhotoUrl}');")">
-        <div class="cover-overlay"></div>
-        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-3 rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#coverModel">
-            <i class="bi bi-camera me-1"></i> Đổi ảnh bìa
-        </button>
+<!-- ========== NAVBAR ========== -->
+<nav class="pr-navbar">
+    <a class="pr-nav-brand" asp-controller="Home" asp-action="Index">
+        <div class="pr-nav-brand-icon">
+            <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </div>
+        Unistay
+    </a>
+
+    <ul class="pr-nav-links-ul">
+        <li><a asp-controller="Rooms" asp-action="Index">Tìm chỗ ở</a></li>
+        <li><a asp-controller="Roommates" asp-action="Index">Bạn cùng phòng</a></li>
+        <li><a asp-controller="RentalAdvice" asp-action="Index">Tài nguyên</a></li>
+    </ul>
+
+    <div class="pr-nav-icons">
+        <span class="pr-nav-icon-btn" title="Thông báo">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+        </span>
+        <a asp-controller="Profile" asp-action="ChangePassword" class="pr-nav-icon-btn" title="Cài đặt">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </a>
+        <img class="pr-nav-avatar"
+             src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Model.FullName?.Replace(" ", "+") ?? "User"}&background=FF5C27&color=fff&size=40" : Model.AvatarUrl)"
+             alt="Avatar">
     </div>
+</nav>
 
-    <div class="profile-header-card">
-        <div class="avatar-box">
-             <img id="avatarPreview"
-                 src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Model.FullName?.Replace(" ", "+") ?? "User"}&background=random&size=150" : Model.AvatarUrl)"
-                 class="avatar-img"
-                 alt="@Model.FullName">
-            <div class="avatar-badge" data-bs-toggle="modal" data-bs-target="#avatarModal" title="Đổi ảnh">
-                <i class="bi bi-camera-fill small"></i>
+<!-- ========== PAGE CONTENT ========== -->
+<div class="pr-page">
+
+    <!-- ===== LEFT SIDEBAR ===== -->
+    <aside class="pr-sidebar">
+        <!-- Profile summary -->
+        <div class="pr-profile-card">
+            <div class="pr-avatar-wrap">
+                <img class="pr-avatar"
+                     src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Model.FullName?.Replace(" ", "+") ?? "User"}&background=FF5C27&color=fff&size=100" : Model.AvatarUrl)"
+                     alt="@Model.FullName"
+                     id="sidebarAvatar">
+                <div class="pr-avatar-badge" data-bs-toggle="modal" data-bs-target="#avatarModal" title="Đổi ảnh">
+                    <svg width="9" height="9" fill="white" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </div>
+            </div>
+            <div class="pr-name">@(Model.FullName ?? "Người dùng")</div>
+            <div class="pr-role">@(User.IsInRole("Landlord") ? "Chủ nhà trọ" : "Sinh viên · " + (Model.Occupation ?? "Đại học"))</div>
+            <a href="#" class="pr-school">@(Model.City ?? "Đại học tại Việt Nam")</a>
+        </div>
+
+        <!-- Navigation menu -->
+        <nav class="pr-menu">
+            <a href="#section-personal" class="pr-menu-item active" id="menu-personal"
+               onclick="activateMenu(event, 'menu-personal', 'section-personal')">
+                <span class="pr-menu-icon">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </span>
+                Thông tin cá nhân
+            </a>
+            <a href="#section-prefs" class="pr-menu-item" id="menu-prefs"
+               onclick="activateMenu(event, 'menu-prefs', 'section-prefs')">
+                <span class="pr-menu-icon">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    </svg>
+                </span>
+                Sở thích chỗ ở
+            </a>
+            <a asp-controller="Rooms" asp-action="Index" class="pr-menu-item">
+                <span class="pr-menu-icon">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                </span>
+                Tin đăng của tôi
+            </a>
+            <a asp-controller="Profile" asp-action="ChangePassword" class="pr-menu-item">
+                <span class="pr-menu-icon">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </span>
+                Bảo mật
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="pr-menu-item logout-item">
+                    <span class="pr-menu-icon">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                    </span>
+                    Đăng xuất
+                </button>
+            </form>
+        </nav>
+
+        <!-- Trust level -->
+        <div class="pr-trust-card">
+            <div class="pr-trust-label">⭐ Mức độ tin cậy: Cao</div>
+            <div class="pr-trust-bar"><div class="pr-trust-fill"></div></div>
+            <div class="pr-trust-text">Hoàn thiện hồ sơ và xác minh thẻ sinh viên để tăng khả năng hiển thị.</div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="pr-main">
+
+        <!-- THÔNG TIN CÁ NHÂN -->
+        <div class="pr-card" id="section-personal">
+            <div class="pr-card-header">
+                <h2 class="pr-card-title">Thông tin cá nhân</h2>
+                <a href="javascript:void(0)" class="pr-save-btn" onclick="submitProfileForm()">
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Lưu thay đổi
+                </a>
+            </div>
+
+            <form asp-controller="Profile" asp-action="Edit" method="post" id="profileForm">
+                @Html.AntiForgeryToken()
+                <div class="pr-form-grid">
+                    <div class="pr-field">
+                        <label>Họ và tên</label>
+                        <input type="text" name="fullName" value="@Model.FullName" placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="pr-field">
+                        <label>Địa chỉ Email</label>
+                        <input type="email" value="@Model.Email" readonly>
+                    </div>
+                    <div class="pr-field">
+                        <label>Chuyên ngành / Khóa học</label>
+                        <input type="text" name="occupation" value="@Model.Occupation" placeholder="VD: Khoa học máy tính">
+                    </div>
+                    <div class="pr-field">
+                        <label>Số điện thoại</label>
+                        <input type="tel" name="phoneNumber" value="@Model.PhoneNumber" placeholder="+84 xxx xxx xxxx">
+                    </div>
+                    <div class="pr-field">
+                        <label>Cung hoàng đạo</label>
+                        <select name="zodiacSign">
+                            <option value="">-- Chọn cung --</option>
+                            @{
+                                var zodiacs2 = new[] { "Bạch Dương", "Kim Ngưu", "Song Tử", "Cự Giải", "Sư Tử", "Xử Nữ", "Thiên Bình", "Bọ Cạp", "Nhân Mã", "Ma Kết", "Bảo Bình", "Song Ngư" };
+                                var zodiacEn = new[] { "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces" };
+                                for (int z = 0; z < zodiacs2.Length; z++) {
+                                    bool sel = Model.ZodiacSign == zodiacs2[z] || Model.ZodiacSign == zodiacEn[z];
+                                    if (sel) { <option value="@zodiacs2[z]" selected>@zodiacs2[z]</option> }
+                                    else { <option value="@zodiacs2[z]">@zodiacs2[z]</option> }
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="pr-field" style="grid-column: 1 / -1;">
+                        <label>Giới thiệu bản thân</label>
+                        <textarea name="bio" placeholder="Mô tả ngắn về bản thân, lối sống, thói quen...">@Model.Bio</textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- SỞ THÍCH CHỖ Ở -->
+        <div class="pr-card" id="section-prefs">
+            <div class="pr-card-header">
+                <h2 class="pr-card-title">Sở thích chỗ ở</h2>
+            </div>
+
+            <div class="pr-pref-cards">
+                <div class="pr-pref-item">
+                    <div class="pr-pref-label">
+                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#FF5C27" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Ngân sách hàng tháng
+                    </div>
+                    <div class="pr-pref-value">
+                        @if (Model.Budget.HasValue) {
+                            @Model.Budget.Value.ToString("#,##0") <text>đ</text>
+                        } else {
+                            <text>Thỏa thuận</text>
+                        }
+                    </div>
+                    <div class="pr-pref-sub">Ngân sách mỗi tháng</div>
+                </div>
+                <div class="pr-pref-item">
+                    <div class="pr-pref-label">
+                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#FF5C27" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        Vị trí ưu tiên
+                    </div>
+                    <div class="pr-pref-value">@(Model.District ?? Model.LivingArea ?? "TP. Hồ Chí Minh")</div>
+                    <div class="pr-pref-sub">Gần trường đại học</div>
+                </div>
+                <div class="pr-pref-item">
+                    <div class="pr-pref-label">
+                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="#FF5C27" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Ngày chuyển vào
+                    </div>
+                    <div class="pr-pref-value">Linh hoạt</div>
+                    <div class="pr-pref-sub">Năm học 2025-2026</div>
+                </div>
+            </div>
+
+            <div>
+                <span class="pr-amenity-label">Tiện ích bắt buộc</span>
+                <div class="pr-amenity-tags">
+                    <span class="pr-tag">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>
+                        </svg>
+                        WiFi tốc độ cao
+                    </span>
+                    <span class="pr-tag">🧺 Giặt lý trong phòng</span>
+                    <span class="pr-tag">❄️ Điều hòa không khí</span>
+                    <span class="pr-tag">🏋️ Phòng tập gym</span>
+                    <button type="button" class="pr-tag-add">+ Thêm tiện ích</button>
+                </div>
             </div>
         </div>
-        <div class="flex-grow-1">
-            <h2 class="fw-bold mb-1">@Model.FullName</h2>
-            <div class="d-flex flex-wrap gap-2 text-muted mb-2">
-                <span><i class="bi bi-person-badge me-1"></i>@(User.IsInRole("Landlord") ? "Chủ nhà trọ" : "Người tìm trọ")</span>
-                @if (Model.IsVerified) { <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Đã xác minh</span> }
-                else { <span class="text-warning cursor-pointer" data-bs-toggle="modal" data-bs-target="#verifyEmailModal"><i class="bi bi-exclamation-circle me-1"></i>Chưa xác minh</span> }
+
+        <!-- BOTTOM 2 COLS -->
+        <div class="pr-bottom-grid">
+            <!-- Security -->
+            <div class="pr-card">
+                <div class="pr-card-header">
+                    <h2 class="pr-card-title">Thông tin cá nhân</h2>
+                </div>
+                <div class="pr-security-item">
+                    <div class="pr-security-info">
+                        <h5>Two-Factor Authentication</h5>
+                        <p>Secure your account with SMS</p>
+                    </div>
+                    <label class="pr-toggle">
+                        <input type="checkbox" @(Model.NotificationSmsEnabled ? "checked" : "")>
+                        <span class="pr-toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="pr-security-item">
+                    <a asp-controller="Profile" asp-action="ChangePassword" class="pr-sec-link">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#6b7280" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        Change Password
+                    </a>
+                </div>
+                <div class="pr-security-item">
+                    <button type="button" class="pr-delete-btn">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                        Delete Account
+                    </button>
+                </div>
             </div>
-             <div class="d-flex flex-wrap gap-3 text-sm text-secondary">
-                 <span><i class="bi bi-geo-alt me-1"></i>@(Model.District ?? "Chưa có địa chỉ")</span>
-                 <span><i class="bi bi-envelope me-1"></i>@Model.Email</span>
-             </div>
+
+            <!-- Recent Listings -->
+            <div class="pr-card">
+                <div class="pr-card-header">
+                    <h2 class="pr-card-title">Sở thích chỗ ở</h2>
+                    <a asp-controller="Rooms" asp-action="Index" class="pr-view-all">VIEW ALL</a>
+                </div>
+                <div class="pr-listing-row">
+                    <img class="pr-listing-img"
+                         src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=120&h=80&fit=crop"
+                         alt="Room">
+                    <div class="pr-listing-info">
+                        <h6>Cozy Studio near Campus</h6>
+                        <div class="pr-listing-meta">
+                            <span class="pr-badge-active">ACTIVE</span>
+                            <span class="pr-listing-price">$1,450/mo</span>
+                        </div>
+                        <div style="font-size:0.72rem;color:#9ca3af;margin-top:2px;">Posted 2 days ago</div>
+                    </div>
+                </div>
+                <div class="pr-listing-row">
+                    <img class="pr-listing-img"
+                         src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=120&h=80&fit=crop"
+                         alt="Room 2">
+                    <div class="pr-listing-info">
+                        <h6>Shared Room in Palo Alto</h6>
+                        <div class="pr-listing-meta">
+                            <span class="pr-badge-expired">EXPIRED</span>
+                            <span class="pr-listing-price">$850/mo</span>
+                        </div>
+                        <div style="font-size:0.72rem;color:#9ca3af;margin-top:2px;">Posted 1 week ago</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="d-flex gap-2">
-            <a href="@Url.Action("Edit", "Profile")" class="btn btn-primary rounded-pill px-4 fw-bold">
-                <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa
-            </a>
-            <a href="@Url.Action("ChangePassword", "Profile")" class="btn btn-outline-secondary rounded-circle" title="Cài đặt">
-                <i class="bi bi-gear-fill"></i>
-            </a>
-        </div>
+
     </div>
 </div>
 
-<div class="container pb-5">
-    <div class="row g-4">
-        <!-- Sidebar Navigation -->
-        <div class="col-lg-3">
-            <div class="nav flex-column nav-pills-custom mb-4" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-selected="true">
-                    <i class="bi bi-grid-fill"></i>Tổng quan
-                </button>
-                <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-selected="false">
-                    <i class="bi bi-person-lines-fill"></i>Thông tin cá nhân
-                </button>
-                <button class="nav-link" id="v-pills-preferences-tab" data-bs-toggle="pill" data-bs-target="#v-pills-preferences" type="button" role="tab" aria-selected="false">
-                    <i class="bi bi-sliders"></i>Nhu cầu tìm kiếm
-                </button>
-                <button class="nav-link" id="v-pills-activity-tab" data-bs-toggle="pill" data-bs-target="#v-pills-activity" type="button" role="tab" aria-selected="false">
-                    <i class="bi bi-clock-history"></i>Lịch sử hoạt động
-                </button>
-            </div>
-
-            <div class="quick-actions-card">
-                <h6 class="fw-bold mb-3">Trạng thái tài khoản</h6>
-                <div class="d-flex justify-content-between align-items-center mb-2 small">
-                    <span class="text-muted">Email</span>
-                    @if(Model.EmailConfirmed) { <i class="bi bi-check-circle-fill text-success"></i> }
-                    else { <span class="badge bg-warning text-dark">Chờ xác thực</span> }
-                </div>
-                 <div class="d-flex justify-content-between align-items-center mb-2 small">
-                    <span class="text-muted">Số điện thoại</span>
-                    @if(!string.IsNullOrEmpty(Model.PhoneNumber)) { <i class="bi bi-check-circle-fill text-success"></i> }
-                    else { <span class="text-muted">-</span> }
-                </div>
-            </div>
+<!-- ===== FOOTER ===== -->
+<footer class="pr-footer">
+    <a class="pr-footer-brand" asp-controller="Home" asp-action="Index">
+        <div style="width:22px;height:22px;background:var(--pr-orange);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <svg width="13" height="13" fill="white" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </div>
-
-        <!-- Main Content -->
-        <div class="col-lg-9">
-            
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <a href="@Url.Action("Index", "Roommates")" class="action-btn">
-                        <i class="bi bi-people-fill action-icon"></i>
-                        <span class="fw-bold small">Tìm bạn ở ghép</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="#" class="action-btn">
-                        <i class="bi bi-heart-fill action-icon text-danger"></i>
-                        <span class="fw-bold small">Đã lưu</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="#" class="action-btn">
-                         <i class="bi bi-chat-dots-fill action-icon text-info"></i>
-                        <span class="fw-bold small">Tin nhắn</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="@Url.Action("Index", "Rooms")" class="action-btn">
-                        <i class="bi bi-house-door-fill action-icon text-success"></i>
-                         <span class="fw-bold small">Tìm phòng</span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="tab-content" id="v-pills-tabContent">
-                
-                <!-- 1. OVERVIEW TAB -->
-                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel">
-                     <div class="row g-4">
-                         <div class="col-md-4">
-                             <div class="content-card text-center py-4">
-                                 <h3 class="fw-bold text-primary mb-1">@Model.TotalListings</h3>
-                                 <span class="text-muted small fw-bold text-uppercase">Bài đăng</span>
-                             </div>
-                         </div>
-                         <div class="col-md-4">
-                             <div class="content-card text-center py-4">
-                                 <h3 class="fw-bold text-success mb-1">@Model.SuccessfulBookings</h3>
-                                 <span class="text-muted small fw-bold text-uppercase">Giao dịch</span>
-                             </div>
-                         </div>
-                         <div class="col-md-4">
-                             <div class="content-card text-center py-4">
-                                 <h3 class="fw-bold text-warning mb-1">@Model.AverageRating.ToString("0.0") <i class="bi bi-star-fill small"></i></h3>
-                                 <span class="text-muted small fw-bold text-uppercase">Uy tín</span>
-                             </div>
-                         </div>
-
-                         <!-- Zodiac Rich Display -->
-                         <div class="col-md-12">
-                             <a href="@Url.Action("Index", "Zodiac")" class="text-decoration-none">
-                                <div class="zodiac-card d-flex align-items-center justify-content-between position-relative overflow-hidden">
-                                    <!-- Background decoration -->
-                                    <div class="position-absolute top-0 end-0 p-4 opacity-10" style="font-size: 10rem; transform: translate(30%, -30%);">
-                                        <i class="bi bi-stars"></i>
-                                    </div>
-                                    
-                                    @{
-                                        Unistay_Web.Helpers.ZodiacInfo? zodiacInfo = null;
-                                        try {
-                                            if (!string.IsNullOrEmpty(Model.ZodiacSign)) {
-                                                zodiacInfo = Unistay_Web.Helpers.ZodiacHelper.GetZodiacInfoByName(Model.ZodiacSign);
-                                            } else if (Model.DateOfBirth.HasValue) {
-                                                zodiacInfo = Unistay_Web.Helpers.ZodiacHelper.GetZodiacInfo(Model.DateOfBirth.Value);
-                                            }
-                                        } catch {}
-                                    }
-
-                                    <div class="text-white position-relative z-1">
-                                        <div class="small text-uppercase opacity-75 fw-bold mb-2"><i class="bi bi-stars text-warning me-2"></i>Cung Hoàng Đạo</div>
-                                        @if(zodiacInfo != null)
-                                        {
-                                            <h2 class="fw-bold mb-0 display-6">@zodiacInfo.VietnameseName</h2>
-                                            <div class="d-flex align-items-center gap-2 mt-1 opacity-75">
-                                                <span class="fw-medium">@zodiacInfo.Name</span>
-                                                <span>&bull;</span>
-                                                <small>@zodiacInfo.DateRange</small>
-                                            </div>
-                                            <!-- Traits Badge -->
-                                            <div class="mt-3 d-flex flex-wrap gap-1">
-                                                @foreach(var trait in (zodiacInfo.Traits ?? "").Split(',')) {
-                                                    <span class="badge bg-white bg-opacity-10 backdrop-blur rounded-pill fw-normal border border-white border-opacity-25">@trait.Trim()</span>
-                                                }
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <h3 class="fw-bold mb-0">Chưa cập nhật</h3>
-                                            <p class="mb-0 opacity-75 small mt-1">Cập nhật ngày sinh để xem cung hoàng đạo của bạn</p>
-                                        }
-                                    </div>
-                                    <div class="zodiac-icon position-relative z-1 display-1 mb-0" style="text-shadow: 0 0 20px rgba(255,255,255,0.5);">
-                                        @if(zodiacInfo != null) { @Html.Raw(zodiacInfo.Icon) } else { <span class="opacity-50">✨</span> }
-                                    </div>
-                                </div>
-                             </a>
-                         </div>
-
-                         <div class="col-md-12">
-                             <div class="content-card">
-                                 <div class="section-title">
-                                     <span>Giới thiệu</span>
-                                 </div>
-                                 <p class="text-muted mb-0" style="line-height: 1.6;">
-                                     @(string.IsNullOrEmpty(Model.Bio) ? "Người dùng này chưa viết gì về bản thân." : Model.Bio)
-                                 </p>
-                             </div>
-                         </div>
-                     </div>
-                </div>
-
-                <!-- 2. PERSONAL INFO TAB -->
-                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel">
-                    <div class="content-card">
-                        <div class="section-title">
-                            <span>Thông tin chi tiết</span>
-                            <a href="@Url.Action("Edit", "Profile")" class="btn btn-sm btn-light text-primary fw-bold rounded-pill">Chỉnh sửa</a>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Họ và tên</span>
-                            <span class="info-value">@Model.FullName</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Giới tính</span>
-                            <span class="info-value">@(Model.Gender == "Male" ? "Nam" : (Model.Gender == "Female" ? "Nữ" : "Khác"))</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Ngày sinh</span>
-                            <span class="info-value">@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("dd/MM/yyyy") : "Chưa cập nhật")</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Nghề nghiệp</span>
-                            <span class="info-value">@(Model.Occupation ?? "Chưa cập nhật")</span>
-                        </div>
-                         <div class="info-row">
-                            <span class="info-label">Tham gia từ</span>
-                            <span class="info-value">@Model.CreatedAt.ToString("MM/yyyy")</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. PREFERENCES TAB -->
-                <div class="tab-pane fade" id="v-pills-preferences" role="tabpanel">
-                     <div class="content-card">
-                        <div class="section-title">
-                            <span>Nhu cầu tìm kiếm hiện tại</span>
-                            <a href="@Url.Action("Edit", "Profile")" class="btn btn-sm btn-light text-primary fw-bold rounded-pill">Cập nhật</a>
-                        </div>
-                         <div class="row g-4">
-                             <div class="col-md-6">
-                                 <div class="p-3 bg-light rounded-3 border">
-                                     <label class="small text-muted fw-bold text-uppercase mb-1">Khu vực ưu tiên</label>
-                                     <div class="fw-bold fs-5 text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i>@(Model.LivingArea ?? "Toàn quốc")</div>
-                                 </div>
-                             </div>
-                             <div class="col-md-6">
-                                 <div class="p-3 bg-light rounded-3 border">
-                                     <label class="small text-muted fw-bold text-uppercase mb-1">Ngân sách</label>
-                                     <div class="fw-bold fs-5 text-success"><i class="bi bi-cash-stack me-2"></i>@(Model.Budget.HasValue ? Model.Budget.Value.ToString("#,##0") : "Thỏa thuận") <small>VNĐ</small></div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                </div>
-
-                <!-- 4. ACTIVITY TAB -->
-                <div class="tab-pane fade" id="v-pills-activity" role="tabpanel">
-                    <div class="content-card">
-                         <div class="section-title">
-                            <span>Hoạt động gần đây</span>
-                             <a href="@Url.Action("ActivityHistory", "Profile")" class="btn btn-sm btn-light text-primary fw-bold rounded-pill">Xem tất cả</a>
-                        </div>
-                        
-                        <div class="activity-timeline">
-                             <p class="text-center text-muted py-3">Lịch sử hoạt động đang được cập nhật...</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+        Unistay
+    </a>
+    <div class="pr-footer-links">
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản dịch vụ</a>
+        <a href="#">Trung tâm trợ giúp</a>
     </div>
-</div>
+    <span>© 2024 Unistay Student Housing. Bảo lưu mọi quyền.</span>
+</footer>
 
+<!-- Avatar Modal -->
 <div class="modal fade" id="avatarModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg px-3 py-2">
-            <div class="modal-header border-0">
-                 <h5 class="modal-title fw-bold">Cập nhật ảnh đại diện</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <form id="avatarForm">
-                    <input type="file" id="avatarFile" class="form-control mb-3" accept="image/*">
-                    <button type="button" class="btn btn-primary rounded-pill w-100" id="uploadAvatarBtn">Lưu thay đổi</button>
-                    <div id="uploadProgress" class="progress mt-3 d-none" style="height: 5px;"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="coverModel" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-         <div class="modal-content border-0 shadow-lg px-3 py-2">
-            <div class="modal-header border-0">
-                 <h5 class="modal-title fw-bold">Cập nhật ảnh bìa</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                 <form id="coverForm">
-                    <input type="file" id="coverFile" class="form-control mb-3" accept="image/*">
-                    <button type="button" class="btn btn-primary rounded-pill w-100" id="uploadCoverBtn">Lưu thay đổi</button>
-                    <div id="uploadCoverProgress" class="progress mt-3 d-none" style="height: 5px;"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="verifyEmailModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg p-3">
-             <div class="modal-body text-center">
-                 <div class="mb-3 text-primary bg-primary-subtle d-inline-block p-3 rounded-circle"><i class="bi bi-envelope-paper fs-1"></i></div>
-                 <h4 class="fw-bold">Xác thực Email</h4>
-                 <p class="text-muted">Gửi mã xác thực đến <strong>@Model.Email</strong>?</p>
-                 <div id="verifyMessage"></div>
-                 <button class="btn btn-primary rounded-pill w-100 mb-2" id="sendVerificationBtn">Gửi mã ngay</button>
-                 <button class="btn btn-light rounded-pill w-100" data-bs-dismiss="modal">Hủy</button>
-             </div>
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" style="font-size:1rem;">Cập nhật ảnh đại diện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="avatarFile" class="form-control mb-3" accept="image/*">
+                <button type="button" id="uploadAvatarBtn"
+                        style="width:100%;padding:0.65rem;background:var(--pr-orange);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.9rem;">
+                    Lưu thay đổi
+                </button>
+                <div id="uploadProgress" class="progress mt-3 d-none" style="height:4px;">
+                    <div class="progress-bar progress-bar-animated" style="width:100%;background:var(--pr-orange)"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        async function uploadFile(fileInputId, endpoint, progressId, updateSelectors) {
-            const input = document.getElementById(fileInputId);
-            if (!input.files[0]) return alert('Vui lòng chọn ảnh!');
-            const btn = document.querySelector(`button[onclick*="${fileInputId}"]`) || input.parentElement.querySelector('button');
-            btn.disabled = true;
-            document.getElementById(progressId).classList.remove('d-none');
-            const formData = new FormData();
-            formData.append('file', input.files[0]);
-            try {
-                const res = await fetch(endpoint, { method: 'POST', body: formData });
-                const data = await res.json();
-                if (data.success) {
-                   location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Có lỗi xảy ra.');
-            } finally {
-                btn.disabled = false;
-                document.getElementById(progressId).classList.add('d-none');
-            }
-        }
-        document.getElementById('uploadAvatarBtn').onclick = () => uploadFile('avatarFile', '/api/Upload/avatar', 'uploadProgress');
-        document.getElementById('uploadCoverBtn').onclick = () => uploadFile('coverFile', '/api/Upload/cover', 'uploadCoverProgress');
-        document.getElementById('sendVerificationBtn').onclick = async function() {
-            this.disabled = true;
-            this.textContent = 'Đang gửi...';
-            try {
-                const res = await fetch('@Url.Action("VerifyEmail", "Profile")', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value }
-                });
-                const data = await res.json();
-                document.getElementById('verifyMessage').innerHTML = `<div class="alert alert-${data.success ? 'success' : 'danger'}">${data.message}</div>`;
-                if(data.success) setTimeout(() => bootstrap.Modal.getInstance(document.getElementById('verifyEmailModal')).hide(), 2000);
-            } catch(e) {
-                 document.getElementById('verifyMessage').innerHTML = `<div class="alert alert-danger">Lỗi kết nối</div>`;
-            } finally {
-                this.disabled = false;
-                this.textContent = 'Gửi mã ngay';
-            }
-        };
-    </script>
+<script>
+function activateMenu(e, menuId, sectionId) {
+    e.preventDefault();
+    document.querySelectorAll('a.pr-menu-item').forEach(i => i.classList.remove('active'));
+    const menuEl = document.getElementById(menuId);
+    if (menuEl) menuEl.classList.add('active');
+    const section = document.getElementById(sectionId);
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function submitProfileForm() {
+    const form = document.getElementById('profileForm');
+    form?.requestSubmit();
+}
+
+// Upload avatar
+document.getElementById('uploadAvatarBtn').addEventListener('click', async function () {
+    const input = document.getElementById('avatarFile');
+    if (!input.files[0]) { alert('Vui lòng chọn ảnh!'); return; }
+    this.disabled = true;
+    document.getElementById('uploadProgress').classList.remove('d-none');
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    try {
+        const res = await fetch('/api/Upload/avatar', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) location.reload();
+        else alert('Lỗi: ' + data.message);
+    } catch { alert('Có lỗi xảy ra.'); }
+    finally {
+        this.disabled = false;
+        document.getElementById('uploadProgress').classList.add('d-none');
+    }
+});
+
+// Hide default navbar from layout
+document.addEventListener('DOMContentLoaded', function () {
+    const defaultNav = document.getElementById('mainNav');
+    if (defaultNav) defaultNav.style.display = 'none';
+});
+</script>
 }
