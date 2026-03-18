@@ -1,122 +1,588 @@
-@model List<Unistay_Web.Models.Room.Room>
-
+@model dynamic
 @{
-    ViewData["Title"] = "Góc Tư Vấn";
+    ViewData["Title"] = "Trợ Lý AI - UniStay";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trợ Lý AI - Unistay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #F0F4F8; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-<div class="container py-5">
-    <!-- Hero Section with AI Greeting -->
-    <div class="glass-card p-5 mb-5 text-center">
-        <h1 class="display-4 fw-bold mb-3">
-            <span class="text-gradient">Chuyên Gia Thuê Nhà AI</span>
-        </h1>
-        <p class="lead text-muted mb-4">
-            @ViewBag.AIAdvice
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-            <a asp-action="Chat" class="btn btn-primary btn-lg">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                Chat Với AI
-            </a>
-            <a asp-action="Neighborhoods" class="btn btn-outline-primary btn-lg">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Khám Phá Khu Vực
-            </a>
-        </div>
+        /* ====== TOP NAV ====== */
+        .topnav {
+            height: 50px; background: #fff; border-bottom: 1px solid #E8EDF2;
+            display: flex; align-items: center; padding: 0 20px; flex-shrink: 0;
+        }
+        .topnav-brand {
+            display: flex; align-items: center; gap: 7px; margin-right: 24px;
+            font-size: 14px; font-weight: 800; color: #0F172A; text-decoration: none;
+        }
+        .topnav-brand-icon {
+            width: 27px; height: 27px; background: #2563EB; border-radius: 7px;
+            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px;
+        }
+        .topnav-links { display: flex; gap: 2px; flex: 1; }
+        .topnav-links a {
+            color: #475569; font-size: 13px; font-weight: 500; padding: 5px 11px;
+            border-radius: 7px; text-decoration: none; transition: all .15s;
+        }
+        .topnav-links a:hover { background: #F1F5F9; color: #0F172A; }
+        .topnav-right { display: flex; align-items: center; gap: 8px; }
+        .topnav-icon-btn {
+            width: 30px; height: 30px; background: none; border: none; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: #64748B;
+            cursor: pointer; font-size: 14px;
+        }
+        .topnav-icon-btn:hover { background: #F1F5F9; }
+        .topnav-avatar {
+            width: 30px; height: 30px; border-radius: 50%; overflow: hidden;
+            background: #E2E8F0; display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .topnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ====== APP LAYOUT ====== */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr 275px;
+            flex: 1; overflow: hidden;
+        }
+
+        /* ====== SIDEBAR ====== */
+        .sidebar {
+            background: #1B3F35; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .sb-brand { padding: 18px 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+        .sb-brand-row { display: flex; align-items: center; gap: 11px; }
+        .sb-brand-icon {
+            width: 42px; height: 42px; background: #4076ea; border-radius: 12px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+            padding: 9px; flex-shrink: 0;
+        }
+        .sb-brand-icon span {
+            display: block; background: rgba(255,255,255,0.9); border-radius: 3px;
+        }
+        .sb-brand-name { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.25; }
+        .sb-brand-sub { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 500; margin-top: 1px; }
+
+
+        .sb-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 11px; border-radius: 11px;
+            font-size: 13px; font-weight: 600; color: rgba(255,255,255,.52);
+            text-decoration: none; cursor: pointer; transition: all .18s;
+        }
+        .sb-item:hover { background: rgba(38, 82, 192, 0.07); color: rgba(255,255,255,.85); }
+        .sb-item.active {
+            background: rgba(255,255,255,0.93);
+            color: #1B3A2F;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+        }
+        .sb-item-icon {
+            width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
+            transition: all .18s;
+        }
+        .sb-item.active .sb-item-icon {
+            background: #EFF6FF; color: #2563EB;
+        }
+        .sb-item-label { font-size: 13px; font-weight: 600; }
+
+        .sb-footer { padding: 14px; margin-top: auto; }
+        .sb-promo {
+            background: linear-gradient(135deg, #3980d6, #0f151c);
+            border-radius: 14px; padding: 14px 13px; cursor: pointer;
+        }
+        .sb-promo-label { font-size: 9px; font-weight: 800; color: rgba(255,255,255,.72); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+        .sb-promo-title { font-size: 12px; font-weight: 800; color: #fff; line-height: 1.45; }
+
+        /* ====== CENTER CHAT ====== */
+        .chat-center {
+            background: #fff; display: flex; flex-direction: column; overflow: hidden;
+            border-left: 1px solid #EAEFF4; border-right: 1px solid #EAEFF4;
+        }
+        .chat-greeting {
+            padding: 24px 32px 12px; flex-shrink: 0;
+        }
+        .chat-greeting h1 { font-size: 26px; font-weight: 800; color: #0F172A; margin-bottom: 7px; }
+        .chat-greeting h1 span { color: #2563EB; }
+        .chat-greeting p { font-size: 13px; color: #64748B; line-height: 1.55; max-width: 520px; }
+
+        .chat-msgs {
+            flex: 1; overflow-y: auto; padding: 6px 32px 12px;
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .chat-msgs::-webkit-scrollbar { width: 3px; }
+        .chat-msgs::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+        /* Message rows */
+        .msg-row { display: flex; gap: 10px; align-items: flex-start; }
+        .msg-row.user { flex-direction: row-reverse; }
+
+        .msg-avatar {
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 14px; margin-top: 2px;
+        }
+        .msg-avatar.bot { background: linear-gradient(135deg, #2563EB, #0EA5E9); color: #fff; }
+        .msg-avatar.user { background: #1E3A8A; color: #fff; }
+
+        .msg-content { max-width: 75%; }
+        .msg-row.user .msg-content { display: flex; flex-direction: column; align-items: flex-end; }
+
+        .msg-bubble {
+            display: inline-block; padding: 12px 16px;
+            border-radius: 18px; font-size: 13.5px; line-height: 1.6;
+        }
+        .msg-row.bot .msg-bubble { background: #F1F5F9; color: #1E293B; border-bottom-left-radius: 4px; }
+        .msg-row.user .msg-bubble {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #fff;
+            border-bottom-right-radius: 4px; box-shadow: 0 4px 14px rgba(37,99,235,.22);
+        }
+
+        /* Quick chips */
+        .msg-chips { display: flex; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
+        .msg-chip {
+            padding: 5px 14px; background: #fff; border: 1.5px solid #CBD5E1;
+            border-radius: 99px; font-size: 12px; font-weight: 600; color: #334155;
+            cursor: pointer; transition: all .15s;
+        }
+        .msg-chip:hover { border-color: #2563EB; color: #2563EB; background: #EFF6FF; }
+
+        /* Roommate cards */
+        .rm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .rm-card {
+            background: #fff; border: 1px solid #E2E8F0; border-radius: 14px;
+            padding: 13px; box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        }
+        .rm-top { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+        .rm-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .rm-name { font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 2px; }
+        .rm-badge { font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: .04em; }
+        .rm-quote {
+            font-size: 11.5px; color: #64748B; line-height: 1.45; margin-bottom: 9px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .rm-btn {
+            display: block; text-align: center; background: #F1F5F9; color: #2563EB;
+            font-size: 12px; font-weight: 700; padding: 7px; border-radius: 8px;
+            border: none; cursor: pointer; width: 100%; transition: background .15s;
+        }
+        .rm-btn:hover { background: #EFF6FF; }
+
+        /* Typing */
+        .typing-bubble {
+            display: inline-flex; gap: 5px; align-items: center;
+            padding: 12px 16px; background: #F1F5F9;
+            border-radius: 18px; border-bottom-left-radius: 4px;
+        }
+        .tdot {
+            width: 7px; height: 7px; background: #94A3B8; border-radius: 50%;
+            animation: tdot 1.2s infinite ease-in-out;
+        }
+        .tdot:nth-child(2) { animation-delay: .2s; }
+        .tdot:nth-child(3) { animation-delay: .4s; }
+        @@keyframes tdot {
+            0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* Input bar */
+        .chat-input-area { padding: 12px 32px 18px; background: #fff; flex-shrink: 0; }
+        .chat-input-box {
+            display: flex; align-items: center; gap: 10px;
+            background: #F8FAFC; border: 1.5px solid #E2E8F0;
+            border-radius: 14px; padding: 9px 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.04); transition: border-color .2s;
+        }
+        .chat-input-box:focus-within { border-color: #2563EB; background: #fff; }
+        .chat-input-plus {
+            width: 30px; height: 30px; background: #F1F5F9; border: none; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: #64748B;
+            cursor: pointer; font-size: 15px; flex-shrink: 0; transition: background .15s;
+        }
+        .chat-input-plus:hover { background: #E2E8F0; }
+        #userMessage {
+            flex: 1; border: none; outline: none; font-size: 13px; color: #1E293B;
+            background: transparent; font-family: inherit;
+        }
+        #userMessage::placeholder { color: #94A3B8; }
+        .chat-send-btn {
+            width: 38px; height: 38px; background: #2563EB; border: none;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 15px; cursor: pointer; flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(37,99,235,.28); transition: all .2s;
+        }
+        .chat-send-btn:hover { background: #1D4ED8; transform: scale(1.06); }
+
+        /* Animations */
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .msg-row { animation: fadeUp .28s ease forwards; }
+
+        /* ====== RIGHT PANEL ====== */
+        .right-panel {
+            background: #F8FAFC; overflow-y: auto;
+            padding: 18px 14px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .right-panel::-webkit-scrollbar { width: 3px; }
+        .right-panel::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+        .rp-header { display: flex; align-items: center; justify-content: space-between; }
+        .rp-title { font-size: 14px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 5px; }
+        .rp-title i { color: #2d69be; }
+        .rp-badge {
+            background: #ECEBFE; color: #4338CA; font-size: 10px; font-weight: 800;
+            padding: 3px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: .04em;
+        }
+
+        /* Tarot card */
+        .tarot-card {
+            background: #fff; border: 2.5px solid #2DBE8C;
+            border-radius: 18px; padding: 14px;
+        }
+        .tarot-inner {
+            background: #F8FAFC; border-radius: 12px;
+            padding: 20px 12px 16px; margin-bottom: 12px; text-align: center;
+        }
+        .tarot-star-svg {
+            width: 52px; height: 52px; margin: 0 auto 10px; display: block;
+            transition: all .35s ease;
+        }
+        .tarot-name { font-size: 16px; font-weight: 800; color: #0F172A; margin-bottom: 4px; }
+        .tarot-sub { font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .09em; }
+        .tarot-quote { font-size: 12px; color: #64748B; font-style: italic; line-height: 1.6; }
+
+        /* Feng shui box */
+        .feng-box { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #E2E8F0; }
+        .feng-hdr { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
+        .feng-hdr i { color: #3B82F6; font-size: 12px; }
+        .feng-text { font-size: 12px; color: #64748B; line-height: 1.55; }
+        .feng-text strong { color: #0F172A; }
+
+        /* Buttons */
+        .draw-btn {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            background: linear-gradient(135deg, #592dbe, #1746a4); color: #fff;
+            border: none; border-radius: 13px; padding: 13px 16px;
+            font-size: 14px; font-weight: 700; cursor: pointer; width: 100%;
+            box-shadow: 0 4px 12px rgba(45,190,140,.28); transition: all .2s;
+        }
+        .draw-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(62, 118, 228, 0.4); }
+
+        .stats-row { display: flex; gap: 8px; align-items: stretch; }
+        .stat-box {
+            background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;
+            padding: 12px 10px; text-align: center; flex: 1;
+        }
+        .stat-num { font-size: 22px; font-weight: 800; color: #0F172A; line-height: 1; }
+        .stat-label { font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+        .alt-draw-btn {
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            background: linear-gradient(135deg, #2563EB, #0EA5E9); color: #fff;
+            border: none; border-radius: 12px; padding: 12px 13px;
+            font-size: 12px; font-weight: 700; cursor: pointer; flex: 1.2;
+            box-shadow: 0 4px 12px rgba(37,99,235,.22); transition: all .2s; white-space: nowrap;
+        }
+        .alt-draw-btn:hover { transform: translateY(-1px); }
+
+        @@media (max-width: 900px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .sidebar, .right-panel { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+    <a href="/" class="topnav-brand">
+        <div class="topnav-brand-icon"><i class="fas fa-star"></i></div>
+        Unistay AI
+    </a>
+    <div class="topnav-links">
+        <a asp-controller="Rooms" asp-action="Index">Nhà ở</a>
+        <a asp-controller="Roommates" asp-action="Index">Bạn cùng phòng</a>
+        <a asp-controller="RentalAdvice" asp-action="PriceAnalysis">Xem Tarot</a>
+        <a href="#">Hỗ trợ</a>
     </div>
-
-    <div class="row g-4 mb-5">
-        <!-- Feature Cards -->
-        <div class="col-md-4">
-            <div class="glass-card h-100 p-4 hover-lift">
-                <div class="icon-box bg-purple-light text-purple mb-3">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <h3>Phân Tích Giá</h3>
-                <p class="text-muted">Biểu đồ biến động giá và thời điểm thuê tốt nhất cho từng khu vực.</p>
-                <a asp-action="PriceAnalysis" class="btn btn-link px-0 text-primary">Xem chi tiết &rarr;</a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="glass-card h-100 p-4 hover-lift">
-                 <div class="icon-box bg-warning-light text-warning mb-3">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01"/></svg>
-                </div>
-                <h3>Check Uy Tín</h3>
-                <p class="text-muted">Hệ thống phát hiện rủi ro và cảnh báo lừa đảo dựa trên dữ liệu lớn.</p>
-                <a href="#" class="btn btn-link px-0 text-primary">Kiểm tra ngay &rarr;</a>
-            </div>
-        </div>
-        <div class="col-md-4">
-             <div class="glass-card h-100 p-4 hover-lift">
-                <div class="icon-box bg-success-light text-success mb-3">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                </div>
-                <h3>So Sánh Phòng</h3>
-                <p class="text-muted">So sánh chi tiết các lựa chọn của bạn: tiện ích, giá, và an ninh.</p>
-                <a asp-controller="Rooms" asp-action="Index" class="btn btn-link px-0 text-primary">Bắt đầu so sánh &rarr;</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Suggested Rooms -->
-    <h2 class="fw-bold mb-4">Gợi Ý Cho Bạn</h2>
-    <div class="row g-4">
-        @if (Model != null)
-        {
-            foreach (var room in Model)
+    <div class="topnav-right">
+        <button class="topnav-icon-btn"><i class="fas fa-bell"></i></button>
+        <div class="topnav-avatar">
+            @if (User.Identity?.IsAuthenticated == true)
             {
-                <div class="col-md-4">
-                    <div class="glass-card p-0 overflow-hidden h-100">
-                        <div class="position-relative">
-                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80" 
-                                 class="w-100" style="height: 200px; object-fit: cover;" alt="@room.Title">
-                            <span class="badge bg-primary position-absolute top-0 end-0 m-3">
-                                @room.Price.ToString("N0") VNĐ
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="fw-bold mb-2">@room.Title</h5>
-                            <p class="text-muted small mb-3">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="me-1"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                @room.Address
-                            </p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id" class="btn btn-sm btn-outline-primary">Xem Ngay</a>
-                                <a asp-action="RiskAnalysis" asp-route-id="@room.Id" class="btn btn-sm btn-light text-danger" title="Check Risk">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                </a>
-                            </div>
-                        </div>
+                <img src="https://ui-avatars.com/api/?name=@Uri.EscapeDataString(User.Identity.Name ?? "U")&background=2563EB&color=fff&size=30" alt="avatar" />
+            }
+            else
+            {
+                <i class="fas fa-user" style="color:#94A3B8;font-size:12px;"></i>
+            }
+        </div>
+    </div>
+</nav>
+
+<!-- APP BODY -->
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sb-brand">
+            <div class="sb-brand-row">
+                <div class="sb-brand-icon">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div>
+                    <div class="sb-brand-name">Unistay</div>
+                    <div class="sb-brand-sub">Student Living</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sb-nav">
+            <a class="sb-item active" href="#">
+                <div class="sb-item-icon"><i class="fas fa-robot"></i></div>
+                <span class="sb-item-label">Trợ lý AI</span>
+            </a>
+            <a class="sb-item" asp-controller="RentalAdvice" asp-action="PriceAnalysis">
+                <div class="sb-item-icon"><i class="fas fa-magic"></i></div>
+                <span class="sb-item-label">Xem bài Tarot</span>
+            </a>
+            <a class="sb-item" asp-controller="Roommates" asp-action="Index">
+                <div class="sb-item-icon"><i class="fas fa-user-friends"></i></div>
+                <span class="sb-item-label">Tìm bạn cùng phòng</span>
+            </a>
+            <a class="sb-item" asp-controller="Rooms" asp-action="Index">
+                <div class="sb-item-icon"><i class="fas fa-th-large"></i></div>
+                <span class="sb-item-label">Phòng của tôi</span>
+            </a>
+        </nav>
+        <div class="sb-footer">
+            <div class="sb-promo">
+                <div class="sb-promo-label">FPT Hola Special</div>
+                <div class="sb-promo-title">Tìm phòng Dom xịn &amp; Bạn hợp mệnh</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- CENTER CHAT -->
+    <main class="chat-center">
+        <div class="chat-greeting">
+            <h1>Chào bạn, <span>FPTer!</span></h1>
+            <p>Hòa Lạc đang chờ đón bạn. AI sẽ giúp bạn tìm nơi ở "vượng khí" và người bạn đồng hành hợp cung hoàng đạo nhất.</p>
+        </div>
+
+        <div class="chat-msgs" id="chatMessages">
+            <div class="msg-row bot">
+                <div class="msg-avatar bot"><i class="fas fa-robot"></i></div>
+                <div class="msg-content">
+                    <div class="msg-bubble">
+                        Chào bạn! Mình là trợ lý Unistay. Bạn đang tìm phòng ở khu vực nào tại Hòa Lạc? (Dom 1-8, Tân Xã, hay Thạch Hòa?)
+                    </div>
+                    <div class="msg-chips">
+                        <button class="msg-chip quick-send" data-msg="Ký túc xá FPT">Ký túc xá FPT</button>
+                        <button class="msg-chip quick-send" data-msg="Khu Tân Xã">Khu Tân Xã</button>
                     </div>
                 </div>
-            }
-        }
-    </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <form id="chatForm" autocomplete="off">
+                <div class="chat-input-box">
+                    <button type="button" class="chat-input-plus"><i class="fas fa-plus"></i></button>
+                    <input type="text" id="userMessage" placeholder="Hỏi AI về cung hoàng đạo hoặc tìm phòng..." required autocomplete="off" />
+                    <button type="submit" class="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- RIGHT PANEL -->
+    <aside class="right-panel">
+        <div class="rp-header">
+            <div class="rp-title"><i class="fas fa-magic"></i> Góc Huyền Bí</div>
+            <span class="rp-badge">HỢP MỆNH</span>
+        </div>
+
+        <!-- Tarot card with SVG star -->
+        <div class="tarot-card">
+            <div class="tarot-inner">
+                <svg id="tarotSvg" class="tarot-star-svg" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="26,4 31.5,19 47,19 34.5,28.5 39.5,44 26,35 12.5,44 17.5,28.5 5,19 20.5,19"
+                             stroke="#2DBE8C" stroke-width="2.5" fill="#fff"/>
+                </svg>
+                <div class="tarot-name" id="tarotName">The Star</div>
+                <div class="tarot-sub" id="tarotSub">Sự Hy Vọng &amp; Kết Nối</div>
+            </div>
+            <p class="tarot-quote" id="tarotQuote">"Lá bài báo hiệu bạn sẽ tìm thấy một người bạn cùng phòng có tâm hồn đồng điệu tại Hòa Lạc."</p>
+        </div>
+
+        <!-- Feng shui -->
+        <div class="feng-box">
+            <div class="feng-hdr"><i class="fas fa-info-circle"></i> Lời khuyên phong thủy</div>
+            <p class="feng-text" id="fengshuiText">Tháng này Song Ngư nên chọn phòng hướng <strong>Đông Nam</strong> để đón năng lượng tích cực từ Tân Xã.</p>
+        </div>
+
+        <!-- Rút bài button -->
+        <button class="draw-btn" id="drawBtn">
+            <i class="fas fa-star" style="font-size:12px;"></i> Rút bài mới
+        </button>
+
+        <!-- Stats + alt button -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-num">150+</div>
+                <div class="stat-label">Cặp hợp mệnh</div>
+            </div>
+            <button class="alt-draw-btn" id="altBtn">
+                <i class="fas fa-star" style="font-size:11px;"></i> Trải bài mới
+            </button>
+        </div>
+    </aside>
 </div>
 
-<style>
-.icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-.bg-purple-light { background: rgba(139, 92, 246, 0.1); }
-.text-purple { color: #8b5cf6; }
-.bg-warning-light { background: rgba(245, 158, 11, 0.1); }
-.text-warning { color: #f59e0b; }
-.bg-success-light { background: rgba(16, 185, 129, 0.1); }
-.text-success { color: #10b981; }
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script>
+$(function () {
+    const $msgs = $('#chatMessages');
 
-.hover-lift {
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-</style>
+    function esc(s) {
+        if (!s) return '';
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    }
+
+    function scroll() { $msgs.scrollTop($msgs[0].scrollHeight); }
+
+    function appendUser(text) {
+        $msgs.append(`
+            <div class="msg-row user">
+                <div class="msg-avatar user"><i class="fas fa-user"></i></div>
+                <div class="msg-content">
+                    <div class="msg-bubble">${esc(text)}</div>
+                </div>
+            </div>`);
+        scroll();
+    }
+
+    function roommateCardsHtml() {
+        return `<div class="rm-grid">
+            <div class="rm-card">
+                <div class="rm-top">
+                    <img class="rm-av" src="https://i.pravatar.cc/80?img=47" alt="Minh Anh"/>
+                    <div><div class="rm-name">Minh Anh</div><div class="rm-badge">CỰ GIẢI • K18</div></div>
+                </div>
+                <div class="rm-quote">"Mình thích nấu ăn và trang trí phòng. Rất mong tìm được bạn..."</div>
+                <button class="rm-btn">Xem hồ sơ</button>
+            </div>
+            <div class="rm-card">
+                <div class="rm-top">
+                    <img class="rm-av" src="https://i.pravatar.cc/80?img=12" alt="Quốc Bảo"/>
+                    <div><div class="rm-name">Quốc Bảo</div><div class="rm-badge">MA KẾT • K17</div></div>
+                </div>
+                <div class="rm-quote">"Kỷ luật và gọn gàng là ưu tiên số 1 của mình. Đang có phòng..."</div>
+                <button class="rm-btn">Xem hồ sơ</button>
+            </div>
+        </div>`;
+    }
+
+    function appendBot(text, showChips, showCards) {
+        const chips = showChips ? `<div class="msg-chips">
+            <button class="msg-chip quick-send" data-msg="Ký túc xá FPT">Ký túc xá FPT</button>
+            <button class="msg-chip quick-send" data-msg="Khu Tân Xã">Khu Tân Xã</button>
+            <button class="msg-chip quick-send" data-msg="Thạch Hòa">Thạch Hòa</button>
+        </div>` : '';
+        const cards = showCards ? roommateCardsHtml() : '';
+        $msgs.append(`
+            <div class="msg-row bot">
+                <div class="msg-avatar bot"><i class="fas fa-robot"></i></div>
+                <div class="msg-content">
+                    <div class="msg-bubble">${esc(text)}</div>
+                    ${chips}${cards}
+                </div>
+            </div>`);
+        scroll();
+    }
+
+    function showTyping() {
+        const $t = $(`<div class="msg-row bot" id="typingRow">
+            <div class="msg-avatar bot"><i class="fas fa-robot"></i></div>
+            <div class="msg-content">
+                <div class="typing-bubble">
+                    <div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>
+                </div>
+            </div>
+        </div>`);
+        $msgs.append($t); scroll(); return $t;
+    }
+
+    function send(msg) {
+        if (!msg.trim()) return;
+        appendUser(msg);
+        $('#userMessage').val('');
+        const $t = showTyping();
+
+        $.ajax({
+            url: '@Url.Action("GetChatResponse","RentalAdvice")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ message: msg }),
+            success: function (res) {
+                $t.remove();
+                const resp = res.response || '';
+                const showCards = resp.includes('bạn cùng phòng') || resp.includes('ở ghép') || resp.includes('hợp cung') || msg.toLowerCase().includes('tân xã') || msg.toLowerCase().includes('song ngư');
+                const showChips = resp.includes('khu vực') || resp.includes('dom') || resp.length < 100;
+                appendBot(resp || 'Xin lỗi, thử lại nhé!', showChips, showCards);
+            },
+            error: function () {
+                $t.remove();
+                appendBot('Xin lỗi, mình đang gặp lỗi kết nối. Bạn thử lại nhé! 🙏', false, false);
+            }
+        });
+    }
+
+    $('#chatForm').on('submit', function (e) { e.preventDefault(); send($('#userMessage').val().trim()); });
+    $(document).on('click', '.quick-send', function () { send($(this).data('msg')); });
+
+    // Tarot draw
+    const tarotCards = [
+        { name: 'The Star', sub: 'Sự Hy Vọng &amp; Kết Nối', quote: '"Lá bài báo hiệu bạn sẽ tìm thấy người bạn cùng phòng có tâm hồn đồng điệu tại Hòa Lạc."', feng: 'Tháng này Song Ngư nên chọn phòng hướng <strong>Đông Nam</strong> để đón năng lượng tích cực từ Tân Xã.', color: '#2DBE8C' },
+        { name: 'The Sun', sub: 'Niềm Vui &amp; Thịnh Vượng', quote: '"Năng lượng tươi sáng bao quanh bạn. Phòng hướng Đông sẽ mang lại may mắn trong học tập."', feng: 'Chọn phòng hướng <strong>Đông</strong> để đón nắng buổi sáng, tăng vận khí học tập tốt.', color: '#F59E0B' },
+        { name: 'The Moon', sub: 'Trực Giác &amp; Bí Ẩn', quote: '"Hãy tin vào linh cảm khi chọn phòng. Nơi ở yên tĩnh sẽ giúp bạn tập trung học."', feng: 'Tránh phòng đối diện cầu thang. Chọn phòng cuối hành lang để có sự yên tĩnh cần thiết.', color: '#6366F1' },
+        { name: 'The Lovers', sub: 'Hòa Hợp &amp; Kết Nối', quote: '"Bạn cùng phòng tuyệt vời đang ở gần bạn. Sự hòa hợp tính cách tạo nên mái ấm lý tưởng."', feng: 'Đặt cây xanh nhỏ trong phòng để tăng năng lượng hòa hợp với bạn cùng phòng.', color: '#EC4899' },
+        { name: 'The Tower', sub: 'Thay Đổi &amp; Bứt Phá', quote: '"Đây là thời điểm thay đổi. Hãy mạnh dạn thử khu vực mới như Thạch Hòa hoặc Dom 5-8."', feng: 'Phòng ở tầng cao sẽ hút năng lượng đổi mới. Tránh phòng góc để không bị cô lập.', color: '#EF4444' },
+    ];
+    let lastCardIdx = 0;
+
+    function drawCard() {
+        let idx;
+        do { idx = Math.floor(Math.random() * tarotCards.length); } while (idx === lastCardIdx && tarotCards.length > 1);
+        lastCardIdx = idx;
+        const c = tarotCards[idx];
+
+        // Animate out
+        $('#tarotSvg, #tarotName, #tarotSub, #tarotQuote, #fengshuiText')
+            .css({ opacity: 0, transform: 'translateY(6px)', transition: 'all .2s ease' });
+
+        setTimeout(() => {
+            // Update star color
+            $('#tarotSvg polygon').attr('stroke', c.color);
+            $('#tarotName').text(c.name);
+            $('#tarotSub').html(c.sub);
+            $('#tarotQuote').html(c.quote);
+            $('#fengshuiText').html(c.feng);
+            // Animate in
+            $('#tarotSvg, #tarotName, #tarotSub, #tarotQuote, #fengshuiText')
+                .css({ transition: 'all .35s ease', opacity: 1, transform: 'translateY(0)' });
+        }, 200);
+    }
+
+    $('#drawBtn, #altBtn').on('click', drawCard);
+});
+</script>
+</body>
+</html>

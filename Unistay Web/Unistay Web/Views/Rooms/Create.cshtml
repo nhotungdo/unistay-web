@@ -1,607 +1,411 @@
-@model Unistay_Web.Models.Room.Room
+﻿@model Unistay_Web.Models.Room.Room
 @{
-    ViewData["Title"] = "Đăng tin phòng cho thuê";
+    ViewData["Title"] = "Đăng tin phòng cho thuê - UniStay";
+    ViewData["HideDefaultLayout"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+@section Styles {
+    <link rel="stylesheet" href="~/css/create-post.css" asp-append-version="true" />
+}
 
-<style>
-    :root {
-        --primary: #667eea;
-        --primary-dark: #764ba2;
-        --secondary: #f093fb;
-        --success: #4ade80;
-        --danger: #ef4444;
-        --light: #f8fafc;
-        --dark: #1e293b;
-    }
+<div class="cp-page">
 
-    body {
-        background: linear-gradient(135deg, var(--light) 0%, #f1f5f9 100%);
-        min-height: 100vh;
-        padding: 2rem 0;
-    }
+    <!-- NAVBAR -->
+    <header class="cp-navbar">
+        <a asp-controller="Home" asp-action="Index" class="cp-brand">UniStay</a>
+        <nav class="cp-nav">
+            <a asp-controller="Rooms" asp-action="Index" class="active">Tìm phòng</a>
+            <a asp-controller="Roommates" asp-action="Index">Ở ghép</a>
+            <a href="#">Dịch vụ</a>
+        </nav>
+        <div class="cp-nav-right">
+            <button class="cp-icon-btn" title="Thông báo"><i class="fas fa-bell"></i></button>
+            <button class="cp-icon-btn" title="Tin nhắn"><i class="fas fa-comment-dots"></i></button>
+            <div class="cp-avatar-wrap">
+                <img src="https://ui-avatars.com/api/?name=@Uri.EscapeDataString(User.Identity?.Name ?? "U")&background=6366f1&color=fff" alt="avatar" />
+            </div>
+            <a asp-controller="Rooms" asp-action="Create" class="cp-btn-post">Đăng tin</a>
+        </div>
+    </header>
 
-    /* Form Container */
-    .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .form-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .form-header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-    }
-
-    .form-header p {
-        font-size: 1.125rem;
-        color: #64748b;
-    }
-
-    /* Form Card */
-    .form-card {
-        background: white;
-        border-radius: 20px;
-        padding: 2.5rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Section Header */
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 2rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #e2e8f0;
-    }
-
-    .section-header:first-of-type {
-        margin-top: 0;
-    }
-
-    .section-number {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.25rem;
-    }
-
-    .section-header h3 {
-        margin: 0;
-        font-weight: 700;
-        color: var(--dark);
-    }
-
-    .section-header p {
-        margin: 0;
-        color: #64748b;
-        font-size: 0.875rem;
-    }
-
-    /* Form Group */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
-    }
-
-    .form-group label .required {
-        color: var(--danger);
-        margin-left: 0.25rem;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        font-family: inherit;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-group textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    /* Help Text */
-    .help-text {
-        font-size: 0.875rem;
-        color: #64748b;
-        margin-top: 0.5rem;
-    }
-
-    /* Form Row */
-    .form-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    /* Image Upload */
-    .image-upload-area {
-        border: 2px dashed #cbd5e1;
-        border-radius: 16px;
-        padding: 2.5rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #f8fafc;
-    }
-
-    .image-upload-area:hover {
-        border-color: var(--primary);
-        background: rgba(102, 126, 234, 0.05);
-    }
-
-    .image-upload-area.active {
-        border-color: var(--primary);
-        background: rgba(102, 126, 234, 0.1);
-    }
-
-    .upload-icon {
-        font-size: 3rem;
-        color: var(--primary);
-        margin-bottom: 1rem;
-    }
-
-    .upload-text {
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 0.25rem;
-    }
-
-    .upload-hint {
-        font-size: 0.875rem;
-        color: #64748b;
-    }
-
-    #imageUpload {
-        display: none;
-    }
-
-    /* Image Preview */
-    .image-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .image-preview-item {
-        position: relative;
-        border-radius: 12px;
-        overflow: hidden;
-        aspect-ratio: 1;
-    }
-
-    .image-preview-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .remove-image {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        width: 32px;
-        height: 32px;
-        background: var(--danger);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        opacity: 0;
-    }
-
-    .image-preview-item:hover .remove-image {
-        opacity: 1;
-    }
-
-    .remove-image:hover {
-        transform: scale(1.1);
-    }
-
-    /* Amenities */
-    .amenities-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-    }
-
-    .amenity-checkbox {
-        display: none;
-    }
-
-    .amenity-label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        padding: 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: white;
-        font-weight: 500;
-        color: #475569;
-    }
-
-    .amenity-checkbox:checked + .amenity-label {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .amenity-label:hover {
-        border-color: var(--primary);
-    }
-
-    .amenity-label i {
-        font-size: 1.25rem;
-    }
-
-    /* Buttons */
-    .button-group {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2.5rem;
-        justify-content: center;
-    }
-
-    .btn {
-        padding: 0.875rem 2.5rem;
-        border: none;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        min-width: 150px;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-secondary {
-        background: white;
-        color: var(--dark);
-        border: 2px solid #e2e8f0;
-    }
-
-    .btn-secondary:hover {
-        background: #f8fafc;
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    /* Responsive */
-    @@media (max-width: 768px) {
-        .form-card {
-            padding: 1.5rem;
-        }
-
-        .form-header h1 {
-            font-size: 1.75rem;
-        }
-
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-
-        .amenities-list {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .button-group {
-            flex-direction: column;
-        }
-    }
-
-    .validation-error {
-        color: var(--danger);
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .validation-error i {
-        font-size: 0.75rem;
-    }
-</style>
-
-<div class="container form-container">
-    <!-- Header -->
-    <div class="form-header" style="margin-bottom: 2rem;">
-        <h1><i class="fas fa-home me-2"></i>Đăng tin phòng cho thuê</h1>
-        <p>Điền thông tin chi tiết để thu hút người thuê phòng nhanh chóng</p>
-    </div>
-
-    <!-- Form Card -->
-    <div class="form-card">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <!-- SECTION 1: Basic Info -->
-            <div class="section-header">
-                <div class="section-number">1</div>
-                <div>
-                    <h3>Thông tin cơ bản</h3>
-                    <p>Tiêu đề và mô tả phòng</p>
-                </div>
+    <!-- BODY -->
+    <div class="cp-body">
+        <div class="cp-container">
+            <div class="cp-heading">
+                <div class="cp-step-label">BƯỚC ĐẦU TÌM TỔ ẤM</div>
+                <h1 class="cp-title">Đăng tin mới</h1>
+                <p class="cp-subtitle">Chia sẻ nhu cầu của bạn để tìm được căn phòng ưng ý hoặc những người bạn đồng hành tuyệt vời nhất.</p>
             </div>
 
-            <div class="form-group">
-                <label for="Title">Tiêu đề bài đăng <span class="required">*</span></label>
-                <input asp-for="Title" class="form-control" placeholder="VD: Studio cao cấp, full nội thất gần FPT" />
-                <span asp-validation-for="Title" class="validation-error"><i class="fas fa-exclamation-circle"></i></span>
-                <p class="help-text">Tiêu đề hấp dẫn sẽ giúp bài đăng được nhiều người xem hơn</p>
-            </div>
-
-            <div class="form-group">
-                <label for="Description">Mô tả chi tiết <span class="required">*</span></label>
-                <textarea asp-for="Description" class="form-control" placeholder="Mô tả tính năng, tiện ích, môi trường xung quanh, nội quy v.v..."></textarea>
-                <span asp-validation-for="Description" class="validation-error"><i class="fas fa-exclamation-circle"></i></span>
-                <p class="help-text">Mô tả chi tiết giúp người tìm kiếm hiểu rõ hơn về phòng của bạn</p>
-            </div>
-
-            <!-- SECTION 2: Specifics -->
-            <div class="section-header">
-                <div class="section-number">2</div>
-                <div>
-                    <h3>Thông số phòng</h3>
-                    <p>Diện tích, loại phòng, số người tối đa</p>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="Area">Diện tích (m²) <span class="required">*</span></label>
-                    <input asp-for="Area" type="number" step="0.5" class="form-control" placeholder="0" />
-                    <span asp-validation-for="Area" class="validation-error"><i class="fas fa-exclamation-circle"></i></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="MaxOccupants">Số người tối đa</label>
-                    <input asp-for="MaxOccupants" type="number" class="form-control" value="1" />
-                </div>
-
-                <div class="form-group">
-                    <label for="Address">Địa chỉ chi tiết <span class="required">*</span></label>
-                    <input asp-for="Address" class="form-control" placeholder="VD: 123 Phố Viễn Đông, Quận Cầu Giấy, Hà Nội" />
-                    <span asp-validation-for="Address" class="validation-error"><i class="fas fa-exclamation-circle"></i></span>
-                </div>
-            </div>
-
-            <!-- SECTION 3: Pricing -->
-            <div class="section-header">
-                <div class="section-number">3</div>
-                <div>
-                    <h3>Chi phí</h3>
-                    <p>Giá thuê, tiền cọc, chi phí khác</p>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="Price">Giá thuê (VNĐ/tháng) <span class="required">*</span></label>
-                    <input asp-for="Price" type="number" class="form-control" placeholder="0" />
-                    <span asp-validation-for="Price" class="validation-error"><i class="fas fa-exclamation-circle"></i></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="Deposit">Tiền cọc (VNĐ)</label>
-                    <input asp-for="Deposit" type="number" class="form-control" placeholder="0" />
-                    <p class="help-text">Để trống nếu không yêu cầu tiền cọc</p>
-                </div>
-            </div>
-
-            <!-- SECTION 4: Amenities -->
-            <div class="section-header">
-                <div class="section-number">4</div>
-                <div>
-                    <h3>Tiện ích & Dịch vụ</h3>
-                    <p>Chọn các tiện ích có sẵn trong phòng</p>
-                </div>
-            </div>
-
-            <input type="hidden" name="selectedAmenities" id="selectedAmenities" />
-            <div class="amenities-list">
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_wifi" name="amenities" value="wifi">
-                    <label for="amenity_wifi" class="amenity-label">
-                        <i class="fas fa-wifi"></i>
-                        <span>Wi-Fi</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_ac" name="amenities" value="ac">
-                    <label for="amenity_ac" class="amenity-label">
-                        <i class="fas fa-snowflake"></i>
-                        <span>Điều hòa</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_kitchen" name="amenities" value="kitchen">
-                    <label for="amenity_kitchen" class="amenity-label">
-                        <i class="fas fa-utensils"></i>
-                        <span>Bếp</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_bathroom" name="amenities" value="bathroom">
-                    <label for="amenity_bathroom" class="amenity-label">
-                        <i class="fas fa-shower"></i>
-                        <span>Phòng tắm</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_security" name="amenities" value="security">
-                    <label for="amenity_security" class="amenity-label">
-                        <i class="fas fa-shield"></i>
-                        <span>24/7 An toàn</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_parking" name="amenities" value="parking">
-                    <label for="amenity_parking" class="amenity-label">
-                        <i class="fas fa-square-parking"></i>
-                        <span>Chỗ để xe</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_tv" name="amenities" value="tv">
-                    <label for="amenity_tv" class="amenity-label">
-                        <i class="fas fa-tv"></i>
-                        <span>TV Cable</span>
-                    </label>
-                </div>
-                <div>
-                    <input type="checkbox" class="amenity-checkbox" id="amenity_laundry" name="amenities" value="laundry">
-                    <label for="amenity_laundry" class="amenity-label">
-                        <i class="fas fa-person-drowning"></i>
-                        <span>Giặt</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- SECTION 5: Images -->
-            <div class="section-header">
-                <div class="section-number">5</div>
-                <div>
-                    <h3>Hình ảnh</h3>
-                    <p>Tải lên ít nhất 3 hình ảnh chất lượng cao</p>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="image-upload-area" onclick="document.getElementById('imageUpload').click()">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-arrow-up"></i>
+            <div class="cp-layout">
+                <div class="cp-form-col">
+                    <!-- Post type selector -->
+                    <div class="cp-type-selector">
+                        <label class="cp-type-card cp-type-active">
+                            <input type="radio" name="postType" value="room" checked />
+                            <div class="cp-type-icon"><i class="fas fa-home"></i></div>
+                            <div class="cp-type-info">
+                                <div class="cp-type-title">Đăng tin cho thuê phòng</div>
+                                <div class="cp-type-desc">Bạn có phòng trống và muốn tìm người thuê phù hợp.</div>
+                            </div>
+                        </label>
+                        <a asp-controller="Roommates" asp-action="Create" class="cp-type-card" style="text-decoration:none">
+                            <div class="cp-type-icon cp-type-icon-green"><i class="fas fa-user-friends"></i></div>
+                            <div class="cp-type-info">
+                                <div class="cp-type-title">Đăng tin tìm bạn ở ghép</div>
+                                <div class="cp-type-desc">Bạn đang tìm người chia sẻ chi phí thuê phòng.</div>
+                            </div>
+                        </a>
                     </div>
-                    <div class="upload-text">Kéo thả hoặc click để tải ảnh</div>
-                    <div class="upload-hint">Hỗ trợ JPG, PNG (Tối đa 10MB mỗi file)</div>
-                </div>
-                <input type="file" id="imageUpload" name="imageFiles" multiple accept="image/*" />
-                <div class="image-gallery" id="imageGallery"></div>
-                <p class="help-text">Hình ảnh sắc nét sẽ giúp bài đăng hấp dẫn hơn</p>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="button-group">
-                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
-                    <i class="fas fa-arrow-left me-2"></i>Hủy
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-check me-2"></i>Đăng tin
-                </button>
+                    <!-- Form card -->
+                    <div class="cp-form-card">
+                        <div class="cp-form-section-title">
+                            <span class="cp-form-section-bar"></span> Thông tin cơ bản
+                        </div>
+
+                        <form asp-action="Create" method="post" enctype="multipart/form-data" id="mainForm">
+                            @Html.AntiForgeryToken()
+
+                            <div class="cp-field">
+                                <label class="cp-label">Tiêu đề bài viết</label>
+                                <input type="text" asp-for="Title" class="cp-input" placeholder="VD: Phòng trọ khu vực Bách Khoa, đầy đủ tiện nghi, gần trường" />
+                                <span asp-validation-for="Title" class="cp-error"></span>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Nội dung chi tiết</label>
+                                <textarea asp-for="Description" class="cp-textarea" placeholder="Mô tả chi tiết về phòng: diện tích, tiện ích, nội thất, quy định nhà trọ..."></textarea>
+                                <span asp-validation-for="Description" class="cp-error"></span>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Địa chỉ phòng</label>
+                                <div class="cp-input-icon-wrap">
+                                    <i class="fas fa-map-marker-alt cp-input-icon"></i>
+                                    <input type="text" asp-for="Address" class="cp-input cp-input-padded" placeholder="Số nhà, đường, phường/xã, quận/huyện, thành phố" />
+                                </div>
+                                <span asp-validation-for="Address" class="cp-error"></span>
+                            </div>
+
+                            <div class="cp-row-3">
+                                <div class="cp-field">
+                                    <label class="cp-label">Giá thuê (VNĐ/tháng)</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-money-bill-wave cp-input-icon"></i>
+                                        <input type="number" asp-for="Price" class="cp-input cp-input-padded" placeholder="VD: 3000000" />
+                                    </div>
+                                    <span asp-validation-for="Price" class="cp-error"></span>
+                                </div>
+                                <div class="cp-field">
+                                    <label class="cp-label">Tiền cọc (VNĐ)</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-shield-alt cp-input-icon"></i>
+                                        <input type="number" asp-for="Deposit" class="cp-input cp-input-padded" placeholder="VD: 6000000" />
+                                    </div>
+                                </div>
+                                <div class="cp-field">
+                                    <label class="cp-label">Diện tích (m²)</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-ruler-combined cp-input-icon"></i>
+                                        <input type="number" asp-for="Area" class="cp-input cp-input-padded" placeholder="VD: 25" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Số người tối đa</label>
+                                <div class="cp-occupant-row">
+                                    @for (int i = 1; i <= 4; i++)
+                                    {
+                                        <label class="cp-occupant-opt @(i == 1 ? "active" : "")">
+                                            <input type="radio" name="MaxOccupants" value="@i" @(i == 1 ? "checked" : "") />
+                                            @i người
+                                        </label>
+                                    }
+                                    <label class="cp-occupant-opt">
+                                        <input type="radio" name="MaxOccupants" value="5" />
+                                        5+ người
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Tiện ích có sẵn</label>
+                                <div class="cp-habits-wrap">
+                                    @{
+                                        var amenityList = new (string icon, string name)[] {
+                                                                        ("fas fa-wifi", "Wifi"),
+                                                                        ("fas fa-snowflake", "Điều hòa"),
+                                                                        ("fas fa-tshirt", "Máy giặt"),
+                                                                        ("fas fa-parking", "Chỗ để xe"),
+                                                                        ("fas fa-utensils", "Bếp nấu ăn"),
+                                                                        ("fas fa-bath", "WC riêng"),
+                                                                        ("fas fa-tv", "TV"),
+                                                                        ("fas fa-couch", "Nội thất"),
+                                                                        ("fas fa-shield-alt", "An ninh 24/7"),
+                                                                        ("fas fa-bolt", "Điện nước riêng")
+                                                                        };
+                                        var currentAmenities = Model?.Amenities?.Split(',') ?? Array.Empty<string>();
+                                    }
+                                    @foreach (var item in amenityList)
+                                    {
+                                        var isChecked = currentAmenities.Contains(item.name);
+                                        <label class="cp-habit-chip @(isChecked ? "active" : "")">
+                                            <input type="checkbox" name="selectedAmenities" value="@item.name" @(isChecked ? "checked" : "") />
+                                            <i class="@item.icon"></i> @item.name
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Quy định nhà trọ</label>
+                                <div class="cp-habits-wrap">
+                                    @{
+                                        var ruleList = new[] { "Không hút thuốc", "Không thú cưng", "Không nấu ăn", "Không khách qua đêm", "Giờ giấc tự do", "Không ồn ào sau 22h" };
+                                        var currentRules = Model?.Rules?.Split(',') ?? Array.Empty<string>();
+                                    }
+                                    @foreach (var rule in ruleList)
+                                    {
+                                        var isChecked = currentRules.Contains(rule);
+                                        <label class="cp-habit-chip @(isChecked ? "active" : "")">
+                                            <input type="checkbox" name="rulesList" value="@rule" @(isChecked ? "checked" : "") />
+                                            @rule
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Hình ảnh phòng</label>
+                                <label class="cp-upload-zone" for="imageUpload" id="uploadZone">
+                                    <div class="cp-upload-inner">
+                                        <div class="cp-upload-icon"><i class="fas fa-image"></i></div>
+                                        <div class="cp-upload-text">Tải ảnh lên hoặc kéo thả vào đây</div>
+                                        <div class="cp-upload-hint">Hỗ trợ JPG, PNG (Tối đa 5 ảnh, mỗi ảnh &lt; 5MB)</div>
+                                    </div>
+                                </label>
+                                <input type="file" id="imageUpload" name="imageFiles" class="cp-file-input" accept="image/*" multiple />
+                                <div class="cp-preview-row" id="previewRow"></div>
+                            </div>
+
+                            <div class="cp-field">
+                                <label class="cp-label">Gói đăng tin</label>
+                                <div class="cp-package-row">
+                                    <label class="cp-package-opt active">
+                                        <input type="radio" name="packageType" value="free" checked />
+                                        <div class="cp-pkg-icon"><i class="fas fa-tag"></i></div>
+                                        <div>
+                                            <div class="cp-pkg-name">Miễn phí</div>
+                                            <div class="cp-pkg-desc">Hiển thị thông thường, 30 ngày</div>
+                                        </div>
+                                    </label>
+                                    <label class="cp-package-opt">
+                                        <input type="radio" name="packageType" value="vip" />
+                                        <div class="cp-pkg-icon cp-pkg-icon-gold"><i class="fas fa-crown"></i></div>
+                                        <div>
+                                            <div class="cp-pkg-name">VIP <span class="cp-pkg-badge">Nổi bật</span></div>
+                                            <div class="cp-pkg-desc">Ưu tiên hiển thị, 60 ngày</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <input type="hidden" asp-for="IsVIP" id="isVipHidden" value="false" />
+                            </div>
+
+                            <input type="hidden" asp-for="Rules" id="rulesInput" />
+
+                            <div class="cp-form-actions">
+                                <button type="button" class="cp-btn-draft" onclick="saveDraft()">
+                                    <i class="fas fa-save"></i> Lưu nháp
+                                </button>
+                                <button type="submit" class="cp-btn-submit">
+                                    <i class="fas fa-check-circle"></i> Xác nhận Đăng tin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SIDEBAR -->
+                <aside class="cp-sidebar">
+                    <div class="cp-tip-card">
+                        <div class="cp-tip-header">
+                            <div class="cp-tip-icon"><i class="fas fa-lightbulb"></i></div>
+                            <span class="cp-tip-title">Mẹo đăng tin hiệu quả</span>
+                        </div>
+                        <ol class="cp-tip-list">
+                            <li>Tiêu đề rõ ràng bao gồm khu vực và mục đích chính giúp tin của bạn dễ được tìm thấy hơn.</li>
+                            <li>Cung cấp ít nhất 3 ảnh thật về không gian phòng để tăng độ tin cậy và thu hút người thuê.</li>
+                            <li>Nêu rõ các quy tắc chung như giờ giấc, hút thuốc, hay thú cưng để lọc đối tác tương xứng.</li>
+                        </ol>
+                    </div>
+
+                    <div class="cp-support-card">
+                        <div class="cp-support-badge">HỖ TRỢ 24/7</div>
+                        <div class="cp-support-title">Cần trợ giúp đăng bài?</div>
+                        <p class="cp-support-desc">Nếu gặp khó khăn trong quá trình đăng tin, đừng ngần ngại liên hệ với đội ngũ hỗ trợ Unistay.</p>
+                        <a href="#" class="cp-support-link">Trung tâm hỗ trợ <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="cp-preview-card">
+                        <div class="cp-preview-card-title"><i class="fas fa-eye"></i> Xem trước tin đăng</div>
+                        <div class="cp-mini-preview">
+                            <div class="cp-mini-img"><i class="fas fa-home"></i></div>
+                            <div class="cp-mini-info">
+                                <div class="cp-mini-title" id="previewTitle">Tiêu đề bài viết...</div>
+                                <div class="cp-mini-price" id="previewPrice">— đ/tháng</div>
+                                <div class="cp-mini-addr" id="previewAddr"><i class="fas fa-map-marker-alt"></i> Địa chỉ...</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
             </div>
-        </form>
+        </div>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="cp-footer">
+        <div class="cp-footer-inner">
+            <div class="cp-footer-brand-col">
+                <div class="cp-footer-brand">UniStay</div>
+                <p>Hệ thống tìm phòng trọ và ở ghép hàng đầu dành cho sinh viên Việt Nam.</p>
+                <div class="cp-footer-socials">
+                    <a href="#"><i class="fas fa-globe"></i></a>
+                    <a href="#"><i class="fas fa-at"></i></a>
+                </div>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Khám phá</div>
+                <a href="#">Tìm phòng gần trường</a>
+                <a href="#">Tìm bạn ở ghép mới</a>
+                <a href="#">Tin tức sinh viên</a>
+                <a href="#">Cẩm nang thuê trọ</a>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Công ty</div>
+                <a href="#">Về chúng tôi</a>
+                <a href="#">Tuyển dụng</a>
+                <a href="#">Đối tác</a>
+                <a href="#">Báo chí</a>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Tải ứng dụng</div>
+                <a href="#" class="cp-store-btn">
+                    <i class="fab fa-google-play"></i>
+                    <div><span>GET IT ON</span><strong>Google Play</strong></div>
+                </a>
+                <a href="#" class="cp-store-btn">
+                    <i class="fab fa-apple"></i>
+                    <div><span>DOWNLOAD ON THE</span><strong>App Store</strong></div>
+                </a>
+            </div>
+        </div>
+        <div class="cp-footer-bottom">
+            <span>© 2026 Unistay Corp. All rights reserved.</span>
+            <div class="cp-footer-links">
+                <a href="#">Điều khoản dịch vụ</a>
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Cài đặt Cookie</a>
+            </div>
+        </div>
+    </footer>
+
 </div>
 
-<script>
-    // Image upload handling
-    const imageUploadInput = document.getElementById('imageUpload');
-    const imageGallery = document.getElementById('imageGallery');
-    const uploadArea = document.querySelector('.image-upload-area');
+@section Scripts {
+    <script src="~/js/rooms-create.js" asp-append-version="true"></script>
+}
 
-    imageUploadInput.addEventListener('change', function(e) {
-        handleImageUpload(e.target.files);
-    });
+            // Occupant radio
+            document.querySelectorAll('input[name="MaxOccupants"]').forEach(r => {
+                r.addEventListener('change', function () {
+                    document.querySelectorAll('.cp-occupant-opt').forEach(o => o.classList.remove('active'));
+                    this.closest('.cp-occupant-opt').classList.add('active');
+                });
+            });
 
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadArea.classList.add('active');
-    });
+            // Package toggle
+            document.querySelectorAll('input[name="packageType"]').forEach(r => {
+                r.addEventListener('change', function () {
+                    document.querySelectorAll('.cp-package-opt').forEach(o => o.classList.remove('active'));
+                    this.closest('.cp-package-opt').classList.add('active');
+                    document.getElementById('isVipHidden').value = (this.value === 'vip').toString().toLowerCase();
+                });
+            });
 
-    uploadArea.addEventListener('dragleave', function() {
-        uploadArea.classList.remove('active');
-    });
+            // Amenity chips
+            document.querySelectorAll('input[name="selectedAmenities"]').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    this.closest('.cp-habit-chip').classList.toggle('active', this.checked);
+                });
+            });
 
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadArea.classList.remove('active');
-        const files = e.dataTransfer.files;
-        imageUploadInput.files = files;
-        handleImageUpload(files);
-    });
+            // Rules chips + sync hidden
+            function updateRules() {
+                const selected = Array.from(document.querySelectorAll('input[name="rulesList"]:checked')).map(c => c.value);
+                document.getElementById('rulesInput').value = selected.join(',');
+            }
+            document.querySelectorAll('input[name="rulesList"]').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    this.closest('.cp-habit-chip').classList.toggle('active', this.checked);
+                    updateRules();
+                });
+            });
+            updateRules();
 
-    function handleImageUpload(files) {
-        Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'image-preview-item';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <button type="button" class="remove-image" onclick="this.parentElement.remove()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    imageGallery.appendChild(div);
-                };
-                reader.readAsDataURL(file);
+            // Live preview
+            const titleInput = document.querySelector('input[name="Title"]');
+            const priceInput = document.querySelector('input[name="Price"]');
+            const addrInput = document.querySelector('input[name="Address"]');
+
+            function updatePreview() {
+                const t = titleInput?.value || 'Tiêu đề bài viết...';
+                const p = priceInput?.value ? Number(priceInput.value).toLocaleString('vi-VN') + ' đ/tháng' : '— đ/tháng';
+                const a = addrInput?.value || 'Địa chỉ...';
+                document.getElementById('previewTitle').textContent = t.length > 40 ? t.slice(0, 40) + '...' : t;
+                document.getElementById('previewPrice').textContent = p;
+                document.getElementById('previewAddr').innerHTML = '<i class="fas fa-map-marker-alt"></i> ' + (a.length > 35 ? a.slice(0, 35) + '...' : a);
+            }
+            [titleInput, priceInput, addrInput].forEach(el => el?.addEventListener('input', updatePreview));
+
+            // Image upload
+            const fileInput = document.getElementById('imageUpload');
+            const previewRow = document.getElementById('previewRow');
+            const uploadZone = document.getElementById('uploadZone');
+
+            uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('cp-upload-drag'); });
+            uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('cp-upload-drag'));
+            uploadZone.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadZone.classList.remove('cp-upload-drag');
+                handleFiles(e.dataTransfer.files);
+            });
+            fileInput.addEventListener('change', function () { handleFiles(this.files); });
+
+            function handleFiles(files) {
+                Array.from(files).slice(0, 5).forEach(file => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const thumb = document.createElement('div');
+                        thumb.className = 'cp-thumb';
+                        thumb.innerHTML = `
+<img src="${e.target.result}" alt="preview"><button type="button" class="cp-thumb-remove"><i class="fas fa-times"></i></button>`;
+                        thumb.querySelector('.cp-thumb-remove').addEventListener('click', () => thumb.remove());
+                        previewRow.appendChild(thumb);
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
         });
-    }
 
-    // Amenity selection
-    document.querySelectorAll('.amenity-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const selected = Array.from(document.querySelectorAll('.amenity-checkbox:checked'))
-                .map(c => c.value)
-                .join(',');
-            document.getElementById('selectedAmenities').value = selected;
-        });
-    });
+        function saveDraft() {
+            const btn = document.querySelector('.cp-btn-draft');
+            btn.innerHTML = '<i class="fas fa-check"></i> Đã lưu nháp';
+            btn.style.color = '#10b981';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Lưu nháp'; btn.style.color = ''; }, 2000);
+        }
 </script>
+}

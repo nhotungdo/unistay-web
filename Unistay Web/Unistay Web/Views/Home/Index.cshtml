@@ -13,113 +13,68 @@
 }
 
 <!-- ============================================================
-     NAVBAR (Custom for Homepage)
-     ============================================================ -->
-<nav class="hp-navbar" id="homeNav">
-    <div class="container" style="width:100%; display:flex; align-items:center;">
-        <a class="hp-nav-brand" asp-controller="Home" asp-action="Index">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
-            Unistay
-        </a>
-
-        <ul class="hp-nav-links">
-            <li><a asp-controller="Rooms" asp-action="Index">Tìm phòng</a></li>
-            <li><a asp-controller="Roommates" asp-action="Index">Dịch vụ</a></li>
-            <li><a asp-controller="Marketplace" asp-action="Index">Chợ đồ cũ</a></li>
-            <li><a asp-controller="RentalAdvice" asp-action="Index">Blog</a></li>
-        </ul>
-
-        <div class="hp-nav-actions">
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <a asp-controller="Rooms" asp-action="Create" class="hp-btn-register">
-                    + Đăng tin
-                </a>
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none gap-2"
-                       data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--us-text);">
-                        <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=FF5C27&color=fff&size=32"
-                             style="width:32px;height:32px;border-radius:50%;" />
-                        <span style="font-size:0.875rem; font-weight:600;">@User.Identity.Name</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Hồ sơ cá nhân</a></li>
-                        <li><a class="dropdown-item" asp-controller="RentalAdvice" asp-action="Index">Tư vấn AI</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="dropdown-item text-danger">Đăng xuất</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            }
-            else
-            {
-                <a asp-controller="Account" asp-action="Login" class="hp-btn-login">Đăng nhập</a>
-                <a asp-controller="Account" asp-action="Register" class="hp-btn-register">Đăng ký ngay</a>
-            }
-        </div>
-    </div>
-</nav>
-
-<!-- ============================================================
      HERO SECTION
      ============================================================ -->
 <section class="hp-hero">
     <div class="container">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center;">
+        <div class="hp-hero-grid">
             <!-- Left Content -->
-            <div>
-                <span class="hp-hero-label">🏠 Nền tảng số 1 cho sinh viên Việt Nam</span>
-                <h1>
-                    Tìm phòng lý tưởng hoặc <span class="hp-orange">Đăng tin</span><br/>
-                    cho thuê nhanh chóng
+            <div class="hp-hero-content">
+                <h1 class="hp-hero-title">
+                    Tìm <span class="hp-blue">ngôi nhà mơ ước</span> của bạn tại bất cứ đâu.
                 </h1>
-                <p>Nơi kết nối hàng triệu sinh viên với chủ trọ trên toàn Việt Nam. Minh bạch - An toàn - Hiệu quả.</p>
+                <p class="hp-hero-subtitle">Unistay kết nối sinh viên với những căn phòng chất lượng, an toàn và dịch vụ tìm người ở ghép thông minh nhất hiện nay.</p>
 
                 <!-- Search Bar -->
-                <div class="hp-search-bar">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" style="flex-shrink:0;">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <input type="text" placeholder="Nhập khu vực, quận, trường... (VD: Thủ Đức, HUTECH)">
-                    <button>Tìm kiếm</button>
+                <div class="hp-search-container">
+                    <div class="hp-search-box">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" placeholder="Nhập khu vực, trường học, địa điểm...">
+                        <button class="hp-search-btn">Tìm kiếm ngay</button>
+                    </div>
                 </div>
 
-                <!-- CTA Buttons -->
-                <div class="hp-hero-btns">
-                    <a asp-controller="Rooms" asp-action="Index" class="hp-btn-primary">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        Tìm phòng ngay
-                    </a>
-                    <a asp-controller="Rooms" asp-action="Create" class="hp-btn-outline-orange">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        Đăng tin miễn phí
-                    </a>
+                <!-- Locations -->
+                <div class="hp-hero-shortcuts">
+                    <span class="hp-shortcut-label">Gợi ý:</span>
+                    <a href="#" class="hp-shortcut-link">Hà Nội</a>
+                    <a href="#" class="hp-shortcut-link">TP. Hồ Chí Minh</a>
+                    <a href="#" class="hp-shortcut-link">Đà Nẵng</a>
+                    <a href="#" class="hp-shortcut-link">Cần Thơ</a>
+                </div>
+
+                <!-- Hero Trust Badges -->
+                <div class="hp-hero-trust">
+                    <div class="hp-trust-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Đã xác thực</span>
+                    </div>
+                    <div class="hp-trust-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Tìm nhanh 24h</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Image/Card -->
-            <div style="position:relative;">
-                <div style="border-radius:20px; overflow:hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.14);">
-                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&h=500&fit=crop&q=80"
-                         alt="Tìm phòng trọ sinh viên" style="width:100%; height:360px; object-fit:cover; display:block;">
-                </div>
-                <!-- Floating card -->
-                <div style="position:absolute; bottom:-16px; left:-20px; background:white; border-radius:14px; padding:1rem 1.25rem; box-shadow: 0 8px 30px rgba(0,0,0,0.12); display:flex; align-items:center; gap:0.75rem;">
-                    <div style="width:42px;height:42px;background:#ecfdf5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">✅</div>
-                    <div>
-                        <div style="font-size:0.8rem;font-weight:700;color:#1a1a2e;">Đã xác thực</div>
-                        <div style="font-size:0.75rem;color:#6b7280;">Hơn 10.000+ phòng</div>
+            <!-- Right Image/Illustration -->
+            <div class="hp-hero-visual">
+                <div class="hp-hero-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&q=80" 
+                         alt="Phòng trọ đẹp" class="hp-hero-main-img">
+                    
+                    <!-- Floating Card -->
+                    <div class="hp-floating-card">
+                        <div class="hp-fc-badge">CĂN HỘ CAO CẤP</div>
+                        <div class="hp-fc-title">The Central Residence</div>
+                        <div class="hp-fc-location">Quận 1, TP. Hồ Chí Minh</div>
+                        <a href="#" class="hp-fc-btn">Đăng ký ngay</a>
                     </div>
-                </div>
-                <!-- Floating badge -->
-                <div style="position:absolute; top:-14px; right:-14px; background: var(--us-orange, #FF5C27); border-radius:12px; padding:0.7rem 1rem; box-shadow:0 8px 24px rgba(255,92,39,0.35); color:white;">
-                    <div style="font-size:1.1rem;font-weight:800;">5K+</div>
-                    <div style="font-size:0.72rem;opacity:0.9;">Tin đăng/tháng</div>
                 </div>
             </div>
         </div>
@@ -127,224 +82,171 @@
 </section>
 
 <!-- ============================================================
-     DÀNH CHO SINH VIÊN
+     TÍNH NĂNG NỔI BẬT
      ============================================================ -->
-<section class="hp-student-section">
+<section class="hp-features">
     <div class="container">
-        <div style="text-align:center; margin-bottom:2rem;">
-            <span class="hp-section-label">Khám phá dịch vụ</span>
-            <h2 style="font-size:1.6rem; font-weight:800; color:#1a1a2e; margin-bottom:0.5rem;">Dành cho Sinh Viên</h2>
-            <p style="color:#6b7280; font-size:0.9rem; max-width:500px; margin:0 auto;">Hệ sinh thái toàn diện giúp sinh viên tìm trọ, bạn ở ghép và kết nối cộng đồng dễ dàng</p>
+        <div class="hp-section-intro">
+            <span class="hp-label-blue">DÀNH CHO SINH VIÊN</span>
+            <h2 class="hp-section-title">Tính năng nổi bật</h2>
         </div>
 
-        <div class="hp-cards-grid">
-            <!-- Card 1: Phòng mới nhất -->
-            <a asp-controller="Rooms" asp-action="Index" class="hp-feature-card">
-                <div class="hp-feature-icon orange">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5C27" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                        <polyline points="9 22 9 12 15 12 15 22"/>
+        <div class="hp-features-grid">
+            <!-- Feature 1 -->
+            <div class="hp-feature-item">
+                <div class="hp-f-icon blue-bg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                     </svg>
                 </div>
                 <h3>Phòng mới nhất</h3>
-                <p>Cập nhật liên tục những phòng trọ tốt nhất, giá hợp lý dành riêng cho sinh viên trên toàn quốc.</p>
-                <span class="hp-card-link">
-                    Tìm ngay →
-                </span>
-            </a>
+                <p>Cập nhật liên tục hàng ngàn phòng trọ, căn hộ dịch vụ xung quanh các cụm trường đại học lớn.</p>
+                <a href="#" class="hp-f-more">Khám phá ngay →</a>
+            </div>
 
-            <!-- Card 2: Tìm bạn ở ghép -->
-            <a asp-controller="Roommates" asp-action="Index" class="hp-feature-card">
-                <div class="hp-feature-icon green">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            <!-- Feature 2 -->
+            <div class="hp-feature-item">
+                <div class="hp-f-icon green-bg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m18-12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
                     </svg>
                 </div>
                 <h3>Tìm bạn ở ghép</h3>
-                <p>Kết nối với những người bạn cùng sở thích, phù hợp lối sống để cùng chia sẻ không gian và chi phí.</p>
-                <span class="hp-card-link">
-                    Tìm bạn →
-                </span>
-            </a>
+                <p>Thuật toán khớp nối thông minh giúp bạn tìm được người bạn cùng phòng có cùng lối sống và sở thích.</p>
+                <a href="#" class="hp-f-more">Kết nối ngay →</a>
+            </div>
 
-            <!-- Card 3: Hỗ trợ viên / Tư vấn AI -->
-            <a asp-controller="RentalAdvice" asp-action="Index" class="hp-feature-card">
-                <div class="hp-feature-icon blue">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+            <!-- Feature 3 -->
+            <div class="hp-feature-item">
+                <div class="hp-f-icon orange-bg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
                     </svg>
                 </div>
-                <h3>Hỗ trợ viên AI</h3>
-                <p>Tư vấn tìm trọ thông minh bằng AI, giúp bạn chọn được phòng phù hợp nhất theo nhu cầu và ngân sách.</p>
-                <span class="hp-card-link">
-                    Thử ngay →
-                </span>
-            </a>
+                <h3>AI tư vấn</h3>
+                <p>Hỗ trợ tìm phòng tự động 24/7 dựa trên ngân sách, vị trí và tiện ích mà bạn mong muốn.</p>
+                <a href="#" class="hp-f-more">Trò chuyện với AI →</a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- ============================================================
-     BUSINESS / CHỦ TRỌ SECTION
+     BUSINESS SECTION
      ============================================================ -->
-<section class="hp-business">
+<section class="hp-business-cta">
     <div class="container">
-        <div class="hp-business-inner">
-            <!-- Left Image -->
-            <div class="hp-business-img">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=500&fit=crop&q=80"
-                     alt="Chủ trọ quản lý với Unistay">
-                <div style="position:absolute; bottom:24px; right:-20px; background: white; padding: 1rem 1.25rem; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 160px;">
-                    <div style="font-size: 0.75rem; color:#6b7280; margin-bottom:4px;">Thu nhập tháng này</div>
-                    <div style="font-size: 1.3rem; font-weight:800; color:#FF5C27;">+15.5 tr</div>
-                    <div style="font-size: 0.75rem; color:#059669; font-weight:600;">▲ 12% so với tháng trước</div>
-                </div>
-            </div>
-
-            <!-- Right Content -->
-            <div class="hp-business-content">
-                <span class="hp-section-label">Dành cho Chủ Nhà</span>
-                <h2>Gia tăng thu nhập, tối ưu quản lý cùng Unistay</h2>
-
-                <ul class="hp-check-list">
+        <div class="hp-b-card">
+            <div class="hp-b-content">
+                <h2 class="hp-b-title">Gia tăng thu nhập với Unistay</h2>
+                <ul class="hp-b-list">
                     <li>
-                        <div class="hp-check-dot">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4>Tiếp cận 10k+ sinh viên</h4>
-                            <p>Tin đăng của bạn hiện thị đến hàng nghìn sinh viên đang tìm phòng mỗi ngày trên nền tảng.</p>
-                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Tiếp cận 100,000+ sinh viên tìm phòng mỗi tháng.</span>
                     </li>
                     <li>
-                        <div class="hp-check-dot">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4>Quản lý dễ dàng</h4>
-                            <p>Theo dõi tin đăng, tương tác với khách thuê và nhận booking ngay trên ứng dụng mọi lúc mọi nơi.</p>
-                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Quản lý tin đăng chuyên nghiệp và hiệu quả.</span>
                     </li>
                     <li>
-                        <div class="hp-check-dot">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4>Minh bạch tài chính</h4>
-                            <p>Theo dõi lịch sử giao dịch, thu chi rõ ràng giúp bạn điều hành kinh doanh hiệu quả hơn.</p>
-                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Hệ thống thanh toán và đặt cọc an toàn.</span>
                     </li>
                 </ul>
-
-                <a asp-controller="Rooms" asp-action="Create" class="hp-btn-primary">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                    Bắt đầu kinh doanh
-                </a>
+                <a href="#" class="hp-b-btn">Bắt đầu đăng tin miễn phí</a>
+            </div>
+            <div class="hp-b-visual">
+                <div class="hp-stats-card">
+                    <div class="hp-sc-header">
+                        <div class="hp-sc-dot green"></div>
+                        <span class="hp-sc-percent">+46% tỷ lệ lấp phòng</span>
+                    </div>
+                    <div class="hp-sc-bars">
+                        <div class="hp-sc-bar" style="width: 85%;"></div>
+                        <div class="hp-sc-bar" style="width: 60%;"></div>
+                        <div class="hp-sc-bar" style="width: 75%;"></div>
+                        <div class="hp-sc-bar" style="width: 90%;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- ============================================================
-     STATS BANNER
+     STATS SECTION
      ============================================================ -->
-<section class="hp-stats">
+<section class="hp-stats-new">
     <div class="container">
-        <div class="hp-stats-grid">
-            <div class="hp-stat-item">
-                <h3>10k+</h3>
-                <p>Sinh viên tin tưởng sử dụng</p>
+        <div class="hp-stats-grid-new">
+            <div class="hp-stat-box">
+                <div class="hp-sb-number">10k+</div>
+                <div class="hp-sb-label">Sinh viên</div>
             </div>
-            <div class="hp-stat-item">
-                <h3>5k+</h3>
-                <p>Tin đăng mỗi tháng</p>
+            <div class="hp-stat-box">
+                <div class="hp-sb-number">5k+</div>
+                <div class="hp-sb-label">Phòng trọ</div>
             </div>
-            <div class="hp-stat-item">
-                <h3>98%</h3>
-                <p>Đánh giá hài lòng</p>
+            <div class="hp-stat-box">
+                <div class="hp-sb-number">98%</div>
+                <div class="hp-sb-label">Hài lòng</div>
+            </div>
+            <div class="hp-stat-box">
+                <div class="hp-sb-number">50+</div>
+                <div class="hp-sb-label">Đối tác</div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- ============================================================
-     ĐÁNH GIÁ NGƯỜI DÙNG
+     REVIEWS SECTION
      ============================================================ -->
-<section class="hp-reviews">
-    <div class="container">
-        <div class="hp-reviews-header">
-            <span class="hp-section-label">Phản hồi từ cộng đồng</span>
-            <h2>Đánh giá từ người dùng</h2>
-            <p>Hàng nghìn sinh viên và chủ trọ đã tin tưởng và sử dụng nền tảng Unistay mỗi ngày</p>
-        </div>
-
-        <div class="hp-reviews-grid">
+<section class="hp-reviews-new">
+    <div class="container text-center">
+        <h2 class="hp-section-title">Đánh giá từ người dùng</h2>
+        <p class="hp-section-subtitle">Hàng ngàn sinh viên đã tìm thấy tổ ấm thứ hai của mình.</p>
+        
+        <div class="hp-reviews-grid-new">
             <!-- Review 1 -->
-            <div class="hp-review-card">
-                <div class="hp-stars">
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                </div>
-                <p>"Tôi tìm được phòng ưng ý chỉ sau 3 ngày dùng Unistay! Giao diện rất dễ dùng, thông tin phòng chi tiết và chủ trọ phản hồi nhanh chóng. Rất hài lòng với trải nghiệm này."</p>
-                <div class="hp-reviewer">
-                    <div class="hp-reviewer-avatar" style="background:linear-gradient(135deg,#FF5C27,#ff8c42);">N</div>
-                    <div class="hp-reviewer-info">
-                        <h5>Nguyễn Văn An</h5>
-                        <p>Sinh viên HUTECH · TP. HCM</p>
+            <div class="hp-rev-card">
+                <div class="hp-rev-stars">★★★★★</div>
+                <p class="hp-rev-text">"Unistay giúp mình tìm được phòng chỉ trong 2 ngày. Giao diện rất dễ dùng và các phòng đều đã được xác thực nên rất yên tâm."</p>
+                <div class="hp-rev-user">
+                    <img src="https://i.pravatar.cc/150?u=1" alt="User">
+                    <div class="hp-rev-info">
+                        <strong>Minh Anh</strong>
+                        <span>SV Đại học FPT</span>
                     </div>
                 </div>
             </div>
-
             <!-- Review 2 -->
-            <div class="hp-review-card">
-                <div class="hp-stars">
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                </div>
-                <p>"Tính năng tìm bạn ở ghép quá hay! Tôi đã kết nối được với bạn cùng phòng hợp lý, cùng chia sẻ chi phí và còn trở thành bạn bè thân. Tiết kiệm được gần 2 triệu mỗi tháng."</p>
-                <div class="hp-reviewer">
-                    <div class="hp-reviewer-avatar" style="background:linear-gradient(135deg,#059669,#34d399);">O</div>
-                    <div class="hp-reviewer-info">
-                        <h5>Chi Linh</h5>
-                        <p>Sinh viên UEF · Bình Thạnh</p>
+            <div class="hp-rev-card">
+                <div class="hp-rev-stars">★★★★★</div>
+                <p class="hp-rev-text">"Lần đầu tiên mình tìm người ở ghép mà không thấy lo lắng. Tính năng lọc theo sở thích của Unistay thực sự rất thông minh."</p>
+                <div class="hp-rev-user">
+                    <img src="https://i.pravatar.cc/150?u=2" alt="User">
+                    <div class="hp-rev-info">
+                        <strong>Hoàng Nam</strong>
+                        <span>SV ĐH Bách Khoa</span>
                     </div>
                 </div>
             </div>
-
             <!-- Review 3 -->
-            <div class="hp-review-card">
-                <div class="hp-stars">
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star">★</span>
-                    <span class="hp-star" style="color:#d1d5db;">★</span>
-                </div>
-                <p>"Là chủ nhà, tôi đăng tin lên Unistay và chỉ vài giờ đã có sinh viên liên hệ. Hệ thống quản lý tin đăng rất chuyên nghiệp, tôi sẽ tiếp tục sử dụng cho các phòng khác."</p>
-                <div class="hp-reviewer">
-                    <div class="hp-reviewer-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">T</div>
-                    <div class="hp-reviewer-info">
-                        <h5>Trần Hương</h5>
-                        <p>Chủ trọ · Quận 12</p>
+            <div class="hp-rev-card">
+                <div class="hp-rev-stars">★★★★★</div>
+                <p class="hp-rev-text">"Với tư cách là chủ nhà, mình đánh giá cao sự minh bạch và đội ngũ hỗ trợ nhiệt tình của Unistay mang lại."</p>
+                <div class="hp-rev-user">
+                    <img src="https://i.pravatar.cc/150?u=3" alt="User">
+                    <div class="hp-rev-info">
+                        <strong>Đức Hùng</strong>
+                        <span>Chủ nhà tại Quận 9</span>
                     </div>
                 </div>
             </div>
@@ -353,136 +255,88 @@
 </section>
 
 <!-- ============================================================
-     TIN TỨC & BLOG
+     BLOG SECTION
      ============================================================ -->
-<section class="hp-blog">
+<section class="hp-blog-new">
     <div class="container">
-        <div class="hp-blog-header">
-            <span class="hp-section-label">Kiến thức hữu ích</span>
-            <h2>Tin tức & Blog</h2>
-            <p>Cập nhật những thông tin hữu ích về thị trường thuê phòng và kinh nghiệm sinh viên mỗi ngày</p>
+        <div class="hp-blog-header-new">
+            <div>
+                <span class="hp-label-blue">CẨM NANG THUÊ PHÒNG</span>
+                <h2 class="hp-section-title">Tin tức & Blog</h2>
+            </div>
+            <a href="#" class="hp-btn-outline-blue">Xem tất cả bài viết</a>
         </div>
 
-        <div class="hp-blog-grid">
+        <div class="hp-blog-grid-new">
             <!-- Blog 1 -->
-            <a href="#" class="hp-blog-card">
-                <img class="hp-blog-img"
-                     src="https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500&h=280&fit=crop&q=80"
-                     alt="Blog 1">
-                <div class="hp-blog-body">
-                    <span class="hp-blog-tag orange">Kinh nghiệm</span>
-                    <h4>5 bí quyết tìm phòng trọ an toàn và tiết kiệm cho sinh viên mới lên thành phố</h4>
-                    <p>Mới lên thành phố học, chưa biết tìm phòng ở đâu? Hãy đọc ngay những kinh nghiệm quý báu này...</p>
-                    <span class="hp-blog-readmore">Đọc thêm →</span>
+            <div class="hp-blog-item">
+                <div class="hp-blog-img-box">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&q=80" alt="Blog">
                 </div>
-            </a>
-
+                <div class="hp-blog-info">
+                    <span class="hp-blog-tag blue-text">MẸO THUÊ PHÒNG</span>
+                    <h3>5 điều cần lưu ý khi ký hợp đồng thuê trọ sinh viên</h3>
+                    <p>Trước khi đặt bút ký hợp đồng, hãy chắc chắn bạn đã kiểm tra kỹ các điều khoản về cọc, điện nước...</p>
+                </div>
+            </div>
             <!-- Blog 2 -->
-            <a href="#" class="hp-blog-card">
-                <img class="hp-blog-img"
-                     src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&h=280&fit=crop&q=80"
-                     alt="Blog 2">
-                <div class="hp-blog-body">
-                    <span class="hp-blog-tag green">Quản lý</span>
-                    <h4>Cách sử dụng công cụ quản lý thu nhập hiệu quả dành cho chủ phòng trọ 2024</h4>
-                    <p>Nắm vững những công cụ số giúp bạn tối ưu hóa doanh thu và tiết kiệm thời gian quản lý phòng...</p>
-                    <span class="hp-blog-readmore">Đọc thêm →</span>
+            <div class="hp-blog-item">
+                <div class="hp-blog-img-box">
+                    <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=80" alt="Blog">
                 </div>
-            </a>
-
+                <div class="hp-blog-info">
+                    <span class="hp-blog-tag green-text">DỰ ÁN PHÒNG</span>
+                    <h3>Biến phòng trọ 15m2 thành không gian sống cực chill</h3>
+                    <p>Chỉ với ngân sách dưới 2 triệu đồng, bạn hoàn toàn có thể thay đổi diện mạo căn phòng của mình.</p>
+                </div>
+            </div>
             <!-- Blog 3 -->
-            <a href="#" class="hp-blog-card">
-                <img class="hp-blog-img"
-                     src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=500&h=280&fit=crop&q=80"
-                     alt="Blog 3">
-                <div class="hp-blog-body">
-                    <span class="hp-blog-tag blue">Thị trường</span>
-                    <h4>Xu hướng thị trường cho thuê phòng trọ năm 2024: Thách thức và cơ hội</h4>
-                    <p>Phân tích chuyên sâu về tình hình thị trường cho thuê phòng trọ dành cho sinh viên năm nay...</p>
-                    <span class="hp-blog-readmore">Đọc thêm →</span>
+            <div class="hp-blog-item">
+                <div class="hp-blog-img-box">
+                    <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?w=500&q=80" alt="Blog">
                 </div>
-            </a>
+                <div class="hp-blog-info">
+                    <span class="hp-blog-tag orange-text">CỘNG ĐỒNG</span>
+                    <h3>Cách hòa nhập khi ở ghép cùng người lạ</h3>
+                    <p>Chia sẻ không gian sống đòi hỏi sự thấu hiểu và những quy tắc chung cần được thống nhất ngay từ đầu.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- ============================================================
-     FOOTER (New Design)
+     FOOTER
      ============================================================ -->
-<footer class="hp-footer">
+<footer class="hp-footer-new">
     <div class="container">
-        <div class="hp-footer-grid">
-            <!-- Col 1: Brand -->
-            <div class="hp-footer-col">
-                <a class="hp-footer-brand" asp-controller="Home" asp-action="Index">
-                    <svg width="20" height="20" fill="#FF5C27" viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                    </svg>
-                    <span>Uni</span><span style="color:white;">stay</span>
-                </a>
-                <p>Nền tảng kết nối sinh viên với chủ trọ uy tín tại Việt Nam. Minh bạch - An toàn - Hiệu quả.</p>
-                <div class="hp-footer-social">
-                    <a href="#" class="hp-social-btn" title="Facebook">f</a>
-                    <a href="#" class="hp-social-btn" title="Zalo">Z</a>
-                    <a href="#" class="hp-social-btn" title="TikTok">T</a>
-                    <a href="#" class="hp-social-btn" title="YouTube">▶</a>
+        <div class="hp-footer-grid-new">
+            <div class="hp-f-col-brand">
+                <a href="#" class="hp-f-brand">Unistay</a>
+                <p>Nền tảng tìm kiếm phòng trọ và ở ghép hàng đầu dành cho sinh viên Việt Nam. Chúng tôi luôn sẵn lòng mang lại sự an tâm và tiện nghi nhất cho hành trình tìm kiếm tổ ấm của bạn.</p>
+                <div class="hp-f-socials">
+                    <a href="#"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="#"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 0 0-.748-1.15 3.098 3.098 0 0 0-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16.4a4.4 4.4 0 1 1 0-8.8 4.4 4.4 0 0 1 0 8.8zm6.487-11.59a1.108 1.108 0 1 1-2.216 0 1.108 1.108 0 0 1 2.216 0z"/></svg></a>
                 </div>
             </div>
-
-            <!-- Col 2: Về Unistay -->
-            <div class="hp-footer-col">
+            <div class="hp-f-col">
                 <h4>Về Unistay</h4>
-                <ul class="hp-footer-links">
-                    <li><a href="#">Giới thiệu</a></li>
-                    <li><a href="#">Nhà đầu tư</a></li>
+                <ul class="hp-f-list">
+                    <li><a href="#">Điều khoản</a></li>
+                    <li><a href="#">Bảo mật</a></li>
                     <li><a href="#">Tuyển dụng</a></li>
-                    <li><a href="#">Blog</a></li>
                 </ul>
             </div>
-
-            <!-- Col 3: Hỗ trợ khách hàng -->
-            <div class="hp-footer-col">
-                <h4>Hỗ trợ khách hàng</h4>
-                <ul class="hp-footer-links">
-                    <li><a href="#">Tìm kiếm phòng</a></li>
-                    <li><a href="#">Đăng tin cho thuê</a></li>
-                    <li><a href="#">Tìm bạn ở ghép</a></li>
-                    <li><a href="#">Chợ đồ cũ</a></li>
-                    <li><a href="#">Trung tâm trợ giúp</a></li>
-                </ul>
-            </div>
-
-            <!-- Col 4: Liên hệ -->
-            <div class="hp-footer-col">
-                <h4>Liên hệ</h4>
-                <ul class="hp-footer-contact">
-                    <li>
-                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        contact@@unistay.vn
-                    </li>
-                    <li>
-                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                        </svg>
-                        1900 1234
-                    </li>
-                    <li>
-                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        TP. Hồ Chí Minh, Việt Nam
-                    </li>
+            <div class="hp-f-col">
+                <h4>Hỗ trợ</h4>
+                <ul class="hp-f-list">
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">Trung tâm giúp đỡ</a></li>
+                    <li><a href="#">Hướng dẫn thanh toán</a></li>
                 </ul>
             </div>
         </div>
-
-        <div class="hp-footer-bottom">
+        <div class="hp-f-bottom">
             <span>© 2026 Unistay Corporation. All rights reserved.</span>
             <span>
                 <a href="#" style="color:rgba(255,255,255,0.4); text-decoration:none; margin-right:1rem;" onmouseover="this.style.color='#FF5C27'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Điều khoản sử dụng</a>
@@ -494,12 +348,6 @@
 
 @section Scripts {
 <script>
-    // Hide default navbar on homepage, show custom one
-    document.addEventListener('DOMContentLoaded', function() {
-        const defaultNav = document.getElementById('mainNav');
-        if (defaultNav) defaultNav.style.display = 'none';
-    });
-
     // Smooth scroll animation on scroll
     const observerOptions = {
         threshold: 0.1,
@@ -515,10 +363,10 @@
         });
     }, observerOptions);
 
-    document.querySelectorAll('.hp-feature-card, .hp-review-card, .hp-blog-card, .hp-stat-item').forEach(el => {
+    document.querySelectorAll('.hp-feature-item, .hp-rev-card, .hp-blog-item, .hp-stat-box, .hp-b-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(24px)';
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        el.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
         observer.observe(el);
     });
 </script>

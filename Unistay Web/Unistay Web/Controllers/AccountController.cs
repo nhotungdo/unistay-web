@@ -244,47 +244,66 @@ namespace Unistay_Web.Controllers
                     return RedirectToAction(nameof(Login));
                 }
 
-                var user = new UserProfile
+                // Check if user already exists with this email
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user != null)
                 {
-                    UserName = email,
-                    Email = email,
-                    FullName = name,
-                    Provider = "Google",
-                    ProviderKey = info.ProviderKey,
-                    AvatarUrl = picture,
-                    EmailConfirmed = true, // Google emails are already verified
-                    EmailVerifiedDate = DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var createResult = await _userManager.CreateAsync(user);
-
-                if (createResult.Succeeded)
-                {
-                    // Add default role
-                    await _userManager.AddToRoleAsync(user, "Student");
-
-                    createResult = await _userManager.AddLoginAsync(user, info);
-                    if (createResult.Succeeded)
+                    // Link the external login
+                    var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                    if (addLoginResult.Succeeded)
                     {
                         user.LastLoginAt = DateTime.UtcNow;
                         user.LastLoginIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+                        
+                        // Update avatar if not set
+                        if (string.IsNullOrEmpty(user.AvatarUrl)) user.AvatarUrl = picture;
+                        
                         await _userManager.UpdateAsync(user);
-
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         await LogLoginHistory(user.Id, email, true, null, "Google");
-                        await LogActivity(user.Id, "AccountCreated", "Created account via Google OAuth");
+                        
+                        if (!user.IsOnboardingComplete) return RedirectToAction("Index", "Onboarding");
+                        return RedirectToLocal(returnUrl);
+                    }
+                }
+                else
+                {
+                    // Create new user
+                    user = new UserProfile
+                    {
+                        UserName = email,
+                        Email = email,
+                        FullName = name,
+                        Provider = "Google",
+                        ProviderKey = info.ProviderKey,
+                        AvatarUrl = picture,
+                        EmailConfirmed = true,
+                        EmailVerifiedDate = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow
+                    };
 
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return RedirectToAction("Index", "Onboarding");
+                    var createResult = await _userManager.CreateAsync(user);
+
+                    if (createResult.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Student");
+                        createResult = await _userManager.AddLoginAsync(user, info);
+                        if (createResult.Succeeded)
+                        {
+                            user.LastLoginAt = DateTime.UtcNow;
+                            user.LastLoginIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+                            await _userManager.UpdateAsync(user);
+
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            await LogLoginHistory(user.Id, email, true, null, "Google");
+                            await LogActivity(user.Id, "AccountCreated", "Created account via Google OAuth");
+
+                            return RedirectToAction("Index", "Onboarding");
+                        }
                     }
                 }
 
-                foreach (var error in createResult.Errors)
-                {
-                    _logger.LogError("Error creating user: {Error}", error.Description);
-                }
-
+                _logger.LogWarning("Unexpected error during Google login for {Email}", email);
                 return RedirectToAction(nameof(Login));
             }
         }

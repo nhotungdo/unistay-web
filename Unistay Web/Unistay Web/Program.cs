@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
@@ -62,6 +63,9 @@ builder.Services.AddAuthentication(options =>
     // Request additional scopes
     googleOptions.Scope.Add("profile");
     googleOptions.Scope.Add("email");
+    
+    // Map claims
+    googleOptions.ClaimActions.MapJsonKey("picture", "picture");
     
     // Save tokens for later use
     googleOptions.SaveTokens = true;

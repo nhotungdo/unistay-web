@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Unistay_Web.Models.RentalAdvice;
 using Unistay_Web.Services.RentalAdvice;
@@ -21,16 +22,9 @@ namespace Unistay_Web.Controllers
 
         [HttpGet("")]
         [HttpGet("Index")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return RedirectToAction("Login", "Account");
-            
-            ViewBag.AIAdvice = await _adviceService.GetPersonalizedAdviceAsync(userId);
-            
-            // Get some initial suggestions for the dashboard
-            var rooms = await _adviceService.GetRoomSuggestionsAsync(userId);
-            return View(rooms);
+            return View();
         }
 
         [Route("Chat")]
@@ -83,7 +77,7 @@ namespace Unistay_Web.Controllers
             }
             
             var idList = ids.Split(',').Select(int.Parse).ToList();
-            var rooms = _context.Rooms.Where(r => idList.Contains(r.Id)).ToList();
+            var rooms = await _context.Rooms.Where(r => idList.Contains(r.Id)).ToListAsync();
             
             return View(rooms);
         }

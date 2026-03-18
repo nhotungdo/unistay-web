@@ -1,697 +1,264 @@
+@model dynamic
 @{
-    ViewData["Title"] = "Chi tiết phòng";
+    ViewData["Title"] = "Căn hộ Studio Full nội thất - UniStay";
+    ViewData["HideDefaultLayout"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-<style>
-    :root {
-        --primary: #667eea;
-        --primary-dark: #764ba2;
-        --secondary: #f093fb;
-        --success: #4ade80;
-        --danger: #ef4444;
-        --light: #f8fafc;
-        --dark: #1e293b;
-    }
-
-    body {
-        background: #f8fafc;
-    }
-
-    /* Breadcrumb */
-    .breadcrumb-custom {
-        background: none;
-        padding: 1.5rem 0;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .breadcrumb-item a {
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .breadcrumb-item.active {
-        color: var(--dark);
-        font-weight: 700;
-    }
-
-    /* Image Gallery */
-    .gallery-container {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        margin-bottom: 2rem;
-    }
-
-    .main-image {
-        width: 100%;
-        height: 500px;
-        object-fit: cover;
-        display: block;
-    }
-
-    .thumbnail-gallery {
-        display: flex;
-        gap: 1rem;
-        padding: 1.5rem;
-        background: white;
-        overflow-x: auto;
-    }
-
-    .thumbnail {
-        width: 100px;
-        height: 100px;
-        border-radius: 12px;
-        overflow: hidden;
-        cursor: pointer;
-        border: 3px solid transparent;
-        transition: all 0.3s ease;
-        flex-shrink: 0;
-    }
-
-    .thumbnail img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .thumbnail:hover {
-        border-color: var(--primary);
-        transform: scale(1.05);
-    }
-
-    .thumbnail.active {
-        border-color: var(--primary);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    /* Main Content */
-    .room-details {
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        margin-bottom: 2rem;
-    }
-
-    .room-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 2rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .room-title-section h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-    }
-
-    .room-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: rgba(74, 222, 128, 0.1);
-        color: var(--success);
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-
-    .room-status.featured {
-        background: rgba(240, 147, 251, 0.1);
-        color: var(--secondary);
-    }
-
-    .favorite-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: white;
-        border: 2px solid #e2e8f0;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        font-size: 1.5rem;
-        color: #cbd5e1;
-    }
-
-    .favorite-btn:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .favorite-btn.active {
-        background: var(--danger);
-        border-color: var(--danger);
-        color: white;
-    }
-
-    /* Info Grid */
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .info-item {
-        text-align: center;
-        padding: 1rem;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        border-radius: 12px;
-    }
-
-    .info-item i {
-        font-size: 1.5rem;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    .info-item-value {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 0.25rem;
-    }
-
-    .info-item-label {
-        font-size: 0.875rem;
-        color: #64748b;
-    }
-
-    /* Price Section */
-    .price-section {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .price-content h3 {
-        font-size: 0.875rem;
-        opacity: 0.9;
-        margin-bottom: 0.5rem;
-    }
-
-    .price-value {
-        font-size: 2.5rem;
-        font-weight: 800;
-    }
-
-    .price-period {
-        font-size: 1rem;
-        opacity: 0.9;
-    }
-
-    .price-actions {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .btn-action {
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-contact-owner {
-        background: white;
-        color: var(--primary);
-    }
-
-    .btn-contact-owner:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-book {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-    }
-
-    .btn-book:hover {
-        background: white;
-        color: var(--primary);
-    }
-
-    /* Details Section */
-    .details-section {
-        margin-bottom: 2rem;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-title i {
-        color: var(--primary);
-        font-size: 1.5rem;
-    }
-
-    .location-info {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem;
-        background: rgba(102, 126, 234, 0.05);
-        border-left: 4px solid var(--primary);
-        border-radius: 8px;
-    }
-
-    .location-info i {
-        font-size: 1.5rem;
-        color: var(--primary);
-    }
-
-    .description {
-        line-height: 1.8;
-        color: #475569;
-        font-size: 1rem;
-    }
-
-    .amenities-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-    }
-
-    .amenity-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem;
-        background: #f8fafc;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .amenity-item:hover {
-        background: rgba(102, 126, 234, 0.1);
-        transform: translateY(-2px);
-    }
-
-    .amenity-item i {
-        font-size: 1.25rem;
-        color: var(--primary);
-        width: 30px;
-        text-align: center;
-    }
-
-    .amenity-item span {
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    /* Sidebar */
-    .sidebar-card {
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        margin-bottom: 1.5rem;
-        position: sticky;
-        top: 20px;
-    }
-
-    .owner-info {
-        text-align: center;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .owner-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        color: white;
-        font-size: 2rem;
-    }
-
-    .owner-name {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 0.25rem;
-    }
-
-    .owner-type {
-        font-size: 0.875rem;
-        color: #64748b;
-    }
-
-    .owner-rating {
-        margin-top: 1rem;
-        color: var(--primary);
-    }
-
-    .owner-rating i {
-        color: #fbbf24;
-    }
-
-    .sidebar-btn {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        margin-top: 0.75rem;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .sidebar-btn-primary {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        color: white;
-    }
-
-    .sidebar-btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    .sidebar-btn-secondary {
-        background: #f8fafc;
-        color: var(--primary);
-        border: 2px solid #e2e8f0;
-    }
-
-    .sidebar-btn-secondary:hover {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
-
-    /* Responsive */
-    @@media (max-width: 768px) {
-        .room-header {
-            flex-direction: column;
-        }
-
-        .favorite-btn {
-            align-self: flex-start;
-        }
-
-        .price-section {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .sidebar-card {
-            position: static;
-        }
-    }
-</style>
-
-<!-- Breadcrumb -->
-<div class="container mt-4">
-    <nav class="breadcrumb-custom" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Tìm phòng</a></li>
-            <li class="breadcrumb-item active">Chi tiết phòng</li>
-        </ol>
-    </nav>
-</div>
-
-<div class="container py-4">
-    <div class="row gap-4">
-        <!-- Main Content -->
-        <div class="col-lg-8">
-            <!-- Gallery -->
-            <div class="gallery-container">
-                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=500&fit=crop" alt="Phòng chính" class="main-image">
-                <div class="thumbnail-gallery">
-                    <div class="thumbnail active" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&h=100&fit=crop" alt="Hình 1">
-                    </div>
-                    <div class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=100&h=100&fit=crop" alt="Hình 2">
-                    </div>
-                    <div class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=100&h=100&fit=crop" alt="Hình 3">
-                    </div>
-                    <div class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop" alt="Hình 4">
-                    </div>
-                    <div class="thumbnail" onclick="changeImage(this)">
-                        <img src="https://images.unsplash.com/photo-1537932424956-b3d3a2f0b206?w=100&h=100&fit=crop" alt="Hình 5">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Room Details -->
-            <div class="room-details">
-                <!-- Header -->
-                <div class="room-header">
-                    <div class="room-title-section">
-                        <h1>Studio cao cấp, full nội thất, gần Đại học FPT</h1>
-                        <div style="margin-top: 1rem;">
-                            <span class="room-status"><i class="fas fa-check-circle"></i>Có sẵn</span>
-                            <span class="room-status featured" style="margin-left: 0.5rem;"><i class="fas fa-star"></i>Nổi bật</span>
-                        </div>
-                    </div>
-                    <button class="favorite-btn" onclick="toggleFavorite(this)">
-                        <i class="far fa-heart"></i>
-                    </button>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="info-grid">
-                    <div class="info-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <div class="info-item-value">32 m²</div>
-                        <div class="info-item-label">Diện tích</div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-door-open"></i>
-                        <div class="info-item-value">1</div>
-                        <div class="info-item-label">Người max</div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-eye"></i>
-                        <div class="info-item-value">1.2K</div>
-                        <div class="info-item-label">Lượt xem</div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-calendar"></i>
-                        <div class="info-item-value">5</div>
-                        <div class="info-item-label">Ngày đăng</div>
-                    </div>
-                </div>
-
-                <!-- Price Section -->
-                <div class="price-section">
-                    <div class="price-content">
-                        <h3>Giá thuê</h3>
-                        <div class="price-value">3.5<span class="price-period">M</span></div>
-                        <div class="price-period">VNĐ / tháng</div>
-                    </div>
-                    <div class="price-actions">
-                        <button class="btn-action btn-contact-owner" onclick="alert('Gọi chủ phòng')">
-                            <i class="fas fa-phone me-2"></i>Gọi ngay
-                        </button>
-                        <button class="btn-action btn-book" onclick="alert('Đặt lịch xem phòng')">
-                            <i class="fas fa-calendar-check me-2"></i>Đặt lịch
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Location -->
-                <div class="details-section">
-                    <div class="section-title">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Vị trí</span>
-                    </div>
-                    <div class="location-info">
-                        <div>
-                            <i class="fas fa-map-location-dot"></i>
-                        </div>
-                        <div>
-                            <strong style="color: var(--dark);">Hà Nội, Quận Cầu Giấy</strong>
-                            <p style="color: #64748b; margin: 0.25rem 0;">Gần Đại học FPT, trung tâm thương mại</p>
-                            <p style="color: #64748b; margin: 0;">Địa chỉ chính xác sẽ hiển thị sau khi xác nhận</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Description -->
-                <div class="details-section">
-                    <div class="section-title">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Mô tả chi tiết</span>
-                    </div>
-                    <div class="description">
-                        <p>Studio cao cấp với thiết kế hiện đại, đầy đủ nội thất mới. Phòng thoáng sáng, view đẹp, môi trường yên tĩnh rất thích hợp cho sinh viên hoặc những người trẻ làm việc.</p>
-                        <p>Vị trí gần Đại học FPT, trung tâm thương mại, siêu thị, các cơ sở giáo dục. Giao thông thuận tiện, dễ di chuyển.</p>
-                    </div>
-                </div>
-
-                <!-- Amenities -->
-                <div class="details-section">
-                    <div class="section-title">
-                        <i class="fas fa-star"></i>
-                        <span>Tiện ích & Dịch vụ</span>
-                    </div>
-                    <div class="amenities-grid">
-                        <div class="amenity-item">
-                            <i class="fas fa-wifi"></i>
-                            <span>Wi-Fi</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-tv"></i>
-                            <span>TV Cable</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-shower"></i>
-                            <span>Phòng tắm</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-utensils"></i>
-                            <span>Bếp</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-air-freshener"></i>
-                            <span>Điều hòa</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-lock"></i>
-                            <span>An toàn 24/7</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-bed"></i>
-                            <span>Nệm & gối</span>
-                        </div>
-                        <div class="amenity-item">
-                            <i class="fas fa-shield"></i>
-                            <span>Camera giám sát</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Owner Card -->
-            <div class="sidebar-card">
-                <div class="owner-info">
-                    <div class="owner-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="owner-name">Nguyễn Văn A</div>
-                    <div class="owner-type">Chủ phòng trọ</div>
-                    <div class="owner-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <span style="color: #64748b; margin-left: 0.5rem;">(324 đánh giá)</span>
-                    </div>
-                </div>
-                <button class="sidebar-btn sidebar-btn-primary" onclick="alert('Liên hệ chủ phòng')">
-                    <i class="fas fa-phone me-2"></i>Liên hệ
-                </button>
-                <button class="sidebar-btn sidebar-btn-secondary" onclick="alert('Chat với chủ phòng')">
-                    <i class="fas fa-comment me-2"></i>Chat
-                </button>
-                <button class="sidebar-btn sidebar-btn-secondary" onclick="alert('Xem hồ sơ')">
-                    <i class="fas fa-user-circle me-2"></i>Xem hồ sơ
-                </button>
-            </div>
-
-            <!-- Rules Card -->
-            <div class="sidebar-card">
-                <div class="section-title">
-                    <i class="fas fa-list-check"></i>
-                    <span>Nội quy</span>
-                </div>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0; color: #475569;">
-                        <i class="fas fa-check text-success me-2"></i>Không khí ô nhiễm đến từ thuốc lá
-                    </li>
-                    <li style="padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0; color: #475569;">
-                        <i class="fas fa-check text-success me-2"></i>Cho phép thú cưng
-                    </li>
-                    <li style="padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0; color: #475569;">
-                        <i class="fas fa-check text-success me-2"></i>Không tiếng ồn sau 22h
-                    </li>
-                    <li style="padding: 0.75rem 0; color: #475569;">
-                        <i class="fas fa-check text-success me-2"></i>Khách tạm trú được phép
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Share Card -->
-            <div class="sidebar-card">
-                <div class="section-title">
-                    <i class="fas fa-share-alt"></i>
-                    <span>Chia sẻ bài đăng</span>
-                </div>
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button class="sidebar-btn sidebar-btn-secondary" style="flex: 1; padding: 0.75rem;" onclick="alert('Facebook')">
-                        <i class="fab fa-facebook"></i>
-                    </button>
-                    <button class="sidebar-btn sidebar-btn-secondary" style="flex: 1; padding: 0.75rem;" onclick="alert('Zalo')">
-                        <i class="fas fa-comment"></i>
-                    </button>
-                    <button class="sidebar-btn sidebar-btn-secondary" style="flex: 1; padding: 0.75rem;" onclick="alert('Copy link')">
-                        <i class="fas fa-link"></i>
-                    </button>
-                </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/room-details.css" asp-append-version="true" />
+    <style>
+        body { padding: 0 !important; background-color: #fff; }
+    </style>
+}
+
+<!-- ============================================================
+     NAVBAR (Custom)
+     ============================================================ -->
+<nav class="rs-navbar">
+    <div class="rs-container ns-nav-flex">
+        <a class="rs-brand" asp-controller="Home" asp-action="Index">Unistay</a>
+
+        <ul class="rs-nav-links">
+            <li><a asp-controller="Rooms" asp-action="Index" class="active">Tìm phòng</a></li>
+            <li><a asp-controller="Roommates" asp-action="Index">Ở ghép</a></li>
+            <li><a href="#">Dịch vụ</a></li>
+        </ul>
+
+        <div class="rs-nav-actions">
+            <a href="#" class="rs-btn-post">Đăng tin</a>
+            <a asp-controller="Account" asp-action="Login" class="rs-btn-login-text">Đăng nhập</a>
+            <div style="width: 32px; height: 32px; background: #E5E7EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748B;">
+                <i class="fas fa-user"></i>
             </div>
         </div>
     </div>
+</nav>
+
+<div class="rd-container">
+    <!-- Gallery -->
+    <div class="rd-gallery-grid">
+        <div class="rd-gallery-main">
+            <span class="rd-badge-new">Phòng mới đăng</span>
+            <img src="https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800&q=80" alt="Room Main">
+        </div>
+        <div class="rd-gallery-subs">
+            <div class="rd-gallery-sub">
+                <img src="https://images.unsplash.com/photo-1628592102751-ba83b0314276?w=400&q=80" alt="Sub 1">
+            </div>
+            <div class="rd-gallery-sub">
+                <img src="https://images.unsplash.com/photo-1512918766674-ed62b9a79ad6?w=400&q=80" alt="Sub 2">
+                <button class="rd-btn-all-photos">
+                    <i class="fas fa-th"></i> Xem tất cả ảnh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="rd-content-wrapper">
+        <!-- Left Column -->
+        <main class="rd-main-info">
+            <!-- Header Meta -->
+            <div class="rd-meta-tags">
+                <span class="rd-tag-type"><i class="fas fa-check-circle"></i> Phòng trọ cao cấp</span>
+                <span class="rd-tag-loc">• Quận 7</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="rd-title">Căn hộ Studio Full nội thất gần ĐH Tôn Đức Thắng</h1>
+
+            <!-- Description -->
+            <p class="rd-description">
+                Phòng rộng 25m², thiết kế theo phong cách tối giản Bắc Âu, ngập tràn ánh sáng tự nhiên. Chỉ cách trường 5 phút đi xe, khu vực an ninh, yên tĩnh phù hợp cho sinh viên học tập.
+            </p>
+
+            <!-- Amenities -->
+            <div>
+                <h3 style="font-size: 16px; margin-bottom: 16px;">Tiện ích nổi bật</h3>
+                <div class="rd-amenities-wrapper">
+                    <div class="rd-amenities-strip">
+                        <div class="rd-amenity-box">
+                            <i class="fas fa-wifi"></i>
+                            <span>Wifi tốc độ cao</span>
+                        </div>
+                        <div class="rd-amenity-box">
+                            <i class="fas fa-snowflake"></i>
+                            <span>Máy lạnh Inverter</span>
+                        </div>
+                        <div class="rd-amenity-box">
+                            <i class="fas fa-tshirt"></i>
+                            <span>Máy giặt riêng</span>
+                        </div>
+                        <div class="rd-amenity-box">
+                            <i class="fas fa-key"></i>
+                            <span>Khóa vân tay 24/7</span>
+                        </div>
+                    </div>
+                    <button class="rd-btn-float-map">
+                        <i class="fas fa-map-marked-alt"></i> Xem bản đồ khu vực
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feng Shui Section -->
+            <section class="rd-fengshui-section">
+                <div class="rd-fs-header">
+                    <div class="rd-fs-title">Góc Tâm Linh & Phong Thủy</div>
+                    <span class="rd-fs-badge">AI PHÂN TÍCH</span>
+                </div>
+                
+                <div class="rd-fs-grid">
+                    <div class="rd-fs-card">
+                        <div class="rd-fs-icon-wrap"><i class="fas fa-compass"></i></div>
+                        <div class="rd-fs-label">HƯỚNG PHÒNG</div>
+                        <div class="rd-fs-value">Đông Nam</div>
+                        <div class="rd-fs-sub">Cung Tốn - Vượng khí</div>
+                    </div>
+                    <div class="rd-fs-card">
+                        <div class="rd-fs-icon-wrap"><i class="fas fa-bolt"></i></div>
+                        <div class="rd-fs-label">NĂNG LƯỢNG</div>
+                        <div class="rd-fs-value">88% Cân bằng</div>
+                        <div class="rd-fs-sub">Phù hợp học tập</div>
+                    </div>
+                    <div class="rd-fs-card">
+                        <div class="rd-fs-icon-wrap"><i class="fas fa-tint"></i></div>
+                        <div class="rd-fs-label">MỆNH PHÙ HỢP</div>
+                        <div class="rd-fs-value">Mộc & Thủy</div>
+                        <div class="rd-fs-sub">Tương sinh mạnh mẽ</div>
+                    </div>
+                </div>
+
+                <div class="rd-fs-actions">
+                    <button class="rd-btn-fs-ai">
+                        <i class="fas fa-magic"></i> Xem chi tiết phong thủy với AI
+                    </button>
+                    <button class="rd-btn-fs-tarot">
+                        <i class="fas fa-hand-sparkles"></i> Rút bài Tarot cho phòng này
+                    </button>
+                </div>
+            </section>
+
+            <!-- Location Section -->
+            <section class="rd-map-section">
+                <div class="rd-map-header">
+                    <div style="font-weight: 800; font-size: 16px;">Vị trí & Bản đồ</div>
+                    <a href="#" class="rd-map-link">Chi đường</a>
+                </div>
+                <div class="rd-map-address">Lê Văn Lương, Phường Tân Phong, Quận 7, TP. HCM</div>
+                <div class="rd-map-frame" style="margin-top: 16px;">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" alt="Map Placeholder">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); color: var(--rd-blue); font-size: 32px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Column (Sidebar) -->
+        <aside class="rd-sidebar">
+            <div class="rd-booking-card">
+                <div class="rd-price-row">
+                    <div>
+                        <div class="rd-price-label">Giá thuê hàng tháng</div>
+                        <div class="rd-price-main">4.500.000đ</div>
+                    </div>
+                    <span class="rd-price-badge">Cọc 1 tháng</span>
+                </div>
+
+                <div class="rd-details-list">
+                    <div class="rd-detail-item">
+                        <span class="rd-detail-label">Điện</span>
+                        <span class="rd-detail-value">3.500đ / KWh</span>
+                    </div>
+                    <div class="rd-detail-item">
+                        <span class="rd-detail-label">Nước</span>
+                        <span class="rd-detail-value">100.000đ / người</span>
+                    </div>
+                    <div class="rd-detail-item">
+                        <span class="rd-detail-label">Dịch vụ (Rác, vệ sinh)</span>
+                        <span class="rd-detail-value">150.000đ / phòng</span>
+                    </div>
+                </div>
+
+                <button class="rd-btn-schedule">
+                    <i class="far fa-calendar-alt"></i> Đặt lịch xem phòng
+                </button>
+                <button class="rd-btn-chat">
+                    <i class="far fa-comment-dots"></i> Nhắn tin trao đổi
+                </button>
+
+                <!-- Host Info Card -->
+                <div class="rd-host-card">
+                    <img src="https://i.pravatar.cc/150?u=4" alt="Host" class="rd-host-avatar">
+                    <div class="rd-host-info">
+                        <div class="rd-host-name">Anh Minh Quân</div>
+                        <div class="rd-host-rating"><i class="fas fa-star"></i> 4.9 <span style="color: #94A3B8; font-weight: 400;">(12 đánh giá)</span></div>
+                    </div>
+                </div>
+
+                <div class="rd-host-actions">
+                    <button class="rd-btn-call">
+                        <i class="fas fa-phone-alt"></i> 0908 xxx xxx
+                    </button>
+                    <button class="rd-btn-share">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
 </div>
 
-<script>
-    function changeImage(thumbnail) {
-        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-        thumbnail.classList.add('active');
-        const img = thumbnail.querySelector('img');
-        document.querySelector('.main-image').src = img.src.replace('w=100&h=100', 'w=800&h=500');
-    }
+<!-- ============================================================
+     FOOTER (Sync with Index/Home)
+     ============================================================ -->
+<footer class="rs-footer" style="background: #E5E7EB;">
+    <div class="rs-container">
+        <div class="rs-footer-grid">
+            <div class="rs-footer-col-brand">
+                <div class="rs-footer-logo">Unistay</div>
+                <p>Nền tảng tìm kiếm phòng trọ và ở ghép hàng đầu dành riêng cho sinh viên Việt Nam.</p>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Về chúng tôi</h4>
+                <ul>
+                    <li><a href="#">Câu chuyện thương hiệu</a></li>
+                    <li><a href="#">Blog đời sống</a></li>
+                    <li><a href="#">Cơ hội nghề nghiệp</a></li>
+                </ul>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Hỗ trợ</h4>
+                <ul>
+                    <li><a href="#">Trung tâm trợ giúp</a></li>
+                    <li><a href="#">Điều khoản</a></li>
+                    <li><a href="#">Bảo mật</a></li>
+                </ul>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Liên hệ</h4>
+                <ul style="color: #64748B; font-size: 14px;">
+                    <li style="margin-bottom: 12px;"><i class="fas fa-envelope me-2"></i> support@@unistay.com</li>
+                    <li><i class="fas fa-phone-alt me-2"></i> 1800 6789</li>
+                </ul>
+            </div>
+        </div>
+        <div class="rs-footer-bottom">
+            <p>© 2024 Unistay. All rights reserved.</p>
+            <div class="rs-footer-lang">
+                <i class="fas fa-globe"></i>
+                <i class="fas fa-user-friends"></i>
+            </div>
+        </div>
+    </div>
+</footer>
 
-    function toggleFavorite(btn) {
-        btn.classList.toggle('active');
-        btn.innerHTML = btn.classList.contains('active') 
-            ? '<i class="fas fa-heart"></i>'
-            : '<i class="far fa-heart"></i>';
-    }
-</script>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide the default main navbar
+            const mainNav = document.getElementById('mainNav');
+            if (mainNav) mainNav.style.display = 'none';
+        });
+    </script>
+}

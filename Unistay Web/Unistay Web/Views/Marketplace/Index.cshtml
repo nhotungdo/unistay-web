@@ -1,100 +1,853 @@
 @model IEnumerable<Unistay_Web.Models.Marketplace.MarketplaceItem>
 
 @{
-    ViewData["Title"] = "Chợ đồ cũ";
+    ViewData["Title"] = "Gói dịch vụ - Unistay";
 }
 
-<section style="padding: 2rem 0;">
-    <div class="container">
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 2rem;">
-            <div>
-                <h1 class="h2 mb-2">Chợ sinh viên</h1>
-                <p class="text-muted">Mua bán, trao đổi đồ dùng giá tốt trong cộng đồng</p>
+@section Styles {
+<style>
+    /* =========================================
+       UNISTAY PRICING PAGE - 2026
+       ========================================= */
+
+    body { background: #F8FAFC !important; }
+
+    .pk-page { padding-bottom: 0; }
+
+    /* ===== HERO ===== */
+    .pk-hero {
+        text-align: center;
+        padding: 64px 0 56px;
+        background: #fff;
+        border-bottom: 1px solid #E8EDF2;
+    }
+
+    .pk-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #EFF6FF;
+        color: #2563EB;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 5px 14px;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 20px;
+        border: 1px solid #BFDBFE;
+    }
+
+    .pk-hero-title {
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: #0F172A;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+    }
+
+    .pk-hero-sub {
+        font-size: 15px;
+        color: #64748B;
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.65;
+    }
+
+    /* ===== PRICING CARDS ===== */
+    .pk-cards-section {
+        padding: 48px 0 60px;
+        background: #F8FAFC;
+    }
+
+    .pk-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .pk-card {
+        background: #fff;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 20px;
+        padding: 28px 24px 24px;
+        transition: all 0.25s;
+        position: relative;
+    }
+
+    .pk-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        border-color: #CBD5E1;
+    }
+
+    .pk-card.featured {
+        border: 2px solid #2563EB;
+        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.12);
+        transform: translateY(-4px);
+        z-index: 2;
+    }
+
+    .pk-card.featured:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(37, 99, 235, 0.18);
+    }
+
+    .pk-popular-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2563EB;
+        color: white;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 14px;
+        border-radius: 99px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .pk-plan-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+
+    .pk-plan-icon.green { background: #ECFDF5; color: #059669; }
+    .pk-plan-icon.blue-light { background: #EFF6FF; color: #2563EB; }
+    .pk-plan-icon.blue { background: #2563EB; color: #fff; }
+    .pk-plan-icon.gold { background: #FFFBEB; color: #D97706; }
+
+    .pk-plan-name {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 6px;
+    }
+
+    .pk-plan-price {
+        display: flex;
+        align-items: baseline;
+        gap: 3px;
+        margin-bottom: 4px;
+    }
+
+    .pk-price-number {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .pk-price-unit {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+    }
+
+    .pk-plan-desc {
+        font-size: 12px;
+        color: #94A3B8;
+        margin-bottom: 20px;
+        min-height: 16px;
+    }
+
+    .pk-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pk-features li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13px;
+        color: #334155;
+        line-height: 1.45;
+    }
+
+    .pk-check {
+        color: #2563EB;
+        font-size: 12px;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .pk-check.green { color: #059669; }
+    .pk-check.gold { color: #D97706; }
+
+    .pk-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        border: none;
+    }
+
+    .pk-btn.outline {
+        background: #F1F5F9;
+        color: #334155;
+    }
+
+    .pk-btn.outline:hover {
+        background: #E2E8F0;
+        color: #0F172A;
+    }
+
+    .pk-btn.primary {
+        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .pk-btn.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        color: #fff;
+    }
+
+    /* ===== COMPARISON TABLE ===== */
+    .pk-compare-section {
+        padding: 60px 0;
+        background: #fff;
+    }
+
+    .pk-section-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+    }
+
+    .pk-section-sub {
+        font-size: 14px;
+        color: #64748B;
+        margin-bottom: 40px;
+    }
+
+    .pk-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .pk-table thead th {
+        padding: 14px 20px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #0F172A;
+        text-align: center;
+        border-bottom: 2px solid #E2E8F0;
+        background: #F8FAFC;
+    }
+
+    .pk-table thead th:first-child { text-align: left; }
+
+    .pk-table thead th.th-featured {
+        color: #2563EB;
+        background: #EFF6FF;
+        border-top: 2px solid #2563EB;
+        border-left: 2px solid #2563EB;
+        border-right: 2px solid #2563EB;
+    }
+
+    .pk-table tbody tr:hover td { background: #FAFBFF; }
+
+    .pk-table td {
+        padding: 14px 20px;
+        font-size: 13px;
+        color: #475569;
+        border-bottom: 1px solid #F1F5F9;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .pk-table td:first-child {
+        text-align: left;
+        font-weight: 600;
+        color: #1E293B;
+    }
+
+    .pk-table td.td-featured {
+        background: #F8FBFF;
+        border-left: 2px solid #2563EB;
+        border-right: 2px solid #2563EB;
+    }
+
+    .pk-table tbody tr:last-child td.td-featured {
+        border-bottom: 2px solid #2563EB;
+    }
+
+    .pk-check-icon { color: #2563EB; font-size: 15px; }
+    .pk-check-icon.green { color: #059669; }
+    .pk-x-icon { color: #CBD5E1; font-size: 15px; }
+
+    .pk-table-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #EFF6FF;
+        color: #2563EB;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 6px;
+    }
+
+    /* ===== FAQ ===== */
+    .pk-faq-section {
+        padding: 60px 0;
+        background: #F8FAFC;
+    }
+
+    .pk-faq-list {
+        max-width: 720px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .pk-faq-item {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .pk-faq-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 18px 22px;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0F172A;
+        gap: 12px;
+        transition: color 0.15s;
+    }
+
+    .pk-faq-btn:hover { color: #2563EB; }
+
+    .pk-faq-icon {
+        color: #94A3B8;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+    }
+
+    .pk-faq-item.open .pk-faq-icon { transform: rotate(180deg); color: #2563EB; }
+    .pk-faq-item.open .pk-faq-btn { color: #2563EB; }
+
+    .pk-faq-body {
+        display: none;
+        padding: 0 22px 18px;
+        font-size: 13.5px;
+        color: #64748B;
+        line-height: 1.7;
+        border-top: 1px solid #F1F5F9;
+    }
+
+    .pk-faq-item.open .pk-faq-body { display: block; }
+
+    /* ===== CTA BANNER ===== */
+    .pk-cta-section {
+        padding: 60px 0;
+        background: #fff;
+    }
+
+    .pk-cta-banner {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 50%, #1E40AF 100%);
+        border-radius: 24px;
+        padding: 56px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pk-cta-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .pk-cta-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -5%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .pk-cta-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+        position: relative;
+        z-index: 1;
+    }
+
+    .pk-cta-sub {
+        font-size: 14px;
+        color: rgba(255,255,255,0.8);
+        max-width: 480px;
+        margin: 0 auto 32px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+
+    .pk-cta-actions {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .pk-cta-btn-primary {
+        background: #fff;
+        color: #2563EB;
+        padding: 13px 28px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .pk-cta-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+        color: #1D4ED8;
+    }
+
+    .pk-cta-btn-outline {
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        padding: 13px 28px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1.5px solid rgba(255,255,255,0.3);
+        cursor: pointer;
+    }
+
+    .pk-cta-btn-outline:hover {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    /* ===== FOOTER ===== */
+    .pk-footer {
+        background: #fff;
+        border-top: 1px solid #E2E8F0;
+        padding: 56px 0 32px;
+    }
+
+    .pk-footer-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 48px;
+    }
+
+    .pk-footer-brand {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #2563EB;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .pk-footer-brand-desc {
+        font-size: 13px;
+        color: #64748B;
+        line-height: 1.65;
+        max-width: 280px;
+    }
+
+    .pk-footer-col h4 {
+        font-size: 13px;
+        font-weight: 800;
+        color: #0F172A;
+        margin-bottom: 16px;
+    }
+
+    .pk-footer-links {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pk-footer-links a {
+        text-decoration: none;
+        color: #64748B;
+        font-size: 13px;
+        transition: color 0.15s;
+    }
+
+    .pk-footer-links a:hover { color: #2563EB; }
+
+    .pk-footer-socials {
+        display: flex;
+        gap: 12px;
+        margin-top: 4px;
+    }
+
+    .pk-social-btn {
+        width: 36px;
+        height: 36px;
+        background: #F1F5F9;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+    .pk-social-btn:hover {
+        background: #EFF6FF;
+        color: #2563EB;
+    }
+
+    .pk-footer-bottom {
+        border-top: 1px solid #F1F5F9;
+        padding-top: 24px;
+        text-align: center;
+        font-size: 12px;
+        color: #94A3B8;
+    }
+
+    @@media (max-width: 1024px) {
+        .pk-cards-grid { grid-template-columns: repeat(2, 1fr); }
+        .pk-footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @@media (max-width: 640px) {
+        .pk-cards-grid { grid-template-columns: 1fr; }
+        .pk-hero-title { font-size: 2rem; }
+        .pk-cta-actions { flex-direction: column; align-items: center; }
+        .pk-footer-grid { grid-template-columns: 1fr; gap: 24px; }
+    }
+</style>
+}
+
+<div class="pk-page">
+
+    <!-- HERO -->
+    <section class="pk-hero">
+        <div class="container">
+            <div class="pk-hero-badge">
+                <i class="fas fa-rocket"></i> Nâng cấp tài khoản
             </div>
-            <a asp-action="Create" class="btn btn-primary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mr-2" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Đăng tin bán
-            </a>
+            <h1 class="pk-hero-title">Nâng cấp trải nghiệm<br>tìm thuê cùng Unistay</h1>
+            <p class="pk-hero-sub">Giải pháp tối ưu giúp bạn tìm phòng nhanh nhất hoặc, tạo cần ngân sinh viên có nhu cầu thực tế.</p>
         </div>
+    </section>
 
-        <!-- Categories -->
-        <div class="glass-panel mb-5" style="padding:1rem; overflow-x:auto;">
-            <div style="display:flex; gap:1rem; min-width:max-content;">
-                <button type="button" class="btn btn-primary" style="border-radius:2rem;">Tất cả</button>
-                <button type="button" class="btn btn-outline" style="border-radius:2rem; background:white;">Nội thất</button>
-                <button type="button" class="btn btn-outline" style="border-radius:2rem; background:white;">Điện tử</button>
-                <button type="button" class="btn btn-outline" style="border-radius:2rem; background:white;">Đồ dùng học tập</button>
-                <button type="button" class="btn btn-outline" style="border-radius:2rem; background:white;">Phương tiện</button>
-                <button type="button" class="btn btn-outline" style="border-radius:2rem; background:white;">Khác</button>
-            </div>
-        </div>
+    <!-- PRICING CARDS -->
+    <section class="pk-cards-section">
+        <div class="container">
+            <div class="pk-cards-grid">
 
-        <!-- Items Grid -->
-        <div class="grid-3 animate-fade-in delay-200">
-            @if (Model != null && Model.Any())
-            {
-                foreach (var item in Model)
-                {
-                    <div class="modern-card p-0" style="padding:0; position:relative; @(item.Status != "Available" ? "opacity:0.75;" : "")">
-                        @if (item.Status != "Available")
-                        {
-                            <span class="badge" style="position:absolute; top:12px; right:12px; z-index:2; background:#475569; color:white;">@item.Status</span>
-                        }
-                        else if ((DateTime.Now - item.CreatedAt).TotalDays < 3)
-                        {
-                            <span class="badge badge-success" style="position:absolute; top:12px; right:12px; z-index:2;">Mới đăng</span>
-                        }
-
-                        <div style="aspect-ratio:4/3; position:relative; overflow:hidden; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
-                            <img src="@(string.IsNullOrEmpty(item.ImageUrls) ? "https://via.placeholder.com/400x300?text=No+Image" : item.ImageUrls)" 
-                                 style="width:100%; height:100%; object-fit:cover; transition:transform 0.5s; @(item.Status != "Available" ? "filter:grayscale(100%);" : "")" 
-                                 alt="@item.Title">
-                        </div>
-                        <div style="padding:1.25rem;">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
-                                <h3 class="h6 mb-0 @(item.Status != "Available" ? "text-muted" : "")" style="flex:1;">@item.Title</h3>
-                                <span class="@(item.Status != "Available" ? "text-muted" : "text-primary") font-weight-bold" 
-                                      style="white-space:nowrap; margin-left:1rem; @(item.Status != "Available" ? "text-decoration:line-through;" : "")">
-                                    @(item.Price >= 1000000 ? (item.Price / 1000000).ToString("0.##") + " tr" : (item.Price / 1000).ToString("0") + "k")
-                                </span>
-                            </div>
-                            
-                            <div style="display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); font-size:0.875rem; margin-bottom:1rem;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32688 5.63604 3.63604C7.32387 1.94521 9.61305 1 12 1C14.3869 1 16.6761 1.94521 18.364 3.63604C20.0518 5.32688 21 7.61305 21 10Z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
-                                @(string.IsNullOrEmpty(item.Location) ? "Toàn quốc" : item.Location)
-                            </div>
-                            
-                            <div style="border-top:1px solid var(--border-glass); padding-top:1rem; display:flex; align-items:center; gap:0.75rem;">
-                                <img src="https://ui-avatars.com/api/?name=User&background=random" style="width:24px; height:24px; border-radius:50%;" alt="User">
-                                <small class="text-muted">Đăng bởi Thành viên</small>
-                            </div>
-                            <a asp-action="Details" asp-route-id="@item.Id" style="position:absolute; inset:0;"></a>
-                        </div>
+                <!-- Free -->
+                <div class="pk-card">
+                    <div class="pk-plan-icon green"><i class="fas fa-bell"></i></div>
+                    <div class="pk-plan-name">Thông báo sớm</div>
+                    <div class="pk-plan-price">
+                        <span class="pk-price-number">15K</span>
+                        <span class="pk-price-unit">/tháng</span>
                     </div>
-                }
-            }
-            else
-            {
-                <div class="col-span-3 text-center py-5">
-                    <p class="text-muted">Chưa có tin đăng nào. Hãy là người đầu tiên!</p>
+                    <div class="pk-plan-desc">Phù hợp cho người mới</div>
+                    <ul class="pk-features">
+                        <li><i class="fas fa-check pk-check green"></i> Vào tìm một phòng mới</li>
+                        <li><i class="fas fa-check pk-check green"></i> Lưu tối thiểu các tìm</li>
+                        <li><i class="fas fa-check pk-check green"></i> Nhận thể tải định thống</li>
+                    </ul>
+                    <a href="#" class="pk-btn outline">Chọn ngay</a>
                 </div>
-            }
-        </div>
 
-        <!-- Pagination -->
-        <div style="display:flex; justify-content:center; margin-top:4rem;">
-            <div style="display:flex; gap:0.5rem;">
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&larr;</a>
-                <a href="#" class="btn btn-primary" style="padding:0.5rem 1rem;">1</a>
-                <a href="#" class="btn btn-outline" style="padding:0.5rem 1rem;">&rarr;</a>
+                <!-- Standard -->
+                <div class="pk-card">
+                    <div class="pk-plan-icon blue-light"><i class="fas fa-user"></i></div>
+                    <div class="pk-plan-name">Gói thường</div>
+                    <div class="pk-plan-price">
+                        <span class="pk-price-number">50K</span>
+                        <span class="pk-price-unit">/tháng</span>
+                    </div>
+                    <div class="pk-plan-desc">Phù hợp cho thuê cá nhân</div>
+                    <ul class="pk-features">
+                        <li><i class="fas fa-check pk-check"></i> Vào tìm Tìm nhanh</li>
+                        <li><i class="fas fa-check pk-check"></i> Hay thêm tin mới</li>
+                    </ul>
+                    <a href="#" class="pk-btn outline">Chọn ngay</a>
+                </div>
+
+                <!-- VIP Month (Featured) -->
+                <div class="pk-card featured">
+                    <div class="pk-popular-badge">Phổ biến nhất</div>
+                    <div class="pk-plan-icon blue"><i class="fas fa-star"></i></div>
+                    <div class="pk-plan-name">VIP tháng</div>
+                    <div class="pk-plan-price">
+                        <span class="pk-price-number">200K</span>
+                        <span class="pk-price-unit">/tháng</span>
+                    </div>
+                    <div class="pk-plan-desc">Lựa chọn được ưa thích</div>
+                    <ul class="pk-features">
+                        <li><i class="fas fa-check pk-check"></i> Lên đầu danh sách mành</li>
+                        <li><i class="fas fa-check pk-check"></i> Đẩy tin đi động ở Unistay</li>
+                        <li><i class="fas fa-check pk-check"></i> Ưu tiên cao cường</li>
+                    </ul>
+                    <a href="#" class="pk-btn primary">Nâng cấp ngay</a>
+                </div>
+
+                <!-- VIP Year -->
+                <div class="pk-card">
+                    <div class="pk-plan-icon gold"><i class="fas fa-crown"></i></div>
+                    <div class="pk-plan-name">VIP năm</div>
+                    <div class="pk-plan-price">
+                        <span class="pk-price-number">1499K</span>
+                        <span class="pk-price-unit">/năm</span>
+                    </div>
+                    <div class="pk-plan-desc">Tiết kiệm nhất dài hạn</div>
+                    <ul class="pk-features">
+                        <li><i class="fas fa-check pk-check gold"></i> Tất cả tính năng VIP</li>
+                        <li><i class="fas fa-check pk-check gold"></i> Hỗ trợ Đẩy thân phụ lệnh</li>
+                        <li><i class="fas fa-check pk-check gold"></i> Đặt chỗ hỗ trợ cao</li>
+                        <li><i class="fas fa-check pk-check gold"></i> Hỗ trợ khách 24/7</li>
+                    </ul>
+                    <a href="#" class="pk-btn outline">Chọn ngay</a>
+                </div>
+
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- COMPARISON TABLE -->
+    <section class="pk-compare-section">
+        <div class="container">
+            <h2 class="pk-section-title">So sánh chi tiết</h2>
+            <p class="pk-section-sub">Lựa chọn gói dịch vụ phù hợp nhất với nhu cầu của bạn.</p>
+
+            <div style="overflow-x:auto; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+                <table class="pk-table">
+                    <thead>
+                        <tr>
+                            <th style="width:35%;">Tính năng</th>
+                            <th>Gói thường</th>
+                            <th class="th-featured">VIP tháng</th>
+                            <th>VIP năm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Đẩy tin lên đầu</td>
+                            <td><span style="font-size:12px;color:#64748B;">Tiền lệ</span></td>
+                            <td class="td-featured"><span class="pk-table-badge">Tùy theo 2 lần/ngày</span></td>
+                            <td><span class="pk-table-badge" style="background:#FFFBEB;color:#D97706;">Tủy bằng 3 lần/ngày</span></td>
+                        </tr>
+                        <tr>
+                            <td>Ưu tiên cao nhất</td>
+                            <td><i class="fas fa-times pk-x-icon"></i></td>
+                            <td class="td-featured"><i class="fas fa-check pk-check-icon"></i></td>
+                            <td><i class="fas fa-check pk-check-icon green"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Quản lí tin tức</td>
+                            <td><span style="font-size:12px;color:#64748B;">Tiền lệ, màng thường</span></td>
+                            <td class="td-featured"><span class="pk-table-badge">Tiêu dùng chuyển lại</span></td>
+                            <td><span class="pk-table-badge" style="background:#FFFBEB;color:#D97706;">Tiêu dùng chuyên nghiệp</span></td>
+                        </tr>
+                        <tr>
+                            <td>Thông báo tuổi mới</td>
+                            <td><i class="fas fa-times pk-x-icon"></i></td>
+                            <td class="td-featured"><i class="fas fa-check pk-check-icon"></i></td>
+                            <td><i class="fas fa-check pk-check-icon green"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Gồm tốc "Tin nổi bật"</td>
+                            <td><i class="fas fa-times pk-x-icon"></i></td>
+                            <td class="td-featured"><i class="fas fa-check pk-check-icon"></i></td>
+                            <td><i class="fas fa-check pk-check-icon green"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Chạy chinh điểm chuyên nghiệp</td>
+                            <td><i class="fas fa-times pk-x-icon"></i></td>
+                            <td class="td-featured"><i class="fas fa-times pk-x-icon"></i></td>
+                            <td><i class="fas fa-check pk-check-icon green"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Hỗ trợ khách 24/7</td>
+                            <td><i class="fas fa-times pk-x-icon"></i></td>
+                            <td class="td-featured"><i class="fas fa-times pk-x-icon"></i></td>
+                            <td><i class="fas fa-check pk-check-icon green"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="pk-faq-section">
+        <div class="container">
+            <h2 class="pk-section-title" style="text-align:center; margin-bottom:8px;">Câu hỏi thường gặp</h2>
+            <p class="pk-section-sub" style="text-align:center; margin-bottom:36px;">Giải đáp những thắc mắc phổ biến nhất</p>
+
+            <div class="pk-faq-list">
+                <div class="pk-faq-item open">
+                    <button class="pk-faq-btn pk-faq-toggle">
+                        <span>Làm thế nào để thanh toán gói dịch vụ?</span>
+                        <i class="fas fa-chevron-down pk-faq-icon"></i>
+                    </button>
+                    <div class="pk-faq-body">
+                        Bạn có thể thanh toán qua chuyển khoản ngân hàng, ví điện tử ZaloPay/ MoMo, hoặc thanh toán thẻ tín dụng/ghi nợ. Tất cả giao dịch được mã hóa an toàn.
+                    </div>
+                </div>
+
+                <div class="pk-faq-item">
+                    <button class="pk-faq-btn pk-faq-toggle">
+                        <span>Tôi có thể nâng cấp lên bậc VIP (tháng) từ gói thường không?</span>
+                        <i class="fas fa-chevron-down pk-faq-icon"></i>
+                    </button>
+                    <div class="pk-faq-body">
+                        Được, bạn có thể nâng cấp bất cứ lúc nào. Hệ thống sẽ tính toán số tiền chênh lệch theo ngày sử dụng còn lại và chỉ thu thêm phần đó để nâng lên gói cao hơn.
+                    </div>
+                </div>
+
+                <div class="pk-faq-item">
+                    <button class="pk-faq-btn pk-faq-toggle">
+                        <span>Gói "Thông báo sớm" hoạt động như thế nào?</span>
+                        <i class="fas fa-chevron-down pk-faq-icon"></i>
+                    </button>
+                    <div class="pk-faq-body">
+                        Khi có phòng mới phù hợp với tiêu chí của bạn, hệ thống sẽ gửi thông báo ngay lập tức qua email và ứng dụng trước khi hiển thị công khai, giúp bạn đặt phòng nhanh hơn các ứng viên khác.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="pk-cta-section">
+        <div class="container">
+            <div class="pk-cta-banner">
+                <h2 class="pk-cta-title">Sẵn sàng tìm được ngôi nhà mơ ước?</h2>
+                <p class="pk-cta-sub">Tham gia cùng hàng ngàn sinh viên đã tìm được phòng ưng ý tại Unistay. Bắt đầu cụm hôm nay!</p>
+                <div class="pk-cta-actions">
+                    <a asp-controller="Account" asp-action="Register" class="pk-cta-btn-primary">Bắt đầu miễn phí</a>
+                    <a href="mailto:contact@unistay.vn" class="pk-cta-btn-outline">Liên hệ tư vấn</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="pk-footer">
+        <div class="container">
+            <div class="pk-footer-grid">
+                <!-- Brand -->
+                <div>
+                    <a href="/" class="pk-footer-brand">Unistay</a>
+                    <p class="pk-footer-brand-desc">Nền tảng tìm trọ và kết nối sinh viên hàng đầu tại các khu đô thị đại học Việt Nam.</p>
+                </div>
+
+                <!-- Liên kết nhanh -->
+                <div class="pk-footer-col">
+                    <h4>Liên kết nhanh</h4>
+                    <ul class="pk-footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Dành cho chủ nhà -->
+                <div class="pk-footer-col">
+                    <h4>Dành cho chủ nhà</h4>
+                    <ul class="pk-footer-links">
+                        <li><a asp-controller="Rooms" asp-action="Create">Đăng ký cho thuê</a></li>
+                        <li><a href="#">Blog tài liệu</a></li>
+                        <li><a href="#">Quy định đăng tin</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kết nối -->
+                <div class="pk-footer-col">
+                    <h4>Kết nối với chúng tôi</h4>
+                    <div class="pk-footer-socials">
+                        <a href="#" class="pk-social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="pk-social-btn"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="pk-social-btn"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="pk-social-btn"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pk-footer-bottom">
+                &copy; 2026 Unistay Student Housing. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+@section Scripts {
+<script>
+    // FAQ accordion
+    document.querySelectorAll('.pk-faq-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var item = this.closest('.pk-faq-item');
+            var isOpen = item.classList.contains('open');
+            document.querySelectorAll('.pk-faq-item').forEach(function(i) { i.classList.remove('open'); });
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+</script>
+}

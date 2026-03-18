@@ -1,97 +1,1156 @@
+@model dynamic
 @{
-    ViewData["Title"] = "Chat Chuyên Gia AI";
+    ViewData["Title"] = "Trợ Lý AI - UniStay";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trợ Lý AI - Unistay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="d-flex align-items-center mb-4">
-                <div class="bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                </div>
-                <div>
-                    <h2 class="fw-bold m-0">Trợ Lý Ảo Unistay</h2>
-                    <p class="text-muted m-0 small">Luôn sẵn sàng hỗ trợ bạn 24/7</p>
-                </div>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #F0F4F8;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ====== TOP NAVBAR ====== */
+        .ai-topnav {
+            height: 56px;
+            background: #fff;
+            border-bottom: 1px solid #E8EDF2;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 0;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .ai-nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #0F172A;
+            text-decoration: none;
+            margin-right: 32px;
+        }
+
+        .ai-nav-brand-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #2563EB, #0EA5E9);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+        }
+
+        .ai-nav-links {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .ai-nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+
+        .ai-nav-links a:hover { background: #F1F5F9; color: #0F172A; }
+
+        .ai-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-nav-icon-btn {
+            width: 34px;
+            height: 34px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.15s;
+        }
+
+        .ai-nav-icon-btn:hover { background: #F1F5F9; }
+
+        .ai-nav-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .ai-nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ====== MAIN WRAPPER ====== */
+        .ai-app-body {
+            display: grid;
+            grid-template-columns: 220px 1fr 288px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ====== LEFT SIDEBAR ====== */
+        .ai-sidebar {
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border-right: 1px solid #E2E8F0;
+        }
+
+        .ai-sidebar-top {
+            padding: 20px 16px 16px;
+        }
+
+        .ai-sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .ai-brand-icon {
+            width: 40px;
+            height: 40px;
+            background: #2DBE8C;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .ai-brand-text-main {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1.2;
+        }
+
+        .ai-brand-text-sub {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        /* Sidebar nav items */
+        .ai-sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ai-sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ai-sidebar-item:hover {
+            background: #F1F5F9;
+            color: #2563EB;
+        }
+
+        .ai-sidebar-item.active {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .ai-sidebar-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Bottom pinned promo card */
+        .ai-sidebar-bottom {
+            margin-top: auto;
+            padding: 16px;
+        }
+
+        .ai-promo-card {
+            background: linear-gradient(135deg, #2DBE8C 0%, #1a9e72 100%);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .ai-promo-card:hover { transform: translateY(-2px); }
+
+        .ai-promo-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .ai-promo-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        /* ====== MAIN CHAT ====== */
+        .ai-chat-main {
+            background: #FAFBFC;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-left: 1px solid #E8EDF2;
+            border-right: 1px solid #E8EDF2;
+        }
+
+        /* Chat greeting header */
+        .ai-chat-greeting {
+            padding: 28px 32px 16px;
+            flex-shrink: 0;
+        }
+
+        .ai-greeting-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 6px;
+        }
+
+        .ai-greeting-title span {
+            color: #2563EB;
+        }
+
+        .ai-greeting-sub {
+            font-size: 13px;
+            color: #64748B;
+            line-height: 1.5;
+        }
+
+        /* Messages area */
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 32px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .ai-messages::-webkit-scrollbar { width: 4px; }
+        .ai-messages::-webkit-scrollbar-track { background: transparent; }
+        .ai-messages::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+        /* Message rows */
+        .ai-msg-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .ai-msg-row.user-row {
+            flex-direction: row-reverse;
+        }
+
+        .ai-msg-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .ai-msg-icon.bot-icon {
+            background: linear-gradient(135deg, #2563EB, #0EA5E9);
+            color: white;
+        }
+
+        .ai-msg-icon.user-icon {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            color: white;
+        }
+
+        .ai-msg-content { flex: 1; max-width: 78%; }
+
+        .ai-msg-row.user-row .ai-msg-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .ai-bubble {
+            padding: 13px 16px;
+            border-radius: 16px;
+            font-size: 13.5px;
+            line-height: 1.65;
+            display: inline-block;
+        }
+
+        .ai-bubble.bot {
+            background: #F1F5F9;
+            color: #1E293B;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-bubble.user {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+
+        /* Quick reply chips */
+        .ai-quick-chips {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ai-chip {
+            padding: 6px 14px;
+            background: #fff;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ai-chip:hover {
+            border-color: #2563EB;
+            color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        /* Roommate suggestion cards */
+        .ai-roommate-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ai-rm-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .ai-rm-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .ai-rm-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .ai-rm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .ai-rm-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 2px;
+        }
+
+        .ai-rm-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .ai-rm-quote {
+            font-size: 11.5px;
+            color: #64748B;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ai-rm-btn {
+            display: block;
+            text-align: center;
+            background: #F1F5F9;
+            color: #2563EB;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 7px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.15s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .ai-rm-btn:hover { background: #EFF6FF; }
+
+        /* Typing indicator */
+        .ai-typing {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            padding: 12px 16px;
+            background: #F1F5F9;
+            border-radius: 14px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+        }
+
+        .ai-typing-dot {
+            width: 7px;
+            height: 7px;
+            background: #94A3B8;
+            border-radius: 50%;
+            animation: tDot 1.2s infinite ease-in-out;
+        }
+
+        .ai-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Chat input */
+        .ai-input-area {
+            padding: 16px 32px 20px;
+            background: #FAFBFC;
+            flex-shrink: 0;
+        }
+
+        .ai-input-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: border-color 0.2s;
+        }
+
+        .ai-input-box:focus-within {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .ai-input-add-btn {
+            width: 32px;
+            height: 32px;
+            background: #F1F5F9;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B;
+            cursor: pointer;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .ai-input-add-btn:hover { background: #E2E8F0; }
+
+        #userMessage {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13.5px;
+            color: #1E293B;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        #userMessage::placeholder { color: #94A3B8; }
+
+        .ai-send-btn {
+            width: 36px;
+            height: 36px;
+            background: #2563EB;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .ai-send-btn:hover {
+            background: #1D4ED8;
+            transform: scale(1.05);
+        }
+
+        /* ====== RIGHT PANEL ====== */
+        .ai-right-panel {
+            background: #F8FAFC;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px 16px;
+            gap: 14px;
+        }
+
+        .ai-right-panel::-webkit-scrollbar { width: 3px; }
+        .ai-right-panel::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+        /* Panel header */
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-panel-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-panel-title i {
+            color: #2DBE8C;
+        }
+
+        .ai-hop-menh-badge {
+            background: #EEF2FF;
+            color: #4F46E5;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Tarot card */
+        .ai-tarot-card-wrap {
+            background: #fff;
+            border: 2.5px solid #2DBE8C;
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .ai-tarot-inner {
+            background: #F8FAFC;
+            border-radius: 14px;
+            padding: 20px 12px;
+            margin-bottom: 12px;
+        }
+
+        .ai-tarot-star {
+            font-size: 40px;
+            color: #2DBE8C;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .ai-tarot-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 4px;
+        }
+
+        .ai-tarot-subtitle {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0;
+        }
+
+        .ai-tarot-quote {
+            font-size: 12px;
+            color: #64748B;
+            font-style: italic;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        /* Feng shui tips */
+        .ai-fengshui-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .ai-fengshui-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+
+        .ai-fengshui-header i {
+            color: #3B82F6;
+            font-size: 12px;
+        }
+
+        .ai-fengshui-text {
+            font-size: 12px;
+            color: #64748B;
+            line-height: 1.6;
+        }
+
+        .ai-fengshui-text strong { color: #0F172A; }
+
+        /* Draw card button */
+        .ai-draw-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2DBE8C, #1a9e72);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(45, 190, 140, 0.3);
+            width: 100%;
+        }
+
+        .ai-draw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 190, 140, 0.4);
+        }
+
+        /* Stats + secondary button row */
+        .ai-stats-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-stat-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 12px;
+            border: 1px solid #E2E8F0;
+            flex: 1;
+            text-align: center;
+        }
+
+        .ai-stat-number {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .ai-stat-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .ai-alt-draw-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #2563EB, #0EA5E9);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+            flex: 1.4;
+            white-space: nowrap;
+        }
+
+        .ai-alt-draw-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* User Profile Cards */
+        .ai-profile-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-profile-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .ai-profile-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ai-profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .ai-profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ai-profile-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 2px;
+        }
+
+        .ai-profile-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .ai-profile-quote {
+            font-size: 11.5px;
+            color: #64748B;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ai-profile-link {
+            display: block;
+            text-align: center;
+            background: #F1F5F9;
+            color: #2563EB;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 7px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .ai-profile-link:hover {
+            background: #EFF6FF;
+        }
+
+        /* Animations */
+
+        @@keyframes tDot {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        @@keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-msg-row { animation: slideIn 0.3s ease forwards; }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <nav class="ai-topnav">
+        <a href="/" class="ai-nav-brand">
+            <div class="ai-nav-brand-icon"><i class="fas fa-star"></i></div>
+            Unistay AI
+        </a>
+        <div class="ai-nav-links">
+            <a asp-controller="Rooms" asp-action="Index">Nhà ở</a>
+            <a asp-controller="Roommates" asp-action="Index">Bạn cùng phòng</a>
+            <a asp-controller="RentalAdvice" asp-action="Index">Góc AI</a>
+            <a href="#">Hỗ trợ</a>
+        </div>
+        <div class="ai-nav-right">
+            <button class="ai-nav-icon-btn"><i class="fas fa-bell"></i></button>
+            <div class="ai-nav-avatar">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=2563EB&color=fff&size=32" alt="avatar" />
+                }
+                else
+                {
+                    <i class="fas fa-user" style="color:#94A3B8;font-size:14px;"></i>
+                }
             </div>
+        </div>
+    </nav>
 
-            <div class="glass-card chat-container d-flex flex-column" style="height: 600px;">
-                <!-- Chat Messages Area -->
-                <div id="chatMessages" class="flex-grow-1 p-4 overflow-auto border-bottom">
-                    <div class="message ai-message mb-3">
-                        <div class="content p-3 rounded-3 bg-light d-inline-block" style="max-width: 80%;">
-                            Xin chào! Tôi là trợ lý AI của Unistay. Tôi có thể giúp gì cho bạn về việc tìm trọ, phân tích giá cả hoặc tư vấn khu vực an toàn?
-                        </div>
+    <!-- APP BODY -->
+    <div class="ai-app-body">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="ai-sidebar">
+            <div class="ai-sidebar-top">
+                <div class="ai-sidebar-brand">
+                    <div class="ai-brand-icon"><i class="fas fa-home"></i></div>
+                    <div>
+                        <div class="ai-brand-text-main">Unistay</div>
+                        <div class="ai-brand-text-sub">Student Living</div>
                     </div>
                 </div>
 
-                <!-- Input Area -->
-                <div class="p-3">
-                    <form id="chatForm" class="d-flex gap-2">
-                        <input type="text" id="userMessage" class="form-control form-control-lg border-0 bg-light" placeholder="Nhập câu hỏi của bạn..." required>
-                        <button type="submit" class="btn btn-primary btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </button>
-                    </form>
+                <nav class="ai-sidebar-nav">
+                    <a class="ai-sidebar-item active" href="#">
+                        <i class="fas fa-robot"></i> Trợ lý AI
+                    </a>
+                    <a class="ai-sidebar-item" asp-controller="RentalAdvice" asp-action="PriceAnalysis">
+                        <i class="fas fa-star-and-crescent"></i> Xem bài Tarot
+                    </a>
+                    <a class="ai-sidebar-item" asp-controller="Roommates" asp-action="Index">
+                        <i class="fas fa-user-friends"></i> Tìm bạn cùng phòng
+                    </a>
+                    <a class="ai-sidebar-item" asp-controller="Rooms" asp-action="Index">
+                        <i class="fas fa-building"></i> Phòng của tôi
+                    </a>
+                </nav>
+            </div>
+
+            <div class="ai-sidebar-bottom">
+                <div class="ai-promo-card">
+                    <div class="ai-promo-label">FPT Hola Special</div>
+                    <div class="ai-promo-title">Tìm phòng Dom xịn &amp; Bạn hợp mệnh</div>
                 </div>
             </div>
-        </div>
+        </aside>
+
+        <!-- MAIN CHAT -->
+        <main class="ai-chat-main">
+            <div class="ai-chat-greeting">
+                <div class="ai-greeting-title">Chào bạn, <span>PLAYER!</span></div>
+                <div class="ai-greeting-sub">Unistay đang chờ đón bạn. AI sẽ giúp bạn tìm nơi ở "vượng khí" và người bạn đồng hành hợp cung hoàng đạo nhất.</div>
+            </div>
+
+            <div class="ai-messages" id="chatMessages">
+                <!-- First bot message -->
+                <div class="ai-msg-row">
+                    <div class="ai-msg-icon bot-icon"><i class="fas fa-robot"></i></div>
+                    <div class="ai-msg-content">
+                        <div class="ai-bubble bot">Chào bạn! Mình là trợ lý Unistay. Bạn đang tìm phòng ở khu vực nào tại Hòa Lạc? (Dom 1-8, Tân Xã, hay Thạch Hòa?)</div>
+                        <div class="ai-quick-chips">
+                            <button class="ai-chip quick-send" data-msg="Ký túc xá FPT">Ký túc xá FPT</button>
+                            <button class="ai-chip quick-send" data-msg="Khu Tân Xã">Khu Tân Xã</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-input-area">
+                <form id="chatForm" autocomplete="off">
+                    <div class="ai-input-box">
+                        <button type="button" class="ai-input-add-btn"><i class="fas fa-plus"></i></button>
+                        <input type="text" id="userMessage"
+                               placeholder="Hỏi AI về cung hoàng đạo hoặc tìm phòng..."
+                               required autocomplete="off" />
+                        <button type="submit" class="ai-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="ai-right-panel">
+            <div class="ai-panel-header">
+                <div class="ai-panel-title">
+                    <i class="fas fa-magic"></i> Góc Huyền Bí
+                </div>
+                <span class="ai-hop-menh-badge">HỢP MỆNH</span>
+            </div>
+
+            <!-- Tarot Card -->
+            <div class="ai-tarot-card-wrap">
+                <div class="ai-tarot-inner">
+                    <i class="fas fa-star ai-tarot-star" id="tarotIcon"></i>
+                    <div class="ai-tarot-name" id="tarotName">The Star</div>
+                    <div class="ai-tarot-subtitle" id="tarotSubtitle">Sự Hy Vọng &amp; Kết Nối</div>
+                </div>
+                <p class="ai-tarot-quote" id="tarotQuote">"Lá bài báo hiệu bạn sẽ tìm thấy một người bạn cùng phòng có tâm hồn đồng điệu tại Hòa Lạc."</p>
+            </div>
+
+            <!-- Feng shui tips -->
+            <div class="ai-fengshui-box">
+                <div class="ai-fengshui-header">
+                    <i class="fas fa-info-circle"></i> Lời khuyên phong thủy
+                </div>
+                <p class="ai-fengshui-text" id="fengshuiText">Tháng này Song Ngư nên chọn phòng hướng <strong>Đông Nam</strong> để đón năng lượng tích cực từ Tân Xã.</p>
+            </div>
+
+            <!-- User Profile Cards -->
+            <div class="ai-profile-cards">
+                <div class="ai-profile-card">
+                    <div class="ai-profile-top">
+                        <img src="https://ui-avatars.com/api/?name=MinAnhKIB&background=FF69B4&color=fff&size=40" alt="avatar" class="ai-profile-avatar" />
+                        <div class="ai-profile-info">
+                            <div class="ai-profile-name">Minh Anh</div>
+                            <div class="ai-profile-badge">CỬ NHÂN - KIB</div>
+                        </div>
+                    </div>
+                    <div class="ai-profile-quote">"Mình thích ở tại Hòa Lạc vì an toàn. Rất mong tìm được bạn cùng phòng tốt bụng..."</div>
+                    <a href="#" class="ai-profile-link">Xem hộ sao</a>
+                </div>
+
+                <div class="ai-profile-card">
+                    <div class="ai-profile-top">
+                        <img src="https://ui-avatars.com/api/?name=QuocBaoKIT&background=87CEEB&color=fff&size=40" alt="avatar" class="ai-profile-avatar" />
+                        <div class="ai-profile-info">
+                            <div class="ai-profile-name">Quốc Bảo</div>
+                            <div class="ai-profile-badge">KỸ SƯ - KIT</div>
+                        </div>
+                    </div>
+                    <div class="ai-profile-quote">"Kỹ luật và giặc giúp tôi là 2 cụ. Đang cơ hành lâm và sạch sẽ..."</div>
+                    <a href="#" class="ai-profile-link">Xem hộ sao</a>
+                </div>
+            </div>
+
+            <!-- Draw card button -->
+            <button class="ai-draw-btn" id="drawCardBtn">
+                <i class="fas fa-sparkles" style="font-size:12px;"></i>
+                ✦ Rút bài mới
+            </button>
+
+            <!-- Stats + alt draw -->
+            <div class="ai-stats-row">
+                <div class="ai-stat-box">
+                    <div class="ai-stat-number">150+</div>
+                    <div class="ai-stat-label">Cặp hợp mệnh</div>
+                </div>
+                <button class="ai-alt-draw-btn" id="altDrawBtn">
+                    ✦ Trải bài mới
+                </button>
+            </div>
+        </aside>
     </div>
-</div>
 
-@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script>
-        $(document).ready(function() {
-            const chatMessages = document.getElementById('chatMessages');
+        $(function () {
+            const $msgs = $('#chatMessages');
 
-            function appendMessage(text, isUser) {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `message ${isUser ? 'user-message text-end' : 'ai-message'} mb-3`;
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.className = `content p-3 rounded-3 d-inline-block ${isUser ? 'bg-primary text-white' : 'bg-light'}`;
-                contentDiv.style.maxWidth = '80%';
-                contentDiv.style.textAlign = 'left';
-                contentDiv.textContent = text;
-                
-                msgDiv.appendChild(contentDiv);
-                chatMessages.appendChild(msgDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            function scrollBottom() {
+                $msgs.scrollTop($msgs[0].scrollHeight);
             }
 
-            $('#chatForm').on('submit', function(e) {
-                e.preventDefault();
-                const input = $('#userMessage');
-                const message = input.val().trim();
-                if (!message) return;
+            function getNow() {
+                return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            }
 
-                // Append user message
-                appendMessage(message, true);
-                input.val('');
+            function appendUserMsg(text) {
+                const html = `
+                    <div class="ai-msg-row user-row">
+                        <div class="ai-msg-icon user-icon"><i class="fas fa-user"></i></div>
+                        <div class="ai-msg-content">
+                            <div class="ai-bubble user">${escHtml(text)}</div>
+                        </div>
+                    </div>`;
+                $msgs.append(html);
+                scrollBottom();
+            }
 
-                // Loading state
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message ai-message mb-3';
-                loadingDiv.innerHTML = '<div class="content p-3 rounded-3 bg-light d-inline-block"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang trả lời...</div>';
-                chatMessages.appendChild(loadingDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            function appendBotMsg(text) {
+                const html = `
+                    <div class="ai-msg-row">
+                        <div class="ai-msg-icon bot-icon"><i class="fas fa-robot"></i></div>
+                        <div class="ai-msg-content">
+                            <div class="ai-bubble bot">${text}</div>
+                        </div>
+                    </div>`;
+                $msgs.append(html);
+                scrollBottom();
+            }
 
-                // Send to API
+            function showTyping() {
+                const $t = $(`
+                    <div class="ai-msg-row" id="typingRow">
+                        <div class="ai-msg-icon bot-icon"><i class="fas fa-robot"></i></div>
+                        <div class="ai-msg-content">
+                            <div class="ai-typing">
+                                <div class="ai-typing-dot"></div>
+                                <div class="ai-typing-dot"></div>
+                                <div class="ai-typing-dot"></div>
+                            </div>
+                        </div>
+                    </div>`);
+                $msgs.append($t);
+                scrollBottom();
+                return $t;
+            }
+
+            function escHtml(str) {
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+            }
+
+            function sendMessage(msg) {
+                if (!msg.trim()) return;
+                appendUserMsg(msg);
+                $('#userMessage').val('');
+
+                const $typing = showTyping();
+
                 $.ajax({
                     url: '@Url.Action("GetChatResponse", "RentalAdvice")',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ message: message }),
-                    success: function(res) {
-                        chatMessages.removeChild(loadingDiv);
-                        appendMessage(res.response, false);
+                    data: JSON.stringify({ message: msg }),
+                    success: function (res) {
+                        $typing.remove();
+                        appendBotMsg(escHtml(res.response || 'Xin lỗi, thử lại nhé!'));
                     },
-                    error: function() {
-                        chatMessages.removeChild(loadingDiv);
-                        appendMessage("Xin lỗi, tôi đang gặp sự cố kết nối. Vui lòng thử lại sau.", false);
+                    error: function () {
+                        $typing.remove();
+                        appendBotMsg('Xin lỗi, mình đang gặp lỗi kết nối. Bạn thử lại nhé! 🙏');
                     }
                 });
+            }
+
+            // Form submit
+            $('#chatForm').on('submit', function (e) {
+                e.preventDefault();
+                sendMessage($('#userMessage').val().trim());
             });
+
+            // Quick chips
+            $(document).on('click', '.quick-send', function () {
+                sendMessage($(this).data('msg'));
+            });
+
+            // Tarot cards data
+            const tarotCards = [
+                { icon: 'fa-star', name: 'The Star', sub: 'Sự Hy Vọng & Kết Nối', quote: '"Lá bài báo hiệu bạn sẽ tìm thấy người bạn cùng phòng có tâm hồn đồng điệu tại Hòa Lạc."', fengshui: 'Tháng này Song Ngư nên chọn phòng hướng <strong>Đông Nam</strong> để đón năng lượng tích cực từ Tân Xã.' },
+                { icon: 'fa-sun', name: 'The Sun', sub: 'Niềm Vui & Thịnh Vượng', quote: '"Năng lượng tươi sáng bao quanh bạn. Phòng hướng Đông sẽ mang lại may mắn."', fengshui: 'Chọn phòng có cửa sổ hướng <strong>Đông</strong> để đón nắng buổi sáng, tăng vận khí tốt.' },
+                { icon: 'fa-moon', name: 'The Moon', sub: 'Trực Giác & Bí Ẩn', quote: '"Hãy tin vào linh cảm khi chọn phòng. Nơi ở yên tĩnh sẽ giúp bạn học tốt hơn."', fengshui: 'Tránh phòng đối diện cầu thang, nên chọn phòng ở cuối hành lang để có sự yên tĩnh.' },
+                { icon: 'fa-bolt', name: 'The Tower', sub: 'Thay Đổi & Bứt Phá', quote: '"Đây là thời điểm thay đổi. Hãy dũng cảm thử khu vực mới như Thạch Hòa hoặc Dom 5-8."', fengshui: 'Phòng ở tầng cao sẽ hút năng lượng mới. Tránh phòng góc để không bị cô lập.' },
+                { icon: 'fa-heart', name: 'The Lovers', sub: 'Hòa Hợp & Kết Nối', quote: '"Bạn cùng phòng tuyệt vời đang ở đây. Sự hòa hợp tính cách sẽ tạo nên mái ấm."', fengshui: 'Đặt cây xanh nhỏ trong phòng để tăng năng lượng hòa hợp với bạn cùng phòng.' },
+            ];
+
+            let lastCardIdx = 0;
+
+            function drawCard() {
+                let idx;
+                do { idx = Math.floor(Math.random() * tarotCards.length); } while (idx === lastCardIdx);
+                lastCardIdx = idx;
+                const c = tarotCards[idx];
+
+                const $icon = $('#tarotIcon');
+                const $name = $('#tarotName');
+                const $sub = $('#tarotSubtitle');
+                const $quote = $('#tarotQuote');
+                const $feng = $('#fengshuiText');
+
+                $icon.add($name).add($sub).add($quote).add($feng)
+                    .css({ opacity: 0, transform: 'translateY(8px)' });
+
+                setTimeout(() => {
+                    $icon.removeClass().addClass(`fas ${c.icon} ai-tarot-star`);
+                    $name.text(c.name);
+                    $sub.html(c.sub);
+                    $quote.html(c.quote);
+                    $feng.html(c.fengshui);
+                    $icon.add($name).add($sub).add($quote).add($feng)
+                        .css({ transition: 'all 0.4s ease', opacity: 1, transform: 'translateY(0)' });
+                }, 150);
+            }
+
+            $('#drawCardBtn, #altDrawBtn').on('click', drawCard);
         });
     </script>
-}
+</body>
+</html>

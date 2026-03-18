@@ -1,558 +1,169 @@
 @model Unistay_Web.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Tạo tài khoản mới - Unistay";
     Layout = null;
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Unistay</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <title>@ViewData["Title"]</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd89b 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: gradientShift 15s ease infinite;
-            background-size: 400% 400%;
-        }
-
-        @@keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .auth-container {
-            display: flex;
-            max-width: 1150px;
-            width: 100%;
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(10px);
-        }
-
-        .auth-left {
-            flex: 1;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 70px 50px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auth-left::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .auth-left::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -30%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .auth-left-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .auth-left h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-        }
-
-        .auth-left p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            line-height: 1.7;
-            font-weight: 300;
-            margin-bottom: 40px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 25px;
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-5px);
-        }
-
-        .stat-card h3 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .stat-card p {
-            font-size: 0.9rem;
-            opacity: 0.95;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .auth-right {
-            flex: 1;
-            padding: 50px;
-            max-height: 95vh;
-            overflow-y: auto;
-        }
-
-        .auth-right::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .auth-right::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .auth-right::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 10px;
-        }
-
-        .auth-right::-webkit-scrollbar-thumb:hover {
-            background: #999;
-        }
-
-        .auth-header {
-            text-align: left;
-            margin-bottom: 35px;
-        }
-
-        .auth-header h2 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .auth-header p {
-            color: #888;
-            font-size: 0.95rem;
-            font-weight: 400;
-        }
-
-        .auth-header p a {
-            color: #f5576c;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .auth-header p a:hover {
-            color: #e63946;
-            text-decoration: underline;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 10px;
-            color: #2a2a2a;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e8e8e8;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #f5576c;
-            box-shadow: 0 0 0 5px rgba(245, 87, 108, 0.12);
-            background: white;
-        }
-
-        .form-control::placeholder {
-            color: #aaa;
-            font-weight: 400;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #e8e8e8;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: #f5576c;
-            box-shadow: 0 0 0 5px rgba(245, 87, 108, 0.12);
-            background: white;
-        }
-
-        .form-check {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 28px;
-        }
-
-        .form-check-input {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            margin-top: 2px;
-            cursor: pointer;
-            flex-shrink: 0;
-            accent-color: #f5576c;
-            border-radius: 4px;
-        }
-
-        .form-check-label {
-            color: #555;
-            font-size: 0.9rem;
-            cursor: pointer;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-
-        .form-check-label a {
-            color: #f5576c;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-check-label a:hover {
-            text-decoration: underline;
-            color: #e63946;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 0.3px;
-            margin-top: 8px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.35);
-        }
-
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
-
-        .divider {
-            text-align: center;
-            margin: 35px 0;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #ddd;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 18px;
-            color: #999;
-            font-size: 0.8rem;
-            position: relative;
-            z-index: 1;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .social-login {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .btn-social {
-            flex: 1;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .btn-social:hover {
-            border-color: #f5576c;
-            background: linear-gradient(135deg, #fff5f7 0%, #fff0f3 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.15);
-        }
-
-        .btn-social i {
-            font-size: 1.2rem;
-        }
-
-        .text-danger {
-            color: #e74c3c;
-            font-size: 0.8rem;
-            margin-top: 6px;
-            display: block;
-            font-weight: 500;
-        }
-
-        .alert {
-            padding: 16px 18px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border-left: 4px solid;
-            animation: slideIn 0.4s ease;
-        }
-
-        .alert-danger {
-            background: #fff5f5;
-            border-color: #e74c3c;
-            color: #c0392b;
-        }
-
-        @@keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @@media (max-width: 768px) {
-            .auth-container {
-                flex-direction: column;
-                border-radius: 20px;
-            }
-
-            .auth-left {
-                padding: 50px 30px;
-            }
-
-            .auth-right {
-                padding: 40px 25px;
-                max-height: none;
-            }
-
-            .auth-left h1 {
-                font-size: 2rem;
-            }
-
-            .auth-header h2 {
-                font-size: 1.8rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .auth-left::before,
-            .auth-left::after {
-                display: none;
-            }
-        }
-    </style>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-left">
+    <div class="auth-wrapper">
+        <!-- ===== LEFT SIDE (Visual) ===== -->
+        <div class="auth-left" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80')">
             <div class="auth-left-content">
-                <h1>Tham gia cộng đồng! 🚀</h1>
-                <p>Tìm kiếm ngôi nhà sinh viên hoàn hảo của bạn và kết nối với một cộng đồng tuyệt vời của những người ở chung được xác minh. Cuộc phiêu lưu của bạn bắt đầu ở đây!</p>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>150K+</h3>
-                        <p>Sinh viên hạnh phúc</p>
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">
+                        <i class="fas fa-building" style="color: white;"></i>
                     </div>
-                    <div class="stat-card">
-                        <h3>50K+</h3>
-                        <p>Phòng được xác minh</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>200+</h3>
-                        <p>Thành phố & Thị trấn</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>⭐ 4.9/5</h3>
-                        <p>Xếp hạng người dùng</p>
-                    </div>
+                    <span class="auth-logo-text">Unistay</span>
                 </div>
+                <h1 class="auth-left-title">
+                    Tìm kiếm không gian sống lý tưởng cho hành trình đại học.
+                </h1>
+                <p class="auth-left-desc">
+                    Gia nhập cộng đồng hơn 10,000 sinh viên và chủ trọ trên khắp cả nước.
+                </p>
             </div>
         </div>
 
+        <!-- ===== RIGHT SIDE (Form) ===== -->
         <div class="auth-right">
-            <div class="auth-header">
-                <h2>Tạo tài khoản</h2>
-                <p>Đã có tài khoản? <a asp-action="Login">Đăng nhập →</a></p>
-            </div>
-
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger">
-                    <div asp-validation-summary="All"></div>
-                </div>
-            }
-
-            <form asp-action="Register" asp-controller="Account" method="post">
-                <div class="form-group">
-                    <label asp-for="FullName" class="form-label">👤 Họ và tên</label>
-                    <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
+            <div class="auth-form-container" style="max-height: 95vh; overflow-y: auto; padding-right: 10px;">
+                <div class="auth-header">
+                    <h2>Tạo tài khoản mới</h2>
+                    <p>Khám phá ngay những tiện ích dành riêng cho bạn</p>
                 </div>
 
-                <div class="form-group">
-                    <label asp-for="Email" class="form-label">📧 Địa chỉ email</label>
-                    <input asp-for="Email" class="form-control" placeholder="ban@university.edu" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div style="background: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+                        <div asp-validation-summary="All"></div>
+                    </div>
+                }
+
+                <div class="role-selector">
+                    <button type="button" class="role-btn active" onclick="setRole('Student')">Tôi là Sinh viên</button>
+                    <button type="button" class="role-btn" onclick="setRole('Host')">Tôi là Chủ trọ</button>
                 </div>
 
-                <div class="form-group">
-                    <label asp-for="Phone" class="form-label">📱 Số điện thoại</label>
-                    <input asp-for="Phone" class="form-control" placeholder="+84 (xxx) xxx-xxxx" />
-                    <span asp-validation-for="Phone" class="text-danger"></span>
-                </div>
+                <form asp-action="Register" asp-controller="Account" method="post">
+                    <!-- Hidden field for role if needed by model -->
+                    @* <input type="hidden" asp-for="Role" id="roleInput" value="Student" /> *@
 
-                <div class="form-row">
+                    <!-- Full Name -->
                     <div class="form-group">
-                        <label asp-for="Password" class="form-label">🔐 Mật khẩu</label>
-                        <input asp-for="Password" type="password" class="form-control" placeholder="Tối thiểu 8 ký tự, chữ hoa, thường & số" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <label asp-for="FullName" class="form-label">Họ và tên</label>
+                        <div class="input-wrapper">
+                            <i class="far fa-user input-icon"></i>
+                            <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                        </div>
+                        <span asp-validation-for="FullName" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;"></span>
                     </div>
 
+                    <!-- Email -->
                     <div class="form-group">
-                        <label asp-for="ConfirmPassword" class="form-label">✓ Xác nhận</label>
-                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <div class="input-wrapper">
+                            <i class="far fa-envelope input-icon"></i>
+                            <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                        </div>
+                        <span asp-validation-for="Email" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;"></span>
                     </div>
-                </div>
 
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="terms" required />
-                    <label class="form-check-label" for="terms">
-                        Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>
-                    </label>
-                </div>
+                    <!-- Phone -->
+                    <div class="form-group">
+                        <label asp-for="Phone" class="form-label">Số điện thoại</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone-alt input-icon"></i>
+                            <input asp-for="Phone" class="form-control" placeholder="0901 234 567" />
+                        </div>
+                        <span asp-validation-for="Phone" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;"></span>
+                    </div>
 
-                <button type="submit" class="btn-primary">🎉 Tạo tài khoản</button>
-            </form>
+                    <!-- Passwords Grid -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label asp-for="Password" class="form-label">Mật khẩu</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="........" />
+                            </div>
+                            <span asp-validation-for="Password" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword" class="form-label">Xác nhận</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-shield-alt input-icon"></i>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="........" />
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" style="color: #ef4444; font-size: 13px; margin-top: 4px; display: block;"></span>
+                        </div>
+                    </div>
 
-            <div class="divider">
-                <span>Hoặc đăng ký với</span>
-            </div>
+                    <!-- Agreement -->
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required />
+                        <label class="form-check-label" for="terms" style="font-size: 12px; line-height: 1.4;">
+                            Bằng cách đăng ký, bạn đồng ý với <a href="#" style="color: #2563EB; text-decoration: none; font-weight: 600;">Điều khoản dịch vụ</a> và <a href="#" style="color: #2563EB; text-decoration: none; font-weight: 600;">Chính sách bảo mật</a> của Unistay.
+                        </label>
+                    </div>
 
-            <div class="social-login">
-                <form asp-action="GoogleLogin" asp-controller="Account" method="get" style="flex: 1;">
-                    <button type="submit" class="btn-social" style="width: 100%;">
-                        <i class="fab fa-google" style="color: #DB4437;"></i>
-                        Google
+                    <!-- Submit -->
+                    <button type="submit" class="btn-login">
+                        Đăng ký ngay <i class="fas fa-arrow-right"></i>
                     </button>
                 </form>
+
+                <div class="auth-footer" style="margin: 24px 0;">
+                    Đã có tài khoản? <a asp-action="Login">Đăng nhập</a>
+                </div>
+
+                <div class="auth-divider">
+                    <span>HOẶC ĐĂNG KÝ BẰNG</span>
+                </div>
+
+                <!-- Social login -->
+                <div class="social-buttons" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+                    <a asp-action="GoogleLogin" asp-controller="Account" class="btn-social" style="background-color: #F8FAFC; border: 1px solid #E2E8F0;">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                        Google
+                    </a>
+                    <a href="#" class="btn-social" style="background-color: #F8FAFC; border: 1px solid #E2E8F0;">
+                        <i class="fab fa-facebook" style="color: #1877F2;"></i>
+                        Facebook
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    
     <script>
-        $(document).ready(function () {
-            // Force validation on keyup for password fields to give immediate feedback
-            $('#Password, #ConfirmPassword').on('keyup', function () {
-                $(this).valid();
-            });
-        });
+        function setRole(role) {
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            // Update hidden input if needed: document.getElementById('roleInput').value = role;
+        }
     </script>
 </body>
 </html>

@@ -35,15 +35,15 @@ namespace Unistay_Web.Services.RentalAdvice
             return "That's a great question. When looking for a rental, consider the proximity to public transport and local amenities.";
         }
 
-        public async Task<List<NeighborhoodDetail>> GetNeighborhoodSuggestionsAsync(string userId)
+        public Task<List<NeighborhoodDetail>> GetNeighborhoodSuggestionsAsync(string userId)
         {
             // specific data simulation
-            return new List<NeighborhoodDetail>
+            return Task.FromResult(new List<NeighborhoodDetail>
             {
                 new NeighborhoodDetail { Name = "Tech Hub District", Description = "Vibrant area with many startups.", AveragePrice = 1200, SafetyScore = 8.5, WalkabilityScore = 9, Amenities = new List<string> { "Gyms", "Cafes", "Metro" }, CommuteTimeMinutes = 15, RiskLevel = "Low" },
                 new NeighborhoodDetail { Name = "Green Leaf Park", Description = "Quiet and family friendly.", AveragePrice = 950, SafetyScore = 9.2, WalkabilityScore = 7, Amenities = new List<string> { "Parks", "Schools" }, CommuteTimeMinutes = 35, RiskLevel = "Low" },
                 new NeighborhoodDetail { Name = "Industrial Lofts", Description = "Up and coming area.", AveragePrice = 800, SafetyScore = 6.5, WalkabilityScore = 0, Amenities = new List<string> { "Art Galleries", "Bars" }, CommuteTimeMinutes = 25, RiskLevel = "Medium" }
-            };
+            });
         }
 
         public async Task<List<Room>> GetRoomSuggestionsAsync(string userId)
@@ -89,9 +89,9 @@ namespace Unistay_Web.Services.RentalAdvice
             return analysis.RiskScore > 70;
         }
 
-        public async Task<PriceTrend> GetPriceTrendsAsync(string area)
+        public Task<PriceTrend> GetPriceTrendsAsync(string area)
         {
-            return new PriceTrend
+            return Task.FromResult(new PriceTrend
             {
                 AreaName = area,
                 BestTimeToRent = "September",
@@ -102,12 +102,12 @@ namespace Unistay_Web.Services.RentalAdvice
                     { "Jan", 950 }, { "Feb", 960 }, { "Mar", 980 },
                     { "Apr", 1000 }, { "May", 1020 }, { "Jun", 1100 }
                 }
-            };
+            });
         }
 
-        public async Task<string> GetBestTimeToRentAsync(string area)
+        public Task<string> GetBestTimeToRentAsync(string area)
         {
-            return "The best time to rent in " + area + " is usually during the winter months when demand is lower.";
+            return Task.FromResult("The best time to rent in " + area + " is usually during the winter months when demand is lower.");
         }
     }
 }

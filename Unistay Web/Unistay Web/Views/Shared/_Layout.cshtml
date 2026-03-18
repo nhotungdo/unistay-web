@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Unistay - Nền tảng tìm trọ và kết nối sinh viên" />
-    <meta name="theme-color" content="#6366f1" />
+    <meta name="theme-color" content="#2563EB" />
     <title>@ViewData["Title"] - Unistay Modern</title>
 
     <!-- Google Fonts -->
@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <!-- Navbar (Hidden on homepage via JS in Index) -->
+    <!-- Navbar -->
     <nav class="navbar" id="mainNav">
         <div class="container navbar-content">
             <a class="nav-brand" asp-controller="Home" asp-action="Index" style="margin-right: auto;">
@@ -41,11 +41,11 @@
 
             <ul class="nav-links">
                 <li><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                <li><a class="nav-link" asp-controller="Rooms" asp-action="Index">Tìm trọ</a></li>
-                <li><a class="nav-link" asp-controller="Roommates" asp-action="Index">Tìm ở ghép</a></li>
-                <li><a class="nav-link" asp-controller="Connections" asp-action="Index">Bạn bè</a></li>
-                <li><a class="nav-link" asp-controller="RentalAdvice" asp-action="Index">Tư vấn AI</a></li>
-                <li><a class="nav-link" asp-controller="Marketplace" asp-action="Index">Chợ đồ cũ</a></li>
+                <li><a class="nav-link" asp-controller="Rooms" asp-action="Index">Tìm phòng</a></li>
+                <li><a class="nav-link" asp-controller="RentalAdvice" asp-action="Index">AI tư vấn</a></li>
+                <li><a class="nav-link" asp-controller="Messages" asp-action="Index">Tin nhắn</a></li>
+                <li><a class="nav-link" asp-controller="Roommates" asp-action="Index">Tìm bạn ghép phòng</a></li>
+                <li><a class="nav-link" asp-controller="Marketplace" asp-action="Index">Dịch vụ</a></li>
             </ul>
 
             <div class="nav-actions">

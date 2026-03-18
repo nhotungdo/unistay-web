@@ -1,240 +1,297 @@
 @model IEnumerable<Unistay_Web.Models.Roommate.RoommateDisplayDto>
-
 @{
-    ViewData["Title"] = "Tìm bạn cùng phòng";
+    ViewData["Title"] = "Bạn ở ghép phù hợp - UniStay";
+    ViewData["HideDefaultLayout"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentFilter = ViewData["CurrentFilter"] as string ?? "";
+    var currentGender = ViewData["CurrentGender"] as string ?? "";
+    var currentBudget = ViewData["CurrentBudget"] as string ?? "";
 }
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.5);
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/roommates-index.css" asp-append-version="true" />
+}
 
-    .roommate-index-container {
-        padding: 3rem 0;
-        background: radial-gradient(circle at top left, #f3e8ff 0%, #ffffff 50%, #e0e7ff 100%);
-        min-height: 100vh;
-    }
+<!-- SVG defs for match ring gradient (hidden) -->
+<svg width="0" height="0" style="position:absolute">
+    <defs>
+        <linearGradient id="matchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#6366f1" />
+            <stop offset="100%" style="stop-color:#a855f7" />
+        </linearGradient>
+    </defs>
+</svg>
 
-    .glass-filter {
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        margin-bottom: 3rem;
-    }
+<div class="ri-page">
 
-    .profile-card {
-        background: white;
-        border-radius: 24px;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(0,0,0,0.05);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-    .profile-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    .card-header-bg {
-        height: 100px;
-        background: var(--primary-gradient);
-        position: relative;
-    }
-
-    .profile-card:nth-child(even) .card-header-bg {
-        background: var(--secondary-gradient);
-    }
-
-    .avatar-container {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 4px solid white;
-        overflow: hidden;
-        margin: -50px auto 1rem;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        background: #fff;
-    }
-
-    .avatar-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .info-section {
-        padding: 0 1.5rem 1.5rem;
-        text-align: center;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .habit-badge {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.75rem;
-        border-radius: 50px;
-        background: #f3f4f6;
-        color: #4b5563;
-        font-weight: 500;
-    }
-
-    .detail-box {
-        background: #f9fafb;
-        border-radius: 16px;
-        padding: 1rem;
-        margin: 1rem 0;
-        text-align: left;
-    }
-
-    .match-score {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #10b981;
-        font-weight: 700;
-        font-size: 0.9rem;
-        background: rgba(16, 185, 129, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        margin-bottom: 1rem;
-    }
-</style>
-
-<div class="roommate-index-container">
-    <div class="container">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
-            <div>
-                <h1 class="h2 fw-bold mb-2 text-dark">Tìm bạn cùng phòng</h1>
-                <p class="text-muted mb-0">Kết nối với những người bạn cùng sở thích và lối sống</p>
-            </div>
-            <div class="d-flex gap-3">
-                <a asp-action="Match" class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="bi bi-stars me-2"></i>Tìm người phù hợp
-                </a>
-                <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm" style="background: var(--primary-gradient); border: none;">
-                    <i class="bi bi-plus-lg me-2"></i>Tạo hồ sơ
-                </a>
-            </div>
-        </div>
-
-        <!-- Filter Bar -->
-        <div class="glass-filter">
-             <form asp-action="Index" method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Khu vực</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-primary"></i></span>
-                        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control border-start-0 ps-0" placeholder="Nhập Quận/Huyện...">
-                    </div>
+    <!-- Hero Search Bar -->
+    <div class="ri-hero">
+        <div class="ri-hero-inner">
+            <h1 class="ri-hero-title">Tìm bạn ở ghép <span class="ri-hero-highlight">phù hợp</span></h1>
+            <p class="ri-hero-sub">Kết nối với sinh viên FPT Hòa Lạc có cùng lối sống và ngân sách</p>
+            <form method="get" asp-action="Index" class="ri-search-bar" id="filterForm">
+                <div class="ri-search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="searchString" value="@currentFilter" placeholder="Tìm theo khu vực, tên..." class="ri-search-input" />
                 </div>
-                <div class="col-md-2">
-                     <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Giới tính</label>
-                     <select name="gender" class="form-select">
-                         <option value="All" selected="@(ViewData["CurrentGender"] as string == "All" || ViewData["CurrentGender"] == null ? "selected" : null)">Tất cả</option>
-                         <option value="Male" selected="@(ViewData["CurrentGender"] as string == "Male" ? "selected" : null)">Nam</option>
-                         <option value="Female" selected="@(ViewData["CurrentGender"] as string == "Female" ? "selected" : null)">Nữ</option>
-                     </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label text-uppercase text-secondary fw-bold small ls-1">Ngân sách</label>
-                    <select name="budgetRange" class="form-select">
-                        <option value="All" selected="@(ViewData["CurrentBudget"] as string == "All" || ViewData["CurrentBudget"] == null ? "selected" : null)">Tất cả</option>
-                        <option value="low" selected="@(ViewData["CurrentBudget"] as string == "low" ? "selected" : null)">&lt; 2 triệu</option>
-                        <option value="medium" selected="@(ViewData["CurrentBudget"] as string == "medium" ? "selected" : null)">2 - 4 triệu</option>
-                        <option value="high" selected="@(ViewData["CurrentBudget"] as string == "high" ? "selected" : null)">&gt; 4 triệu</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100 fw-bold" style="background: var(--primary-gradient); border: none; height: 38px;">
-                        Lọc kết quả
-                    </button>
-                </div>
+                <select name="gender" class="ri-select" onchange="this.form.submit()">
+                    <!option value="">Giới tính</!option>
+                    <!option value="Male" selected="@(currentGender == "Male" ? "selected" : null)">Nam</!option>
+                    <!option value="Female" selected="@(currentGender == "Female" ? "selected" : null)">Nữ</!option>
+                    <!option value="Other" selected="@(currentGender == "Other" ? "selected" : null)">Khác</!option>
+                </select>
+                <select name="budgetRange" class="ri-select" onchange="this.form.submit()">
+                    <!option value="">Ngân sách</!option>
+                    <!option value="low" selected="@(currentBudget == "low" ? "selected" : null)">Dưới 2 triệu</!option>
+                    <!option value="medium" selected="@(currentBudget == "medium" ? "selected" : null)">2 - 4 triệu</!option>
+                    <!option value="high" selected="@(currentBudget == "high" ? "selected" : null)">Trên 4 triệu</!option>
+                </select>
+                <button type="submit" class="ri-btn-search">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                @if (!string.IsNullOrEmpty(currentFilter) || !string.IsNullOrEmpty(currentGender) || !string.IsNullOrEmpty(currentBudget))
+                {
+                    <a asp-action="Index" class="ri-btn-clear" title="Xóa bộ lọc">
+                        <i class="fas fa-times"></i>
+                    </a>
+                }
             </form>
         </div>
+    </div>
 
-        <!-- Results Grid -->
-        @if (!Model.Any())
-        {
-            <div class="text-center py-5">
-                <div class="mb-3 text-muted display-1"><i class="bi bi-people"></i></div>
-                <h3>Chưa có hồ sơ nào</h3>
-                <p class="text-muted">Hãy là người đầu tiên tạo hồ sơ tìm bạn!</p>
-                <a asp-action="Create" class="btn btn-primary mt-3 rounded-pill px-4">Tạo hồ sơ ngay</a>
-            </div>
-        }
-        else
-        {
-            <div class="row g-4">
-                @foreach (var item in Model)
-                {
-                    <div class="col-md-6 col-lg-4 col-xl-3 animate-fade-in">
-                        <div class="profile-card">
-                            <div class="card-header-bg"></div>
-                            
-                            <div class="avatar-container">
-                                <img src="@(!string.IsNullOrEmpty(item.AvatarUrl) ? item.AvatarUrl : "/images/default-avatar.png")" 
-                                     class="avatar-img" 
-                                     alt="@item.FullName"
-                                     onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(item.FullName)&background=random'">
-                            </div>
-                            
-                            <div class="info-section">
-                                <h3 class="h5 fw-bold mb-1 text-truncate" title="@item.FullName">@item.FullName</h3>
-                                <p class="text-muted small mb-3 text-truncate">
-                                    @(item.Age > 0 ? $"{item.Age} tuổi" : "") 
-                                    @(string.IsNullOrEmpty(item.Occupation) ? "" : $" • {item.Occupation}")
-                                </p>
-                                
-                                <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap" style="min-height: 26px;">
-                                    @foreach (var habit in item.Habits.Take(3))
-                                    {
-                                        <span class="habit-badge">@habit</span> 
-                                    }
-                                </div>
-                                
-                                <div class="detail-box">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-secondary small">Khu vực:</span>
-                                        <span class="fw-bold small text-dark text-truncate ms-2" style="max-width: 120px;">@item.PreferredArea</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <span class="text-secondary small">Ngân sách:</span>
-                                        <span class="text-primary fw-bold small">@(item.Budget > 0 ? item.Budget.ToString("N0") : "Thỏa thuận") đ</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="match-score">
-                                    <i class="bi bi-check-circle-fill"></i>
-                                    Phù hợp @item.MatchPercentage%
-                                </div>
-                                
-                                <a asp-action="Profile" asp-route-id="@item.Id" class="btn btn-outline-primary rounded-pill w-100 mt-auto border-2 fw-bold">
-                                    Xem hồ sơ
-                                </a>
-                            </div>
-                        </div>
+    <!-- Active Filters -->
+    @if (!string.IsNullOrEmpty(currentFilter) || !string.IsNullOrEmpty(currentGender) || !string.IsNullOrEmpty(currentBudget))
+    {
+        <div class="ri-active-filters">
+            <span class="ri-filter-label"><i class="fas fa-filter"></i> Đang lọc:</span>
+            @if (!string.IsNullOrEmpty(currentFilter))
+            {
+                <span class="ri-filter-chip">Khu vực: @currentFilter <a asp-action="Index" asp-route-gender="@currentGender" asp-route-budgetRange="@currentBudget"><i class="fas fa-times"></i></a></span>
+            }
+            @if (!string.IsNullOrEmpty(currentGender))
+            {
+                var genderLabel = currentGender == "Male" ? "Nam" : currentGender == "Female" ? "Nữ" : "Khác";
+                <span class="ri-filter-chip">Giới tính: @genderLabel <a asp-action="Index" asp-route-searchString="@currentFilter" asp-route-budgetRange="@currentBudget"><i class="fas fa-times"></i></a></span>
+            }
+            @if (!string.IsNullOrEmpty(currentBudget))
+            {
+                var budgetLabel = currentBudget == "low" ? "Dưới 2tr" : currentBudget == "medium" ? "2-4tr" : "Trên 4tr";
+                <span class="ri-filter-chip">Ngân sách: @budgetLabel <a asp-action="Index" asp-route-searchString="@currentFilter" asp-route-gender="@currentGender"><i class="fas fa-times"></i></a></span>
+            }
+        </div>
+    }
+
+    <!-- Main Layout -->
+    <div class="ri-layout">
+        <!-- Sidebar -->
+        <aside class="ri-sidebar">
+            <div class="ri-sidebar-card">
+                <div class="ri-sidebar-title"><i class="fas fa-sliders-h"></i> Bộ lọc nhanh</div>
+
+                <form method="get" asp-action="Index" id="sidebarForm">
+                    <input type="hidden" name="searchString" value="@currentFilter" />
+
+                    <div class="ri-filter-group">
+                        <div class="ri-filter-group-label">Giới tính</div>
+                        <label class="ri-radio-item @(currentGender == "" ? "active" : "")">
+                            <input type="radio" name="gender" value="" @(currentGender == "" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> Tất cả
+                        </label>
+                        <label class="ri-radio-item @(currentGender == "Male" ? "active" : "")">
+                            <input type="radio" name="gender" value="Male" @(currentGender == "Male" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> <i class="fas fa-mars text-primary"></i> Nam
+                        </label>
+                        <label class="ri-radio-item @(currentGender == "Female" ? "active" : "")">
+                            <input type="radio" name="gender" value="Female" @(currentGender == "Female" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> <i class="fas fa-venus text-danger"></i> Nữ
+                        </label>
                     </div>
+
+                    <div class="ri-filter-group">
+                        <div class="ri-filter-group-label">Ngân sách</div>
+                        <label class="ri-radio-item @(currentBudget == "" ? "active" : "")">
+                            <input type="radio" name="budgetRange" value="" @(currentBudget == "" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> Tất cả
+                        </label>
+                        <label class="ri-radio-item @(currentBudget == "low" ? "active" : "")">
+                            <input type="radio" name="budgetRange" value="low" @(currentBudget == "low" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> Dưới 2 triệu
+                        </label>
+                        <label class="ri-radio-item @(currentBudget == "medium" ? "active" : "")">
+                            <input type="radio" name="budgetRange" value="medium" @(currentBudget == "medium" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> 2 - 4 triệu
+                        </label>
+                        <label class="ri-radio-item @(currentBudget == "high" ? "active" : "")">
+                            <input type="radio" name="budgetRange" value="high" @(currentBudget == "high" ? "checked" : "") onchange="document.getElementById('sidebarForm').submit()"> Trên 4 triệu
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tip Box -->
+            <div class="ri-tip-box">
+                <div class="ri-tip-icon"><i class="fas fa-lightbulb"></i></div>
+                <div class="ri-tip-title">Mẹo tìm bạn</div>
+                <p class="ri-tip-text">Điền đầy đủ thông tin thói quen sinh hoạt để AI tìm được người bạn cùng phòng lý tưởng nhất tại Hòa Lạc.</p>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="Roommates" asp-action="Match" class="ri-tip-btn">
+                        <i class="fas fa-magic"></i> Thử AI Match
+                    </a>
                 }
             </div>
-        }
+        </aside>
+
+        <!-- Main Content -->
+        <main class="ri-main">
+            <div class="ri-results-header">
+                <div>
+                    <div class="ri-results-title">Bạn ở ghép phù hợp</div>
+                    <div class="ri-results-count">
+                        Tìm thấy <strong>@Model.Count()</strong> sinh viên đang tìm người ở cùng
+                        @if (!string.IsNullOrEmpty(currentFilter)) { <span>tại <strong>@currentFilter</strong></span> }
+                    </div>
+                </div>
+                <div class="ri-sort-row">
+                    <a asp-action="Index" asp-route-searchString="@currentFilter" asp-route-gender="@currentGender" asp-route-budgetRange="@currentBudget" asp-route-sort="newest"
+                       class="ri-sort-btn @(ViewData["CurrentSort"] as string != "budget" ? "active" : "")">Mới nhất</a>
+                    <a asp-action="Index" asp-route-searchString="@currentFilter" asp-route-gender="@currentGender" asp-route-budgetRange="@currentBudget" asp-route-sort="budget"
+                       class="ri-sort-btn @(ViewData["CurrentSort"] as string == "budget" ? "active" : "")">Giá thấp - cao</a>
+                </div>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="ri-empty">
+                    <div class="ri-empty-icon"><i class="fas fa-user-friends"></i></div>
+                    <h3>Không tìm thấy kết quả</h3>
+                    <p>Thử thay đổi bộ lọc hoặc tìm kiếm với từ khóa khác.</p>
+                    <a asp-action="Index" class="ri-btn-create">Xem tất cả</a>
+                </div>
+            }
+            else
+            {
+                <div class="ri-card-grid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="ri-card">
+                            <div class="ri-card-media">
+                                @if (item.MatchPercentage >= 90)
+                                {
+                                    <span class="ri-badge-top"><i class="fas fa-crown"></i> Top Match</span>
+                                }
+                                <img src="@(!string.IsNullOrEmpty(item.AvatarUrl) ? item.AvatarUrl : "/images/default-avatar.png")"
+                                     alt="@item.FullName"
+                                     onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(item.FullName)&background=6366f1&color=fff&size=200'" />
+                                <div class="ri-card-overlay">
+                                    <div class="ri-match-ring" data-score="@item.MatchPercentage">
+                                        <svg viewBox="0 0 36 36">
+                                            <path class="ri-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path class="ri-ring-fill" stroke-dasharray="@item.MatchPercentage, 100"
+                                                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        </svg>
+                                        <span class="ri-ring-text">@item.MatchPercentage%</span>
+                                    </div>
+                                </div>
+                                <div class="ri-budget-bar">
+                                    <span class="ri-budget-label">Ngân sách</span>
+                                    <span class="ri-budget-val">@(item.Budget > 0 ? (item.Budget / 1000000m).ToString("N1") + "tr" : "Thỏa thuận")/tháng</span>
+                                </div>
+                            </div>
+
+                            <div class="ri-card-body">
+                                <div class="ri-card-top">
+                                    <div>
+                                        <div class="ri-card-name">@item.FullName@(item.Age > 0 ? $", {item.Age}" : "")</div>
+                                        <div class="ri-card-loc"><i class="fas fa-map-marker-alt"></i> @(item.PreferredArea ?? "Hòa Lạc")</div>
+                                    </div>
+                                    <button class="ri-btn-heart" onclick="toggleFavorite(this, @item.Id)" title="Lưu hồ sơ">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+
+                                <div class="ri-card-tags">
+                                    @if (!string.IsNullOrEmpty(item.Gender))
+                                    {
+                                        <span class="ri-tag ri-tag-gender">
+                                            <i class="fas @(item.Gender == "Male" ? "fa-mars" : item.Gender == "Female" ? "fa-venus" : "fa-genderless")"></i>
+                                            @(item.Gender == "Male" ? "Nam" : item.Gender == "Female" ? "Nữ" : "Khác")
+                                        </span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Occupation))
+                                    {
+                                        <span class="ri-tag ri-tag-occ"><i class="fas fa-graduation-cap"></i> @item.Occupation</span>
+                                    }
+                                </div>
+
+                                @if (item.Habits.Any())
+                                {
+                                    <div class="ri-habits">
+                                        @foreach (var h in item.Habits.Take(3))
+                                        {
+                                            <span class="ri-habit-tag">@h</span>
+                                        }
+                                        @if (item.Habits.Length > 3)
+                                        {
+                                            <span class="ri-habit-more">+@(item.Habits.Length - 3)</span>
+                                        }
+                                    </div>
+                                }
+
+                                <div class="ri-card-footer">
+                                    <span class="ri-posted-time"><i class="far fa-clock"></i> @GetTimeAgo(item.CreatedAt)</span>
+                                    <a asp-action="Profile" asp-route-id="@item.Id" class="ri-btn-view">Xem chi tiết <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="ri-load-more">
+                    <button class="ri-btn-more" onclick="loadMore(this)">
+                        <i class="fas fa-chevron-down"></i> Xem thêm sinh viên
+                    </button>
+                </div>
+            }
+        </main>
     </div>
 </div>
 
+@functions {
+    string GetTimeAgo(DateTime dt)
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} phút trước";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours} giờ trước";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays} ngày trước";
+        return dt.ToString("dd/MM/yyyy");
+    }
+}
+
 @section Scripts {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.ri-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('ri-card-visible'), i * 60);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            cards.forEach(c => observer.observe(c));
+        });
+
+        function toggleFavorite(btn, id) {
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+            btn.classList.toggle('ri-btn-heart-active');
+        }
+
+        function loadMore(btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+            btn.disabled = true;
+            // Placeholder - would call API in real implementation
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Đã hiển thị tất cả';
+            }, 1200);
+        }
+    </script>
 }

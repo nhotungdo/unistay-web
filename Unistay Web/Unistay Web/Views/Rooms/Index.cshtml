@@ -1,336 +1,265 @@
 @{
-    ViewData["Title"] = "Tìm Phòng & Căn Hộ";
+    ViewData["Title"] = "Tìm Phòng Trọ - UniStay";
+    ViewData["HideDefaultLayout"] = true;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="~/css/rooms.css" rel="stylesheet">
+@section Styles {
+    <link rel="stylesheet" href="~/css/rooms.css" asp-append-version="true" />
+    <style>
+        body { padding: 0 !important; }
+    </style>
+}
 
-<div class="hero-banner">
-    <div class="hero-content">
-        <h1><i class="fas fa-home me-2"></i>Tìm Phòng Của Bạn</h1>
-        <p>Khám phá hàng ngàn phòng trọ, căn hộ chất lượng cao trên toàn quốc</p>
-    </div>
-</div>
 
-<div class="container" style="margin-top: 2rem;">
-    <!-- Search Bar -->
-    <div class="search-container">
-        <form class="search-form" method="get" asp-action="Index">
-            <div class="form-group">
-                <label for="searchLocation">Vị trí</label>
-                <input type="text" id="searchLocation" name="location" placeholder="Nhập thành phố hoặc khu vực..." />
-            </div>
-            <div class="form-group">
-                <label for="searchType">Loại phòng</label>
-                <select id="searchType" name="type">
-                    <option value="">-- Tất cả --</option>
-                    <option value="phong-tro">Phòng trọ</option>
-                    <option value="can-ho">Căn hộ</option>
-                    <option value="ky-tuc-xa">Ký túc xá</option>
-                    <option value="o-ghep">Ở ghép</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="searchPrice">Giá (VNĐ/tháng)</label>
-                <select id="searchPrice" name="price">
-                    <option value="">-- Tất cả --</option>
-                    <option value="0-2">Dưới 2 triệu</option>
-                    <option value="2-5">2-5 triệu</option>
-                    <option value="5-10">5-10 triệu</option>
-                    <option value="10">Trên 10 triệu</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-search">
-                <i class="fas fa-search me-2"></i>Tìm kiếm
-            </button>
-        </form>
-    </div>
+<main class="rs-main-content">
+    <div class="rs-container">
+        <!-- Header -->
+        <header class="rs-page-header">
+            <h1 class="rs-page-title">Tìm phòng trọ lý tưởng<br>trên toàn quốc</h1>
+            <p class="rs-page-subtitle">Khám phá hơn 50.000+ phòng trọ, chung cư mini và căn hộ dịch vụ tại các thành phố lớn trên cả nước.</p>
+        </header>
 
-    <!-- Filter Tags -->
-    <div class="filter-tags">
-        <span class="tag active"><i class="fas fa-fire me-2"></i>Phổ biến</span>
-        <span class="tag"><i class="fas fa-star me-2"></i>Được yêu thích</span>
-        <span class="tag"><i class="fas fa-tag me-2"></i>Giảm giá</span>
-        <span class="tag"><i class="fas fa-clock me-2"></i>Mới nhất</span>
-    </div>
-
-    <!-- Room Listings -->
-    <div class="rooms-grid">
-        <!-- Room Card 1 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" alt="Phòng 1">
-                <span class="room-badge">Mới đăng</span>
-                <button class="room-favorite" title="Yêu thích">
-                    <i class="fas fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Studio cao cấp, full nội thất, gần Đại học FPT</h3>
-                <div class="room-location">
+        <!-- Filter Bar -->
+        <div class="rs-filter-bar">
+            <div class="rs-filter-group">
+                <div class="rs-filter-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Khoảng giá</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="rs-filter-item">
+                    <i class="fas fa-home"></i>
+                    <span>Loại phòng</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="rs-filter-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Quận Cầu Giấy</span>
+                    <span>Khoảng cách</span>
+                    <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>32 m²</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>1 người</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-wifi"></i>
-                        <span>Wi-Fi</span>
-                    </div>
+                <div class="rs-filter-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Tiện ích</span>
+                    <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="room-price">3.5 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
+            </div>
+            <div class="rs-sort-group">
+                <span class="rs-sort-label">SẮP XẾP:</span>
+                <div class="rs-sort-select">
+                    <span>Mới nhất</span>
+                    <i class="fas fa-chevron-down"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Room Card 2 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop" alt="Phòng 2">
-                <span class="room-badge featured"><i class="fas fa-star me-1"></i>Nổi bật</span>
-                <button class="room-favorite" title="Yêu thích">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Căn hộ 2 phòng ngủ, ban công, thoáng sáng</h3>
-                <div class="room-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Thanh Xuân</span>
-                </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>65 m²</span>
+        <!-- Layout Wrapper -->
+        <div class="rs-content-wrapper">
+            <!-- Listings Left -->
+            <div class="rs-listings-column">
+                <!-- Featured Card (Large) -->
+                <div class="rs-card-featured">
+                    <div class="rs-card-img-box">
+                        <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=600&q=80" alt="Featured Room">
+                        <span class="rs-badge-yellow">NỔI BẬT</span>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>2-3 người</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-tv"></i>
-                        <span>TV Cable</span>
+                    <div class="rs-card-info">
+                        <div class="rs-card-header">
+                            <h2 class="rs-card-title">Phòng Studio Full Nội Thất - Quận 1</h2>
+                            <button class="rs-btn-heart"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="rs-card-location-row">
+                            <span><i class="fas fa-map-marker-alt"></i> Quận 1, TP. Hồ Chí Minh</span>
+                            <span class="rs-spacer-dot"></span>
+                            <span><i class="fas fa-walking"></i> 500m</span>
+                        </div>
+                        <div class="rs-card-amenities">
+                            <span><i class="fas fa-snowflake"></i> Điều hòa</span>
+                            <span><i class="fas fa-wifi"></i> Wifi tốc độ cao</span>
+                            <span><i class="fas fa-door-open"></i> Ban công</span>
+                            <span><i class="fas fa-shield-alt"></i> An ninh 24/7</span>
+                        </div>
+                        <div class="rs-card-footer">
+                            <div class="rs-card-price">3.500.000đ <small>/ tháng</small></div>
+                            <a href="#" class="rs-link-detail">Chi tiết <i class="fas fa-arrow-right"></i></a>
+                        </div>
                     </div>
                 </div>
-                <div class="room-price">6.2 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Room Card 3 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop" alt="Phòng 3">
-                <span class="room-badge"><i class="fas fa-percentage"></i>Giảm 10%</span>
-                <button class="room-favorite" title="Yêu thích">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Phòng trọ tiêu chuẩn, an toàn 24/7, giáo dục tốt</h3>
-                <div class="room-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Hoàng Mai</span>
-                </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>28 m²</span>
+                <!-- Small Cards Grid -->
+                <div class="rs-listings-grid">
+                    <!-- Card 2 -->
+                    <div class="rs-card-small">
+                        <div class="rs-small-img-box">
+                            <img src="https://images.unsplash.com/photo-1522771739844-649f6d175d97?w=400&q=80" alt="Room">
+                            <span class="rs-badge-white">Mới đăng</span>
+                        </div>
+                        <div class="rs-small-info">
+                            <h3 class="rs-small-title">Chung cư mini Cầu Giấy - Tiện nghi</h3>
+                            <div class="rs-small-location"><i class="fas fa-map-marker-alt"></i> Quận Cầu Giấy, Hà Nội</div>
+                            <div class="rs-small-footer">
+                                <span class="rs-small-price">2.200.000đ</span>
+                                <button class="rs-btn-bookmark"><i class="far fa-bookmark"></i></button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>1-2 người</span>
+                    <!-- Card 3 -->
+                    <div class="rs-card-small">
+                        <div class="rs-small-img-box">
+                            <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=80" alt="Room">
+                        </div>
+                        <div class="rs-small-info">
+                            <h3 class="rs-small-title">Phòng ở ghép cao cấp - Đà Nẵng</h3>
+                            <div class="rs-small-location"><i class="fas fa-map-marker-alt"></i> Quận Hải Châu, Đà Nẵng</div>
+                            <div class="rs-small-footer">
+                                <span class="rs-small-price">1.500.000đ</span>
+                                <button class="rs-btn-bookmark"><i class="far fa-bookmark"></i></button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-utensils"></i>
-                        <span>Bếp</span>
+                    <!-- Card 4 -->
+                    <div class="rs-card-small">
+                        <div class="rs-small-img-box">
+                            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80" alt="Room">
+                        </div>
+                        <div class="rs-small-info">
+                            <h3 class="rs-small-title">Nhà nguyên căn 3 tầng - Thanh Xuân</h3>
+                            <div class="rs-small-location"><i class="fas fa-map-marker-alt"></i> Quận Thanh Xuân, Hà Nội</div>
+                            <div class="rs-small-footer">
+                                <span class="rs-small-price">8.000.000đ</span>
+                                <button class="rs-btn-bookmark"><i class="far fa-bookmark"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 5 -->
+                    <div class="rs-card-small">
+                        <div class="rs-small-img-box">
+                            <img src="https://images.unsplash.com/photo-1505691938895-1758d7eaa511?w=400&q=80" alt="Room">
+                        </div>
+                        <div class="rs-small-info">
+                            <h3 class="rs-small-title">Phòng khép kín hiện đại - Bình Thạnh</h3>
+                            <div class="rs-small-location"><i class="fas fa-map-marker-alt"></i> Quận Bình Thạnh, TP. HCM</div>
+                            <div class="rs-small-footer">
+                                <span class="rs-small-price">2.800.000đ</span>
+                                <button class="rs-btn-bookmark"><i class="far fa-bookmark"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="room-price">2.8 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Room Card 4 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop" alt="Phòng 4">
-                <span class="room-badge"><i class="fas fa-fire"></i>Hot</span>
-                <button class="room-favorite active" title="Yêu thích">
-                    <i class="fas fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Ký túc xá đại học, tiện nghi đầy đủ, giá tốt</h3>
-                <div class="room-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Từ Liêm</span>
-                </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>24 m²</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>1-2 người</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-shower"></i>
-                        <span>Phòng tắm</span>
-                    </div>
-                </div>
-                <div class="room-price">2.2 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
+                <div class="rs-load-more">
+                    <button class="rs-btn-load-more">Xem thêm kết quả</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Room Card 5 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1537932424956-b3d3a2f0b206?w=400&h=300&fit=crop" alt="Phòng 5">
-                <button class="room-favorite" title="Yêu thích">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Căn hộ mini mới xây, vị trí trung tâm thành phố</h3>
-                <div class="room-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Hoàn Kiếm</span>
-                </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>38 m²</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>2 người</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-leaf"></i>
-                        <span>Xanh</span>
-                    </div>
-                </div>
-                <div class="room-price">5.5 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
-                </div>
-            </div>
-        </div>
+            <!-- Map Right -->
+            <div class="rs-map-column">
+                <div class="rs-map-wrapper">
+                    <div class="rs-map-placeholder">
+                        <div class="rs-map-pin" style="top: 25%; left: 35%;">3.5tr</div>
+                        <div class="rs-map-pin" style="top: 45%; left: 55%;">2.2tr</div>
+                        <div class="rs-map-pin active" style="top: 65%; left: 65%;">Trung tâm</div>
+                        
+                        <div class="rs-map-controls">
+                            <button><i class="fas fa-plus"></i></button>
+                            <button><i class="fas fa-minus"></i></button>
+                            <button><i class="fas fa-location-arrow"></i></button>
+                        </div>
 
-        <!-- Room Card 6 -->
-        <div class="room-card">
-            <div class="room-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1552968561-deb8e0ac415e?w=400&h=300&fit=crop" alt="Phòng 6">
-                <span class="room-badge"><i class="fas fa-crown"></i>Premium</span>
-                <button class="room-favorite" title="Yêu thích">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="room-info">
-                <h3 class="room-title">Penthouse hạng sang, view thành phố tuyệt đẹp</h3>
-                <div class="room-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Hà Nội, Ba Đình</span>
-                </div>
-                <div class="room-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-ruler-combined"></i>
-                        <span>120 m²</span>
+                        <button class="rs-btn-expand-map">
+                            <i class="fas fa-map"></i> Xem bản đồ lớn
+                        </button>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>3-4 người</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-spa"></i>
-                        <span>Spa</span>
-                    </div>
-                </div>
-                <div class="room-price">15 triệu/tháng</div>
-                <div class="room-controls">
-                    <a href="#" class="btn-view">
-                        <i class="fas fa-eye"></i>Xem chi tiết
-                    </a>
-                    <button class="btn-contact" onclick="alert('Liên hệ chủ phòng')">
-                        <i class="fas fa-phone me-1"></i>Liên hệ
-                    </button>
                 </div>
             </div>
         </div>
     </div>
+</main>
 
-    <!-- Pagination -->
-    <div class="pagination-container">
-        <button class="btn-pagination"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn-pagination active">1</button>
-        <button class="btn-pagination">2</button>
-        <button class="btn-pagination">3</button>
-        <button class="btn-pagination">4</button>
-        <button class="btn-pagination"><i class="fas fa-chevron-right"></i></button>
+<footer class="rs-footer">
+    <div class="rs-container">
+        <div class="rs-footer-grid">
+            <div class="rs-footer-col-brand">
+                <div class="rs-footer-logo">Unistay</div>
+                <p>Nền tảng tìm kiếm và quản lý nhà ở hàng đầu cho sinh viên và người đi làm tại các thành phố lớn trên toàn quốc.</p>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Liên kết</h4>
+                <ul>
+                    <li><a href="#">Tìm phòng</a></li>
+                    <li><a href="#">Ở ghép</a></li>
+                    <li><a href="#">Về chúng tôi</a></li>
+                    <li><a href="#">Liên hệ hỗ trợ</a></li>
+                </ul>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Chính sách</h4>
+                <ul>
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Quy định đăng tin</a></li>
+                </ul>
+            </div>
+            <div class="rs-footer-col">
+                <h4>Kết nối</h4>
+                <div class="rs-social-icons">
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="rs-footer-bottom">
+            <p>© 2026 Unistay - Nền tảng thuê phòng sinh viên hàng đầu.</p>
+            <div class="rs-footer-lang">
+                <span>Vietnamese (VN)</span>
+                <span>VND</span>
+            </div>
+        </div>
     </div>
-</div>
+</footer>
 
-<script>
-    // Favorite toggle
-    document.querySelectorAll('.room-favorite').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            this.classList.toggle('active');
-            this.innerHTML = this.classList.contains('active') 
-                ? '<i class="fas fa-heart"></i>'
-                : '<i class="far fa-heart"></i>';
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle Heart Icon
+            document.querySelectorAll('.rs-btn-heart').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        this.style.color = '#ef4444';
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.style.color = '#64748B';
+                    }
+                });
+            });
+
+            // Toggle Bookmark Icon
+            document.querySelectorAll('.rs-btn-bookmark').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        this.style.color = '#2563EB';
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        this.style.color = '#64748B';
+                    }
+                });
+            });
+
+            // Map Pin Interaction
+            document.querySelectorAll('.rs-map-pin').forEach(pin => {
+                pin.addEventListener('click', function() {
+                    document.querySelectorAll('.rs-map-pin').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
         });
-    });
-
-    // Filter tags
-    document.querySelectorAll('.tag').forEach(tag => {
-        tag.addEventListener('click', function() {
-            document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>
+    </script>
+}

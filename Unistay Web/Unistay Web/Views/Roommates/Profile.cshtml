@@ -1,423 +1,371 @@
 @model Unistay_Web.Models.Roommate.RoommateProfileDetailViewModel
-
 @{
     ViewData["Title"] = "Hồ sơ: " + Model.FullName;
+    ViewData["HideDefaultLayout"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var genderDisplay = Model.Gender == "Male" ? "Nam" : Model.Gender == "Female" ? "Nữ" : (Model.Gender ?? "Nam");
+    var budgetDisplay = Model.Budget > 0 ? (Model.Budget / 1000000m).ToString("N1") + "tr" : "1.5tr";
 }
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --score-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        --glass-bg: rgba(255, 255, 255, 0.8);
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
 
-    .profile-header {
-        background: radial-gradient(circle at top right, #f3e8ff 0%, #ffffff 50%, #e0e7ff 100%);
-        padding-top: 3rem;
-        padding-bottom: 5rem;
-        margin-bottom: -4rem;
-    }
+<div class="pf-page">
 
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-    }
 
-    .avatar-lg {
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        border: 6px solid white;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        object-fit: cover;
-    }
+    <!-- ===== MAIN GRID ===== -->
+    <div class="pf-container">
+        <div class="pf-grid">
 
-    .match-circle {
-        position: relative;
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
-    }
+            <!-- LEFT SIDEBAR -->
+            <aside class="pf-sidebar-left">
+                <div class="pf-filter-card">
+                    <div class="pf-filter-title">Bộ lọc tìm kiếm</div>
+                    <div class="pf-filter-sub">Hòa Lạc, Thạch Thất</div>
 
-    .match-circle::before {
-        content: '';
-        position: absolute;
-        inset: -5px;
-        border-radius: 50%;
-        background: var(--score-gradient);
-        z-index: -1;
-        opacity: 0.3;
-    }
-
-    .score-value {
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: var(--score-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .feature-bar {
-        height: 8px;
-        background: #e5e7eb;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 5px;
-    }
-
-    .feature-progress {
-        height: 100%;
-        background: var(--primary-gradient);
-        border-radius: 4px;
-        transition: width 1s ease-out;
-    }
-
-    .interest-tag {
-        background: #f3f4f6;
-        padding: 8px 16px;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        color: #4b5563;
-        font-weight: 500;
-        display: inline-block;
-        margin-right: 8px;
-        margin-bottom: 8px;
-    }
-
-    .interest-tag.shared {
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #d1fae5;
-    }
-
-    .section-title {
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .ai-report-box {
-        background: linear-gradient(to right, #f0f9ff, #e0f2fe);
-        border-left: 5px solid #0ea5e9;
-        padding: 1.5rem;
-        border-radius: 12px;
-    }
-</style>
-
-<div class="profile-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8 d-flex align-items-center gap-4">
-                <img src="@(!string.IsNullOrEmpty(Model.AvatarUrl) ? Model.AvatarUrl : "/images/default-avatar.png")"
-                    class="avatar-lg" alt="@Model.FullName"
-                    onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.FullName)&background=random'">
-                <div>
-                    <h1 class="display-5 fw-bold mb-1">@Model.FullName</h1>
-                    <p class="text-secondary fs-5 mb-2">
-                        @(Model.Age > 0 ? $"{Model.Age} tuổi" : "")
-                        • @(Model.Occupation ?? "Chưa cập nhật nghề nghiệp")
-                    </p>
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> @(Model.PreferredArea ?? "Toàn quốc")
-                        </span>
-                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                            <i class="bi bi-gender-ambiguous text-primary me-1"></i> @(Model.Gender ?? "Không xác định")
-                        </span>
+                    <a asp-controller="Roommates" asp-action="Index" asp-route-searchString="" class="pf-filter-item active">
+                        <i class="fas fa-map-marker-alt"></i> Khu vực
+                    </a>
+                    <a asp-controller="Roommates" asp-action="Index" asp-route-budgetRange="medium" class="pf-filter-item">
+                        <i class="fas fa-wallet"></i> Ngân sách
+                    </a>
+                    <div class="pf-filter-item">
+                        <i class="fas fa-compass"></i> Cung hoàng đạo
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4 text-center text-md-end mt-4 mt-md-0">
+                    <div class="pf-filter-item">
+                        <i class="fas fa-heart"></i> Sở thích
+                    </div>
+                    <div class="pf-filter-item">
+                        <i class="fas fa-user-friends"></i> Giới tính
+                    </div>
 
-                <br>
-                <button class="btn btn-outline-secondary rounded-pill px-4 border-2 fw-bold mb-2">
-                    <i class="bi bi-heart me-1"></i> Quan tâm
-                </button>
-                <br>
-                <div id="friend-action-container" class="d-inline-block">
-                    @if (Model.ConnectionState == "none")
-                    {
-                        <button onclick="sendFriendRequest('@Model.UserId', this)" class="btn btn-outline-primary rounded-pill px-4 border-2 fw-bold">
-                            <i class="bi bi-person-plus-fill me-1"></i> Thêm bạn
-                        </button>
-                    }
-                    else if (Model.ConnectionState == "pending_sent")
-                    {
-                        <button class="btn btn-secondary rounded-pill px-4 border-2 fw-bold" disabled>
-                            <i class="bi bi-clock-history me-1"></i> Đã gửi
-                        </button>
-                    }
-                    else if (Model.ConnectionState == "pending_received")
-                    {
-                        <div class="d-flex gap-2 justify-content-end">
-                            <button onclick="respondFriendRequest('@Model.ConnectionId', 'accept', this)" class="btn btn-success rounded-pill px-3 fw-bold">
-                                Chấp nhận
-                            </button>
-                            <button onclick="respondFriendRequest('@Model.ConnectionId', 'reject', this)" class="btn btn-outline-danger rounded-pill px-3 fw-bold">
-                                Từ chối
+                    <a asp-controller="Roommates" asp-action="Index" class="pf-btn-apply">Áp dụng bộ lọc</a>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="pf-main">
+
+                <!-- HERO CARD -->
+                <div class="pf-hero-card">
+                    <div class="pf-hero-avatar">
+                        <img src="@(!string.IsNullOrEmpty(Model.AvatarUrl) ? Model.AvatarUrl : "/images/default-avatar.png")"
+                             alt="@Model.FullName"
+                             onerror="this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(Model.FullName)&background=6366f1&color=fff&size=200'" />
+                    </div>
+                    <div class="pf-hero-info">
+                        <div class="pf-hero-badges">
+                            <span class="pf-badge pf-badge-green">SV FPT</span>
+                            <span class="pf-badge pf-badge-yellow">PREMIUM MEMBER</span>
+                        </div>
+                        <h1 class="pf-hero-name">@Model.FullName</h1>
+                        <div class="pf-hero-meta">
+                            <span><i class="fas fa-user"></i> @genderDisplay</span>
+                            <span><i class="fas fa-graduation-cap"></i> @(Model.Occupation ?? "Kỹ thuật phần mềm")</span>
+                        </div>
+                        <div class="pf-hero-actions">
+                            @if (Model.ConnectionState == "accepted")
+                            {
+                                <a asp-controller="Messages" asp-action="Index" class="pf-btn-chat">
+                                    <i class="fas fa-comment-alt"></i> Nhắn tin ngay
+                                </a>
+                            }
+                            else if (Model.ConnectionState == "pending_sent")
+                            {
+                                <button class="pf-btn-chat pf-btn-pending" disabled>
+                                    <i class="fas fa-clock"></i> Đã gửi lời mời
+                                </button>
+                            }
+                            else if (Model.ConnectionState == "self")
+                            {
+                                <a asp-controller="Roommates" asp-action="Create" class="pf-btn-chat">
+                                    <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-controller="Connections" asp-action="SendRequest" method="post" style="display:inline">
+                                    <input type="hidden" name="addresseeId" value="@Model.UserId" />
+                                    <button type="submit" class="pf-btn-chat">
+                                        <i class="fas fa-comment-alt"></i> Nhắn tin ngay
+                                    </button>
+                                </form>
+                            }
+                            <button class="pf-btn-save" title="Lưu hồ sơ">
+                                <i class="fas fa-bookmark"></i>
                             </button>
                         </div>
-                    }
-                    else if (Model.ConnectionState == "accepted")
-                    {
-                        <button class="btn btn-success rounded-pill px-4 border-2 fw-bold" disabled>
-                            <i class="bi bi-check-circle-fill me-1"></i> Bạn bè
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container pb-5">
-    <div class="row g-4">
-        <!-- Left Column: AI Analysis -->
-        <div class="col-lg-4">
-            <div class="glass-card p-4 h-100">
-                <h3 class="section-title"><i class="bi bi-cpu text-primary"></i> AI Phân tích</h3>
-
-                <div class="mb-4">
-                    <form method="get" class="d-flex align-items-center gap-2">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <label class="small text-muted fw-bold mb-0 text-nowrap">Ưu tiên:</label>
-                        <select name="priority" class="form-select form-select-sm rounded-pill"
-                            onchange="this.form.submit()">
-                            @foreach (var p in new[] { "Balanced", "Budget", "Lifestyle", "Personality" })
-                            {
-                                bool isSelected = (ViewBag.CurrentPriority as string)?.ToLower() == p.ToLower();
-                                if (isSelected)
-                                {
-                                    <option value="@p" selected>@p</option>
-                                }
-                                else
-                                {
-                                    <option value="@p">@p</option>
-                                }
-                            }
-                        </select>
-                    </form>
+                    </div>
                 </div>
 
-                @if (Model.CompatibilityScore > 0)
-                {
-                    <div class="d-flex flex-column align-items-center mb-4">
-                        <div class="match-circle mb-3">
-                            <div class="text-center">
-                                <div class="score-value">@Model.CompatibilityScore%</div>
-                                <div class="small text-muted fw-bold">TƯƠNG HỢP</div>
+                <!-- CRITERIA + REQUIREMENTS ROW -->
+                <div class="pf-two-col">
+                    <!-- Tiêu chí tìm bạn -->
+                    <div class="pf-section-card">
+                        <div class="pf-section-header">
+                            <span class="pf-section-line pf-line-blue"></span>
+                            <h2 class="pf-section-title">Tiêu chí tìm bạn</h2>
+                        </div>
+
+                        <div class="pf-info-row">
+                            <div class="pf-info-icon pf-icon-blue"><i class="fas fa-money-bill-wave"></i></div>
+                            <div class="pf-info-body">
+                                <div class="pf-info-label">Ngân sách mong muốn</div>
+                                <div class="pf-info-val">@budgetDisplay – 2.5tr <span class="pf-info-unit">/tháng</span></div>
+                            </div>
+                            <i class="fas fa-chevron-right pf-info-arrow"></i>
+                        </div>
+
+                        <div class="pf-info-row" style="margin-top:12px">
+                            <div class="pf-info-icon pf-icon-blue"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="pf-info-body">
+                                <div class="pf-info-label">Khu vực ưu tiên</div>
+                                <div class="pf-info-val">@(Model.PreferredArea ?? "Tân Xã, Thạch Hòa")</div>
                             </div>
                         </div>
-                        <p class="text-center text-muted small">Dựa trên phân tích ngân sách, lối sống và sở thích.</p>
+
+                        <!-- Map mock -->
+                        <div class="pf-map-wrap">
+                            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&q=80" alt="map" />
+                            <div class="pf-map-pin"><i class="fas fa-map-marker-alt"></i> Khu vực ưu tiên</div>
+                        </div>
+                        <p class="pf-map-note"><i class="fas fa-info-circle"></i> Khu vực được tô màu xanh là nơi @Model.FullName đang muốn tìm phòng nhất.</p>
                     </div>
 
-                    <div class="mb-4">
-                        <h6 class="fw-bold text-uppercase small text-muted mb-3">Chi tiết điểm số</h6>
-                        @if (Model.CompatibilityBreakdown != null)
-                        {
-                            foreach (var item in Model.CompatibilityBreakdown)
-                            {
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between small mb-1">
-                                        <span class="fw-bold">@item.Key</span>
-                                        <span class="text-primary">@item.Value%</span>
-                                    </div>
-                                    <div class="feature-bar">
-                                        <div class="feature-progress" style="width: @item.Value%"></div>
-                                    </div>
+                    <!-- Yêu cầu thêm -->
+                    <div class="pf-section-card">
+                        <div class="pf-section-header">
+                            <span class="pf-section-line pf-line-blue"></span>
+                            <h2 class="pf-section-title">Yêu cầu thêm</h2>
+                        </div>
+                        <div class="pf-req-list">
+                            <div class="pf-req-item">
+                                <div class="pf-req-icon pf-icon-blue"><i class="fas fa-broom"></i></div>
+                                <div>
+                                    <div class="pf-req-title">Sạch sẽ & Ngăn nắp</div>
+                                    <div class="pf-req-desc">Mong muốn tìm người bạn có ý thức giữ gìn vệ sinh không gian chung, dọn dẹp phòng định kỳ.</div>
                                 </div>
-                            }
-                        }
-                    </div>
-
-                    @if (Model.SharedInterests != null && Model.SharedInterests.Any())
-                    {
-                        <div class="mb-3">
-                            <h6 class="fw-bold text-uppercase small text-muted mb-2">Điểm chung</h6>
-                            <div>
-                                @foreach (var interest in Model.SharedInterests)
-                                {
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill me-1 mb-1">
-                                        <i class="bi bi-check2 me-1"></i>@interest
-                                    </span>
-                                }
+                            </div>
+                            <div class="pf-req-item">
+                                <div class="pf-req-icon pf-icon-red"><i class="fas fa-smoking-ban"></i></div>
+                                <div>
+                                    <div class="pf-req-title">Không hút thuốc</div>
+                                    <div class="pf-req-desc">Ưu tiên những bạn không hút thuốc lá hoặc thuốc lá điện tử để đảm bảo không khí trong phòng.</div>
+                                </div>
+                            </div>
+                            <div class="pf-req-item">
+                                <div class="pf-req-icon pf-icon-green"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <div class="pf-req-title">Giờ giấc tự do</div>
+                                    <div class="pf-req-desc">Tôn trọng không gian riêng tư và giờ giấc sinh hoạt của nhau, không giới hạn giờ về.</div>
+                                </div>
+                            </div>
+                            <div class="pf-req-item">
+                                <div class="pf-req-icon pf-icon-orange"><i class="fas fa-paw"></i></div>
+                                <div>
+                                    <div class="pf-req-title">Không nuôi thú cưng</div>
+                                    <div class="pf-req-desc">Để duy trì vệ sinh và tránh dị ứng, vui lòng không mang theo vật nuôi vào phòng.</div>
+                                </div>
                             </div>
                         </div>
-                    }
-                }
-                else
-                {
-                    <div class="text-center py-5">
-                        <i class="bi bi-lock-fill display-4 text-muted mb-3 d-block"></i>
-                        <p>Đăng nhập để xem phân tích AI chi tiết về mức độ phù hợp với người này.</p>
-                        <a href="/Account/Login" class="btn btn-outline-primary rounded-pill">Đăng nhập ngay</a>
                     </div>
-                }
-            </div>
-        </div>
-
-        <!-- Right Column: Details -->
-        <div class="col-lg-8">
-            <div class="glass-card p-4 mb-4">
-                <h3 class="section-title"><i class="bi bi-person-lines-fill text-primary"></i> Thông tin chi tiết</h3>
-
-                <div class="ai-report-box mb-4">
-                    <h5 class="fw-bold mb-2"><i class="bi bi-stars text-warning me-2"></i>Đánh giá từ AI</h5>
-                    <p class="mb-0 text-dark" style="line-height: 1.6;">@Model.AiAnalysisReport</p>
                 </div>
 
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-4 border">
-                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Ngân sách</h6>
-                            <p class="h4 text-primary fw-bold mb-0">
-                                @(Model.Budget > 0 ? Model.Budget.ToString("N0") + " đ" : "Thỏa thuận")
-                                <small class="text-muted fs-6 fw-normal">/tháng</small>
-                            </p>
-                        </div>
+                <!-- REVIEWS: CHỦ TRỌ -->
+                <div class="pf-section-card pf-full-width">
+                    <div class="pf-section-header">
+                        <span class="pf-section-line pf-line-green"></span>
+                        <h2 class="pf-section-title">Đánh giá từ chủ trọ cũ</h2>
+                        <a href="#" class="pf-section-link"><i class="fas fa-map-marked-alt"></i> Xem bản đồ khu vực</a>
                     </div>
-                    <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-4 border">
-                            <h6 class="text-muted text-uppercase small fw-bold mb-2">Ngày chuyển vào</h6>
-                            <p class="h5 text-dark fw-bold mb-0">
-                                @(Model.MoveInDate.HasValue? Model.MoveInDate.Value.ToString("dd/MM/yyyy") : "Sớm nhất                       có thể")
-                            </p>
+                    <div class="pf-reviews-grid">
+                        <div class="pf-review-card">
+                            <div class="pf-rev-top">
+                                <span class="pf-rev-name">Chú Hoàng</span>
+                                <span class="pf-rev-stars">★★★★★</span>
+                            </div>
+                            <div class="pf-rev-role">Chủ nhà tại Thạch Hòa</div>
+                            <p class="pf-rev-text">"Quân là một người thuê nhà rất có trách nhiệm. Cậu ấy luôn đóng tiền phòng đúng hạn và giữ gìn phòng ốc rất sạch sẽ. Rất lịch sự với mọi người xung quanh."</p>
+                        </div>
+                        <div class="pf-review-card">
+                            <div class="pf-rev-top">
+                                <span class="pf-rev-name">Cô Lan</span>
+                                <span class="pf-rev-stars">★★★★★</span>
+                            </div>
+                            <div class="pf-rev-role">Chủ nhà tại Tân Xã</div>
+                            <p class="pf-rev-text">"Sinh viên rất ngoan, không bao giờ gây ồn ào hay làm phiền hàng xóm. Khi chuyển đi, phòng được dọn dẹp rất ngăn nắp. Tôi rất tin tưởng khi cho Quân thuê."</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <h5 class="fw-bold mb-3">Giới thiệu bản thân</h5>
-                    <p class="text-muted" style="white-space: pre-line;">
-                        @(string.IsNullOrEmpty(Model.Bio) ? "Người dùng này chưa viết giới thiệu bản thân." : Model.Bio)
-                    </p>
+                <!-- REVIEWS: BẠN BÈ -->
+                <div class="pf-section-card pf-full-width">
+                    <div class="pf-section-header">
+                        <span class="pf-section-line pf-line-green"></span>
+                        <h2 class="pf-section-title">Đánh giá từ bạn bè</h2>
+                    </div>
+                    <div class="pf-reviews-grid">
+                        <div class="pf-review-card">
+                            <div class="pf-rev-top">
+                                <span class="pf-rev-name">Lê Văn Nam</span>
+                                <span class="pf-rev-stars">★★★★★</span>
+                            </div>
+                            <div class="pf-rev-role">Bạn cùng lớp</div>
+                            <p class="pf-rev-text">"Quân là một người rất điềm đạm, ngăn nắp và cực kỳ có trách nhiệm. Chắc chắn sẽ là một người bạn cùng phòng lý tưởng."</p>
+                        </div>
+                        <div class="pf-review-card">
+                            <div class="pf-rev-top">
+                                <span class="pf-rev-name">Trần Thu Hà</span>
+                                <span class="pf-rev-stars">★★★★★</span>
+                            </div>
+                            <div class="pf-rev-role">Bạn thân</div>
+                            <p class="pf-rev-text">"Biết Quân từ hồi năm nhất, Quân rất tôn trọng không gian riêng của người khác và luôn sẵn sàng giúp đỡ bạn bè."</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <h5 class="fw-bold mb-3">Thói quen & Sở thích</h5>
-                    <div>
-                        @if (Model.Habits != null && Model.Habits.Any())
+                <!-- LỊCH SỬ THUÊ TRỌ -->
+                <div class="pf-section-card pf-full-width pf-section-gray">
+                    <div class="pf-section-header">
+                        <span class="pf-section-line pf-line-blue"></span>
+                        <h2 class="pf-section-title">Lịch sử thuê trọ</h2>
+                    </div>
+                    <div class="pf-history-grid">
+                        <div class="pf-hist-card">
+                            <div class="pf-hist-top">
+                                <div class="pf-hist-icon"><i class="fas fa-building"></i></div>
+                                <div class="pf-hist-meta">
+                                    <div class="pf-hist-name">Khu trọ Thạch Hòa</div>
+                                    <div class="pf-hist-date"><i class="far fa-clock"></i> 12 tháng (2023)</div>
+                                </div>
+                                <span class="pf-hist-badge">ĐÃ HOÀN THÀNH</span>
+                            </div>
+                            <p class="pf-hist-quote">"Môi trường yên tĩnh, gần trường, chủ nhà hỗ trợ nhiệt tình."</p>
+                            <div class="pf-hist-reply">
+                                <div class="pf-hist-reply-label">PHẢN HỒI CỦA TÔI</div>
+                                <div class="pf-hist-stars">★★★★★ <span>(5.0/5.0)</span></div>
+                                <p>"Cảm ơn chú Hoàng vì sự hỗ trợ nhiệt tình trong suốt 1 năm qua!"</p>
+                            </div>
+                        </div>
+                        <div class="pf-hist-card">
+                            <div class="pf-hist-top">
+                                <div class="pf-hist-icon"><i class="fas fa-home"></i></div>
+                                <div class="pf-hist-meta">
+                                    <div class="pf-hist-name">Chung cư mini Tân Xã</div>
+                                    <div class="pf-hist-date"><i class="far fa-clock"></i> 6 tháng (2022)</div>
+                                </div>
+                                <span class="pf-hist-badge">ĐÃ HOÀN THÀNH</span>
+                            </div>
+                            <p class="pf-hist-quote">"Tiện nghi đầy đủ, an ninh tốt, chuyển đi do muốn tìm phòng gần bạn bè hơn."</p>
+                            <div class="pf-hist-reply">
+                                <div class="pf-hist-reply-label">PHẢN HỒI CỦA TÔI</div>
+                                <div class="pf-hist-stars">★★★★★ <span>(4.8/5.0)</span></div>
+                                <p>"Phòng ốc rất mới và hiện đại, bảo vệ thân thiện."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="pf-sidebar-right">
+                <!-- Zodiac -->
+                <div class="pf-side-card">
+                    <div class="pf-side-header">
+                        <span class="pf-side-title">CUNG HOÀNG ĐẠO</span>
+                        <i class="fas fa-star" style="color:#f59e0b; font-size:14px;"></i>
+                    </div>
+                    <div class="pf-zodiac-row">
+                        <div class="pf-zodiac-icon"><i class="fas fa-sun"></i></div>
+                        <div>
+                            <div class="pf-zodiac-name">Sư Tử</div>
+                            <div class="pf-zodiac-desc">Quyết đoán & Nhiệt huyết</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interests -->
+                <div class="pf-side-card">
+                    <div class="pf-side-header">
+                        <span class="pf-side-title">SỞ THÍCH CÁ NHÂN</span>
+                    </div>
+                    <div class="pf-interests">
+                        @if (Model.Habits.Any())
                         {
-                            foreach (var habit in Model.Habits)
+                            foreach (var h in Model.Habits)
                             {
-                                bool isShared = Model.SharedInterests != null && Model.SharedInterests.Contains(habit);
-                                <span class="interest-tag @(isShared ? "shared" : "")">
-                                    @habit
-                                </span>
+                                <span class="pf-interest-tag">@h</span>
                             }
                         }
                         else
                         {
-                            <span class="text-muted fst-italic">Chưa cập nhật</span>
+                            <span class="pf-interest-tag">Chơi game</span>
+                            <span class="pf-interest-tag">Nấu ăn</span>
+                            <span class="pf-interest-tag">Gym</span>
                         }
                     </div>
                 </div>
 
-                @if (Model.PotentialConflicts != null && Model.PotentialConflicts.Any())
+                <!-- AI Score (if available) -->
+                @if (Model.CompatibilityScore > 0)
                 {
-                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 rounded-4">
-                        <h6 class="fw-bold text-warning-emphasis"><i class="bi bi-exclamation-triangle-fill me-2"></i>Lưu ý
-                            tiềm năng</h6>
-                        <ul class="mb-0 ps-3 text-warning-emphasis small">
-                            @foreach (var conflict in Model.PotentialConflicts)
-                            {
-                                <li>@conflict</li>
-                            }
-                        </ul>
+                    <div class="pf-side-card">
+                        <div class="pf-side-header">
+                            <span class="pf-side-title">ĐỘ TƯƠNG HỢP AI</span>
+                            <i class="fas fa-magic" style="color:#6366f1; font-size:14px;"></i>
+                        </div>
+                        <div class="pf-score-circle">
+                            <svg viewBox="0 0 36 36">
+                                <path class="pf-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="pf-ring-fill" stroke-dasharray="@Model.CompatibilityScore, 100"
+                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span class="pf-score-text">@Model.CompatibilityScore%</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.AiAnalysisReport))
+                        {
+                            <p class="pf-ai-report">@Model.AiAnalysisReport</p>
+                        }
                     </div>
                 }
-            </div>
+            </aside>
+
         </div>
     </div>
+
+    <!-- FOOTER -->
+    <footer class="pf-footer">
+        <div class="pf-footer-inner">
+            <div>
+                <div class="pf-footer-brand">Tìm Ở Ghép FPT</div>
+                <p>Nền tảng kết nối sinh viên FPT Hòa Lạc tìm kiếm người ở ghép phù hợp và tin cậy.</p>
+            </div>
+            <div>
+                <div class="pf-footer-heading">Về chúng tôi</div>
+                <a href="#">Câu chuyện thương hiệu</a>
+                <a href="#">Đội ngũ phát triển</a>
+            </div>
+            <div>
+                <div class="pf-footer-heading">Điều khoản sử dụng</div>
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Quy định cộng đồng</a>
+            </div>
+            <div>
+                <div class="pf-footer-heading">Liên hệ hỗ trợ</div>
+                <span><i class="fas fa-envelope"></i> support@@fptroom.vn</span>
+                <span><i class="fas fa-phone-alt"></i> 1900 1234</span>
+            </div>
+        </div>
+        <div class="pf-footer-bottom">
+            <span>© 2024 Cộng đồng Sinh viên FPT Hòa Lạc</span>
+            <span>Trải nghiệm người dùng được ưu tiên hàng đầu</span>
+        </div>
+    </footer>
+
 </div>
 
 @section Scripts {
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        async function sendFriendRequest(targetUserId, btnElement) {
-            try {
-                const originalContent = btnElement.innerHTML;
-                btnElement.disabled = true;
-                btnElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-
-                const response = await fetch('/api/connections/request', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ targetUserId: targetUserId })
-                });
-
-                if (response.ok) {
-                    const container = document.getElementById('friend-action-container');
-                    container.innerHTML = `<button class="btn btn-secondary rounded-pill px-4 border-2 fw-bold" disabled>
-                                <i class="bi bi-clock-history me-1"></i> Đã gửi
-                            </button>`;
-                } else {
-                    const data = await response.json();
-                    alert(data.message || 'Có lỗi xảy ra');
-                    btnElement.disabled = false;
-                    btnElement.innerHTML = originalContent;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi kết nối');
-                btnElement.disabled = false;
-            }
-        }
-
-        async function respondFriendRequest(connectionId, action, btnElement) {
-            try {
-                const originalContent = btnElement.innerHTML;
-                const container = document.getElementById('friend-action-container');
-                // Disable all buttons in container
-                const buttons = container.querySelectorAll('button');
-                buttons.forEach(b => b.disabled = true);
-                btnElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-
-                const response = await fetch('/api/connections/respond', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ connectionId: parseInt(connectionId), action: action })
-                });
-
-                if (response.ok) {
-                    if (action === 'accept') {
-                        container.innerHTML = `<button class="btn btn-success rounded-pill px-4 border-2 fw-bold" disabled>
-                                <i class="bi bi-check-circle-fill me-1"></i> Bạn bè
-                            </button>`;
-                    } else {
-                        // If rejected, we can reload or show "Add Friend" again
-                         location.reload();
-                    }
-                } else {
-                    const data = await response.json();
-                    alert(data.message || 'Có lỗi xảy ra');
-                    buttons.forEach(b => b.disabled = false);
-                    btnElement.innerHTML = originalContent;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi kết nối');
-                location.reload();
-            }
-        }
-    </script>
 }

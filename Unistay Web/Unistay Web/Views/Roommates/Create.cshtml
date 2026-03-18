@@ -1,388 +1,348 @@
 @model Unistay_Web.Models.Roommate.RoommateProfile
 @{
-    ViewData["Title"] = "Tạo hồ sơ tìm bạn trọ";
+    ViewData["Title"] = "Đăng tin mới - UniStay";
+    ViewData["HideDefaultLayout"] = true;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isEdit = Model?.Id > 0;
 }
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.5);
-        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-        --input-bg: rgba(255, 255, 255, 0.5);
-        --text-primary: #1f2937;
-        --text-secondary: #6b7280;
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/create-post.css" asp-append-version="true" />
+}
 
-    .roommate-create-container {
-        min-height: 100vh;
-        background: radial-gradient(circle at top right, #e0e7ff 0%, #f3e8ff 40%, #ffffff 100%);
-        padding: 4rem 1rem;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
+<div class="cp-page">
 
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        box-shadow: var(--glass-shadow);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+    <!-- ===== BODY ===== -->
+    <div class="cp-body">
+        <div class="cp-container">
 
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
+            <!-- Page heading -->
+            <div class="cp-heading">
+                <div class="cp-step-label">BƯỚC ĐẦU TÌM TỔ ẤM</div>
+                <h1 class="cp-title">Đăng tin mới</h1>
+                <p class="cp-subtitle">Chia sẻ nhu cầu của bạn để tìm được căn phòng ưng ý hoặc những người bạn đồng hành tuyệt vời nhất.</p>
+            </div>
 
-    .section-title i {
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.5rem;
-    }
+            <div class="cp-layout">
+                <!-- LEFT: Form -->
+                <div class="cp-form-col">
 
-    .form-floating-custom {
-        position: relative;
-        margin-bottom: 1.5rem;
-    }
-
-    .form-control-custom {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        background: var(--input-bg);
-        border: 2px solid transparent;
-        border-radius: 16px;
-        font-size: 1rem;
-        color: var(--text-primary);
-        transition: all 0.3s ease;
-    }
-
-    .form-control-custom:focus {
-        background: #ffffff;
-        border-color: #818cf8;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        outline: none;
-    }
-
-    .form-label-custom {
-        position: absolute;
-        left: 1.25rem;
-        top: 1rem;
-        font-size: 1rem;
-        color: var(--text-secondary);
-        pointer-events: none;
-        transition: all 0.3s ease;
-        background: transparent;
-    }
-
-    .form-control-custom:focus ~ .form-label-custom,
-    .form-control-custom:not(:placeholder-shown) ~ .form-label-custom {
-        top: -0.6rem;
-        left: 1rem;
-        font-size: 0.85rem;
-        color: #6366f1;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 0 0.5rem;
-        border-radius: 4px;
-        font-weight: 600;
-    }
-
-    .upload-area {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 2px dashed #cbd5e1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        margin: 0 auto;
-        background: rgba(255,255,255,0.5);
-    }
-
-    .upload-area:hover {
-        border-color: #6366f1;
-        transform: scale(1.05);
-    }
-
-    .upload-area img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .upload-icon {
-        font-size: 2rem;
-        color: #94a3b8;
-        transition: color 0.3s ease;
-    }
-
-    .habit-chip {
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .habit-chip input {
-        display: none;
-    }
-
-    .habit-chip span {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: rgba(255, 255, 255, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        border-radius: 50px;
-        font-size: 0.95rem;
-        color: var(--text-secondary);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-weight: 500;
-    }
-
-    .habit-chip input:checked + span {
-        background: var(--primary-gradient);
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        border-color: transparent;
-        transform: translateY(-2px);
-    }
-
-    .btn-gradient {
-        background: var(--primary-gradient);
-        color: white;
-        padding: 1rem 3rem;
-        border-radius: 16px;
-        font-weight: 600;
-        border: none;
-        font-size: 1.1rem;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    }
-
-    .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-    }
-
-    .btn-gradient::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(rgba(255,255,255,0.2), transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .btn-gradient:hover::after {
-        opacity: 1;
-    }
-
-    /* Animation classes */
-    .fade-up {
-        animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .delay-100 { animation-delay: 0.1s; }
-    .delay-200 { animation-delay: 0.2s; }
-    .delay-300 { animation-delay: 0.3s; }
-
-    @@keyframes fadeUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
-
-<div class="roommate-create-container">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-8">
-                
-                <div class="text-center mb-5 fade-up">
-                    <h1 class="display-4 fw-bold mb-3" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        Tạo Hồ Sơ
-                    </h1>
-                    <p class="lead text-muted">
-                        Kết nối với người bạn cùng phòng lý tưởng của bạn
-                    </p>
-                </div>
-
-                <form asp-action="Create" method="post" enctype="multipart/form-data" class="fade-up delay-100">
-                    <!-- Personal Info Card -->
-                    <div class="glass-card p-4 p-md-5 mb-4">
-                        <div class="section-title">
-                            <i class="bi bi-person-badge-fill"></i>
-                            <span>Thông tin cá nhân</span>
-                        </div>
-
-                        <div class="row align-items-center mb-5">
-                            <div class="col-md-4 text-center mb-4 mb-md-0">
-                                <label for="avatarUpload" class="upload-area shadow-sm">
-                                    <span class="upload-icon" id="uploadPlaceholder" style="@(string.IsNullOrEmpty(ViewBag.UserAvatar) ? "" : "display: none;")">
-                                        <i class="bi bi-camera-fill"></i>
-                                    </span>
-                                    <img id="avatarPreview" src="@(ViewBag.UserAvatar ?? "#")" alt="Avatar" style="@(string.IsNullOrEmpty(ViewBag.UserAvatar) ? "display: none;" : "display: block;")" />
-                                </label>
-                                <input type="file" id="avatarUpload" name="avatarUpload" class="d-none" accept="image/*">
-                                <div class="mt-3 text-sm text-muted">Chạm để tải ảnh</div>
+                    <!-- Post type selector -->
+                    <div class="cp-type-selector">
+                        <label class="cp-type-card @(Model?.Id == 0 || Model == null ? "cp-type-active" : "")" id="typeRoom">
+                            <input type="radio" name="postType" value="room" checked />
+                            <div class="cp-type-icon"><i class="fas fa-search"></i></div>
+                            <div class="cp-type-info">
+                                <div class="cp-type-title">Đăng tin tìm phòng</div>
+                                <div class="cp-type-desc">Bạn đang tìm một nơi không gian sống riêng tư hoặc chia sẻ.</div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="row g-3">
-                                    <div class="col-12">
-                                        <div class="form-floating-custom">
-                                            <input type="text" class="form-control-custom" id="fullName" name="FullName" placeholder=" " value="@ViewBag.UserFullName">
-                                            <label class="form-label-custom">Họ và tên</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating-custom">
-                                            <select class="form-control-custom" asp-for="Gender" style="appearance: none;">
-                                                <option value="">Chọn giới tính</option>
-                                                <option value="Male">Nam</option>
-                                                <option value="Female">Nữ</option>
-                                                <option value="Other">Khác</option>
-                                            </select>
-                                            <label class="form-label-custom">Giới tính</label>
-                                            <i class="bi bi-chevron-down position-absolute" style="right: 1.25rem; top: 1.1rem; color: #9ca3af; pointer-events: none;"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating-custom">
-                                            <input type="number" class="form-control-custom" id="birthYear" name="BirthYear" placeholder=" " value="@ViewBag.UserBirthYear">
-                                            <label class="form-label-custom">Năm sinh</label>
-                                        </div>
-                                    </div>
-                                </div>
+                        </label>
+                        <label class="cp-type-card" id="typeRoommate">
+                            <input type="radio" name="postType" value="roommate" />
+                            <div class="cp-type-icon cp-type-icon-green"><i class="fas fa-user-friends"></i></div>
+                            <div class="cp-type-info">
+                                <div class="cp-type-title">Đăng tin tìm bạn ở ghép</div>
+                                <div class="cp-type-desc">Bạn có phòng và đang tìm người chia sẻ chi phí.</div>
                             </div>
-                        </div>
-
-                         <div class="form-floating-custom">
-                            <input type="text" class="form-control-custom" id="occupation" name="Occupation" placeholder=" " value="@ViewBag.UserOccupation">
-                            <label class="form-label-custom">Nghề nghiệp / Trường học</label>
-                        </div>
-
-                        <div class="form-floating-custom mb-0">
-                            <textarea class="form-control-custom" id="introduction" name="Introduction" style="height: 120px; resize: none;" placeholder=" ">@ViewBag.UserBio</textarea>
-                            <label class="form-label-custom">Giới thiệu bản thân (Sở thích, tính cách...)</label>
-                        </div>
+                        </label>
                     </div>
 
-                    <!-- Preferences Card -->
-                    <div class="glass-card p-4 p-md-5 mb-4 fade-up delay-200">
-                        <div class="section-title">
-                            <i class="bi bi-sliders"></i>
-                            <span>Mong muốn tìm bạn</span>
+                    <!-- Main form card -->
+                    <div class="cp-form-card">
+                        <div class="cp-form-section-title">
+                            <span class="cp-form-section-bar"></span> Thông tin cơ bản
                         </div>
 
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control-custom" asp-for="PreferredArea" placeholder=" ">
-                                    <label class="form-label-custom">Khu vực mong muốn</label>
-                                </div>
-                            </div>
-                             <div class="col-md-6">
-                                <div class="form-floating-custom">
-                                    <input type="date" class="form-control-custom" asp-for="MoveInDate" placeholder=" ">
-                                    <label class="form-label-custom">Ngày dự kiến chuyển vào</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control-custom" asp-for="Budget" placeholder=" ">
-                                    <label class="form-label-custom">Ngân sách tối đa (VNĐ/tháng)</label>
-                                </div>
-                            </div>
-                        </div>
+                        <form asp-action="Create" method="post" enctype="multipart/form-data" id="mainForm">
+                            @Html.AntiForgeryToken()
 
-                        <div class="mt-4">
-                            <label class="d-block mb-3 fw-bold text-secondary text-uppercase small ls-1">Thói quen & Lối sống</label>
-                            <div class="d-flex flex-wrap gap-3">
-                                @{
-                                    var allHabits = new[] { "Không hút thuốc", "Gọn gàng", "Yên tĩnh", "Thích nấu ăn", "Thân thiện", "Thích thú cưng", "Ngủ sớm", "Tiệc tùng" };
-                                    var currentHabits = Model?.Habits?.Split(", ", StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
-                                    
-                                    foreach (var habit in allHabits)
+                            <!-- Title -->
+                            <div class="cp-field">
+                                <label class="cp-label">Tiêu đề bài viết</label>
+                                <input type="text" name="FullName" value="@ViewBag.UserFullName"
+                                       class="cp-input" placeholder="VD: Tìm phòng trọ khu vực Bách Khoa, đầy đủ tiện nghi" />
+                            </div>
+
+                            <!-- Description -->
+                            <div class="cp-field">
+                                <label class="cp-label">Nội dung chi tiết</label>
+                                <textarea name="Introduction" class="cp-textarea"
+                                          placeholder="Mô tả kỹ hơn về mong muốn của bạn: diện tích, tiện ích, thói quen sinh hoạt...">@ViewBag.UserBio</textarea>
+                            </div>
+
+                            <!-- Area + Budget row -->
+                            <div class="cp-row-2">
+                                <div class="cp-field">
+                                    <label class="cp-label">Khu vực mong muốn</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-map-marker-alt cp-input-icon"></i>
+                                        <input type="text" asp-for="PreferredArea" class="cp-input cp-input-padded"
+                                               placeholder="Quận, Phường hoặc Tên trường" />
+                                    </div>
+                                </div>
+                                <div class="cp-field">
+                                    <label class="cp-label">Ngân sách dự kiến (VNĐ/tháng)</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-wallet cp-input-icon"></i>
+                                        <input type="number" asp-for="Budget" class="cp-input cp-input-padded"
+                                               placeholder="VD: 3000000" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="Gender" id="genderHidden" value="@(Model?.Gender ?? "Male")" />
+                            <input type="hidden" asp-for="MoveInDate" id="moveInHidden" />
+                            <input type="hidden" asp-for="Habits" id="HabitsInput" />
+
+                            <!-- Gender + Move-in row -->
+                            <div class="cp-row-2">
+                                <div class="cp-field">
+                                    <label class="cp-label">Giới tính</label>
+                                    <div class="cp-gender-row">
+                                        <label class="cp-gender-opt @(Model?.Gender == "Male" || Model?.Gender == null ? "active" : "")">
+                                            <input type="radio" name="genderSelect" value="Male" @(Model?.Gender != "Female" && Model?.Gender != "Other" ? "checked" : "") />
+                                            <i class="fas fa-mars"></i> Nam
+                                        </label>
+                                        <label class="cp-gender-opt @(Model?.Gender == "Female" ? "active" : "")">
+                                            <input type="radio" name="genderSelect" value="Female" @(Model?.Gender == "Female" ? "checked" : "") />
+                                            <i class="fas fa-venus"></i> Nữ
+                                        </label>
+                                        <label class="cp-gender-opt @(Model?.Gender == "Other" ? "active" : "")">
+                                            <input type="radio" name="genderSelect" value="Other" @(Model?.Gender == "Other" ? "checked" : "") />
+                                            <i class="fas fa-genderless"></i> Khác
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="cp-field">
+                                    <label class="cp-label">Ngày dự kiến chuyển vào</label>
+                                    <div class="cp-input-icon-wrap">
+                                        <i class="fas fa-calendar-alt cp-input-icon"></i>
+                                        <input type="date" name="moveInDatePicker" class="cp-input cp-input-padded"
+                                               value="@(Model?.MoveInDate?.ToString("yyyy-MM-dd") ?? "")" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Habits -->
+                            <div class="cp-field">
+                                <label class="cp-label">Thói quen & Lối sống</label>
+                                <div class="cp-habits-wrap">
+                                    @{
+                                        var allHabits = new[] { "Không hút thuốc", "Gọn gàng", "Yên tĩnh", "Thích nấu ăn", "Thân thiện", "Thích thú cưng", "Ngủ sớm", "Tiệc tùng" };
+                                        var currentHabits = Model?.Habits?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                                    }
+                                    @foreach (var habit in allHabits)
                                     {
                                         var isChecked = currentHabits.Contains(habit);
-                                        <label class="habit-chip">
-                                            <input type="checkbox" name="HabitsList" value="@habit" @(isChecked ? "checked" : "")>
-                                            <span>@habit</span>
+                                        <label class="cp-habit-chip @(isChecked ? "active" : "")">
+                                            <input type="checkbox" name="HabitsList" value="@habit" @(isChecked ? "checked" : "") />
+                                            @habit
                                         </label>
                                     }
-                                }
-                                <input type="hidden" asp-for="Habits" id="HabitsInput" />
+                                </div>
                             </div>
+
+                            <!-- Image upload -->
+                            <div class="cp-field">
+                                <label class="cp-label">Hình ảnh minh họa</label>
+                                <label class="cp-upload-zone" for="avatarUpload" id="uploadZone">
+                                    <div class="cp-upload-inner" id="uploadPlaceholder">
+                                        <div class="cp-upload-icon"><i class="fas fa-image"></i></div>
+                                        <div class="cp-upload-text">Tải ảnh lên hoặc kéo thả vào đây</div>
+                                        <div class="cp-upload-hint">Hỗ trợ JPG, PNG (Tối đa 5 ảnh, mỗi ảnh < 5MB)</div>
+                                    </div>
+                                </label>
+                                <input type="file" id="avatarUpload" name="avatarUpload" class="cp-file-input" accept="image/*" />
+
+                                <!-- Preview thumbnails -->
+                                <div class="cp-preview-row" id="previewRow">
+                                    @if (!string.IsNullOrEmpty(ViewBag.UserAvatar as string))
+                                    {
+                                        <div class="cp-thumb">
+                                            <img src="@ViewBag.UserAvatar" alt="preview" />
+                                            <button type="button" class="cp-thumb-remove"><i class="fas fa-times"></i></button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Occupation (hidden, sent to controller) -->
+                            <input type="hidden" name="Occupation" value="@ViewBag.UserOccupation" />
+                            <input type="hidden" name="BirthYear" value="@ViewBag.UserBirthYear" />
+
+                            <!-- Actions -->
+                            <div class="cp-form-actions">
+                                <button type="button" class="cp-btn-draft" onclick="saveDraft()">
+                                    <i class="fas fa-save"></i> Lưu nháp
+                                </button>
+                                <button type="submit" class="cp-btn-submit">
+                                    <i class="fas fa-check-circle"></i> Xác nhận Đăng tin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Sidebar -->
+                <aside class="cp-sidebar">
+                    <!-- Tips -->
+                    <div class="cp-tip-card">
+                        <div class="cp-tip-header">
+                            <div class="cp-tip-icon"><i class="fas fa-lightbulb"></i></div>
+                            <span class="cp-tip-title">Mẹo đăng tin hiệu quả</span>
                         </div>
+                        <ol class="cp-tip-list">
+                            <li>Tiêu đề rõ ràng bao gồm khu vực và mục đích chính giúp tin của bạn dễ được tìm thấy hơn.</li>
+                            <li>Cung cấp ít nhất 3 ảnh thật về không gian sống hiện tại (nếu tìm ở ghép) để tăng độ tin cậy.</li>
+                            <li>Nêu rõ các quy tắc chung như giờ giấc, hút thuốc, hay thú cưng để lọc đối tác tương xứng.</li>
+                        </ol>
                     </div>
 
-                    <!-- Submit Button -->
-                    <div class="text-center fade-up delay-300">
-                        <button type="submit" class="btn-gradient shadow-lg">
-                            Hoàn tất hồ sơ
-                        </button>
+                    <!-- Support -->
+                    <div class="cp-support-card">
+                        <div class="cp-support-badge">HỖ TRỢ 24/7</div>
+                        <div class="cp-support-title">Cần trợ giúp đăng bài?</div>
+                        <p class="cp-support-desc">Nếu gặp khó khăn trong quá trình đăng tin, đừng ngần ngại liên hệ với đội ngũ hỗ trợ Unistay.</p>
+                        <a href="#" class="cp-support-link">
+                            Trung tâm hỗ trợ <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
-                </form>
+                </aside>
             </div>
         </div>
     </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="cp-footer">
+        <div class="cp-footer-inner">
+            <div class="cp-footer-brand-col">
+                <div class="cp-footer-brand">UniStay</div>
+                <p>Hệ thống tìm phòng trọ và ở ghép hàng đầu dành cho sinh viên Việt Nam.</p>
+                <div class="cp-footer-socials">
+                    <a href="#"><i class="fas fa-globe"></i></a>
+                    <a href="#"><i class="fas fa-at"></i></a>
+                </div>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Khám phá</div>
+                <a href="#">Tìm phòng gần trường</a>
+                <a href="#">Tìm bạn ở ghép mới</a>
+                <a href="#">Tin tức sinh viên</a>
+                <a href="#">Cẩm nang thuê trọ</a>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Công ty</div>
+                <a href="#">Về chúng tôi</a>
+                <a href="#">Tuyển dụng</a>
+                <a href="#">Đối tác</a>
+                <a href="#">Báo chí</a>
+            </div>
+            <div>
+                <div class="cp-footer-heading">Tải ứng dụng</div>
+                <a href="#" class="cp-store-btn">
+                    <i class="fab fa-google-play"></i>
+                    <div><span>GET IT ON</span><strong>Google Play</strong></div>
+                </a>
+                <a href="#" class="cp-store-btn">
+                    <i class="fab fa-apple"></i>
+                    <div><span>DOWNLOAD ON THE</span><strong>App Store</strong></div>
+                </a>
+            </div>
+        </div>
+        <div class="cp-footer-bottom">
+            <span>© 2024 Unistay Corp. All rights reserved.</span>
+            <div class="cp-footer-links">
+                <a href="#">Điều khoản dịch vụ</a>
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Cài đặt Cookie</a>
+            </div>
+        </div>
+    </footer>
+
 </div>
 
 @section Scripts {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <script>
-        // Avatar Preview Logic
-        const avatarUpload = document.getElementById('avatarUpload');
-        const avatarPreview = document.getElementById('avatarPreview');
-        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Post type toggle
+            document.querySelectorAll('.cp-type-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    document.querySelectorAll('.cp-type-card').forEach(c => c.classList.remove('cp-type-active'));
+                    this.classList.add('cp-type-active');
+                });
+            });
 
-        avatarUpload.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    avatarPreview.src = e.target.result;
-                    avatarPreview.style.display = 'block';
-                    uploadPlaceholder.style.display = 'none';
-                }
-                reader.readAsDataURL(this.files[0]);
+            // Gender radio sync to hidden input
+            document.querySelectorAll('input[name="genderSelect"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    document.getElementById('genderHidden').value = this.value;
+                    document.querySelectorAll('.cp-gender-opt').forEach(o => o.classList.remove('active'));
+                    this.closest('.cp-gender-opt').classList.add('active');
+                });
+            });
+
+            // Move-in date sync
+            const moveInPicker = document.querySelector('input[name="moveInDatePicker"]');
+            if (moveInPicker) {
+                moveInPicker.addEventListener('change', function () {
+                    document.getElementById('moveInHidden').value = this.value;
+                });
+            }
+
+            // Habits chips
+            document.querySelectorAll('.cp-habit-chip input').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    this.closest('.cp-habit-chip').classList.toggle('active', this.checked);
+                    updateHabits();
+                });
+            });
+
+            function updateHabits() {
+                const selected = Array.from(document.querySelectorAll('.cp-habit-chip input:checked'))
+                    .map(cb => cb.value);
+                document.getElementById('HabitsInput').value = selected.join(', ');
+            }
+            updateHabits();
+
+            // Image upload preview
+            const fileInput = document.getElementById('avatarUpload');
+            const previewRow = document.getElementById('previewRow');
+            const uploadZone = document.getElementById('uploadZone');
+
+            uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('cp-upload-drag'); });
+            uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('cp-upload-drag'));
+            uploadZone.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadZone.classList.remove('cp-upload-drag');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', function () {
+                handleFiles(this.files);
+            });
+
+            function handleFiles(files) {
+                Array.from(files).slice(0, 5).forEach(file => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const thumb = document.createElement('div');
+                        thumb.className = 'cp-thumb';
+                        thumb.innerHTML = `<img src="${e.target.result}" alt="preview"><button type="button" class="cp-thumb-remove"><i class="fas fa-times"></i></button>`;
+                        thumb.querySelector('.cp-thumb-remove').addEventListener('click', () => thumb.remove());
+                        previewRow.appendChild(thumb);
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
         });
 
-        // Habits Collection Logic
-        const habitsCheckboxes = document.querySelectorAll('input[name="HabitsList"]');
-        const habitsInput = document.getElementById('HabitsInput');
-
-        function updateHabits() {
-            const selected = Array.from(habitsCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            habitsInput.value = selected.join(', ');
+        function saveDraft() {
+            const btn = document.querySelector('.cp-btn-draft');
+            btn.innerHTML = '<i class="fas fa-check"></i> Đã lưu nháp';
+            btn.style.color = '#10b981';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Lưu nháp'; btn.style.color = ''; }, 2000);
         }
-
-        habitsCheckboxes.forEach(cb => {
-            cb.addEventListener('change', updateHabits);
-        });
-        
-        // Init habits input on load just in case
-        updateHabits();
     </script>
 }
