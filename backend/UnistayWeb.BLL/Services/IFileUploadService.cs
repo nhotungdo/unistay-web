@@ -1,0 +1,12 @@
+using Microsoft.AspNetCore.Http;
+
+namespace UnistayWeb.BLL.Services
+{
+    public interface IFileUploadService
+    {
+        Task<string> UploadAvatarAsync(IFormFile file, string userId);
+        Task<string> UploadCoverPhotoAsync(IFormFile file, string userId);
+        Task<string> UploadImageAsync(IFormFile file, string folder);
+        Task<string> UploadFileAsync(IFormFile file, string folder);
+    }
+}
