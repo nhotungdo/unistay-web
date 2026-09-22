@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Facebook, Instagram, Twitter, Mail, MapPin, Phone } from 'lucide-react';
+import { Globe, MessageCircle, Share2, Mail, MapPin, Phone } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -14,9 +14,9 @@ export default function Footer() {
               Nền tảng tìm kiếm phòng trọ và người ở ghép thông minh, kết nối sinh viên nhanh chóng và an toàn.
             </p>
             <div className="social-links">
-              <a href="#" aria-label="Facebook"><Facebook size={20} /></a>
-              <a href="#" aria-label="Instagram"><Instagram size={20} /></a>
-              <a href="#" aria-label="Twitter"><Twitter size={20} /></a>
+              <a href="#" aria-label="Facebook"><Globe size={20} /></a>
+              <a href="#" aria-label="Instagram"><MessageCircle size={20} /></a>
+              <a href="#" aria-label="Twitter"><Share2 size={20} /></a>
             </div>
           </div>
           

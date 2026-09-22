@@ -47,7 +47,7 @@ export default function AdminPage() {
     if (!loading) {
       if (!user) {
         router.push('/login?redirect=/admin');
-      } else if (user.role !== 'Admin') {
+      } else if (!user.roles?.includes('Admin')) {
         router.push('/');
       } else {
         fetchData();
@@ -55,7 +55,7 @@ export default function AdminPage() {
     }
   }, [user, loading, router, activeTab]);
 
-  if (loading || !user || user.role !== 'Admin') return null;
+  if (loading || !user || !user.roles?.includes('Admin')) return null;
 
   return (
     <div className="admin-layout fade-in">

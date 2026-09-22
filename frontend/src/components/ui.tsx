@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { CircleAlert, CircleCheck, Info, LoaderCircle } from 'lucide-react';
 
-export function Spinner({ size = 20 }: { size?: number }) {
-  return <LoaderCircle size={size} className="spinner" aria-hidden="true" />;
+export function Spinner({ size = 20, color }: { size?: number, color?: string }) {
+  return <LoaderCircle size={size} color={color} className="spinner" aria-hidden="true" />;
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
@@ -19,10 +19,10 @@ const bannerConfig: Record<BannerVariant, { className: string; Icon: typeof Info
   info: { className: 'alert-banner info', Icon: Info, role: 'status' },
 };
 
-export function AlertBanner({ variant, children }: { variant: BannerVariant; children: React.ReactNode }) {
+export function AlertBanner({ variant, children, className: extraClassName }: { variant: BannerVariant; children: React.ReactNode; className?: string }) {
   const { className, Icon, role } = bannerConfig[variant];
   return (
-    <div className={className} role={role}>
+    <div className={`${className} ${extraClassName || ''}`} role={role}>
       <Icon size={18} className="alert-banner-icon" aria-hidden="true" />
       <span>{children}</span>
     </div>
