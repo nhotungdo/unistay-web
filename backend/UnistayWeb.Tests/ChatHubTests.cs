@@ -16,7 +16,7 @@ namespace UnistayWeb.Tests
     public class ChatHubTests
     {
         private Mock<IHubCallerClients> _mockClients;
-        private Mock<IClientProxy> _mockClientProxy;
+        private Mock<ISingleClientProxy> _mockClientProxy;
         private Mock<HubCallerContext> _mockContext;
         private Mock<IGroupManager> _mockGroups;
         private ApplicationDbContext _dbContext;
@@ -32,12 +32,13 @@ namespace UnistayWeb.Tests
 
             // Setup Mocks
             _mockClients = new Mock<IHubCallerClients>();
-            _mockClientProxy = new Mock<IClientProxy>();
+            _mockClientProxy = new Mock<ISingleClientProxy>();
             _mockContext = new Mock<HubCallerContext>();
             _mockGroups = new Mock<IGroupManager>();
 
             _mockClients.Setup(clients => clients.Group(It.IsAny<string>())).Returns(_mockClientProxy.Object);
             _mockClients.Setup(clients => clients.Groups(It.IsAny<IReadOnlyList<string>>())).Returns(_mockClientProxy.Object);
+            _mockClients.Setup(clients => clients.Caller).Returns(_mockClientProxy.Object);
 
             _mockGroups.Setup(g => g.AddToGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
@@ -80,8 +81,8 @@ namespace UnistayWeb.Tests
             // 2. Should join chat group
             _mockGroups.Verify(g => g.AddToGroupAsync("conn1", $"group_{groupId}", default), Times.Once);
             // 3. Should notify friends
-            _mockClients.Verify(c => c.Groups(It.Is<IReadOnlyList<string>>(l => l.Contains(friendId))), Times.Once);
-             _mockClientProxy.Verify(c => c.SendCoreAsync("UserOnline", It.IsAny<object[]>(), default), Times.Once);
+            _mockClients.Verify(c => c.Group(friendId), Times.Once);
+            _mockClientProxy.Verify(c => c.SendCoreAsync("UserOnline", It.Is<object[]>(o => o[0].ToString() == userId), default), Times.Once);
         }
 
         [Fact]
@@ -246,10 +247,10 @@ namespace UnistayWeb.Tests
 
             // Assert
             var dbMsg = await _dbContext.Messages.FindAsync(msg.Id);
-            Assert.Equal(MessageStatus.Seen, dbMsg.Status);
+            Assert.Equal(MessageStatus.Seen, dbMsg!.Status);
 
              _mockClients.Verify(c => c.Group(senderId), Times.Once);
-             _mockClientProxy.Verify(c => c.SendCoreAsync("MessageSeen", It.Is<object[]>(o => (int)o[0] == msg.Id), default), Times.Once);
+             _mockClientProxy.Verify(c => c.SendCoreAsync("MessageSeen", It.Is<object[]>(o => o.Length == 1 && (int)o[0].GetType().GetProperty("messageId")!.GetValue(o[0])! == msg.Id), default), Times.Once);
         }
 
         [Fact]
@@ -264,13 +265,15 @@ namespace UnistayWeb.Tests
              _dbContext.Connections.Add(new Connection { RequesterId = userId, AddresseeId = friendId, Status = ConnectionStatus.Accepted });
              await _dbContext.SaveChangesAsync();
 
-            // Act
+            // Act: connect first so the static OnlineUsers state is populated -
+            // the hub only notifies friends when the last connection leaves.
+            await _hub.OnConnectedAsync();
             await _hub.OnDisconnectedAsync(null);
 
             // Assert
             _mockGroups.Verify(g => g.RemoveFromGroupAsync("conn1", userId, default), Times.Once);
-            
-            _mockClients.Verify(c => c.Groups(It.Is<IReadOnlyList<string>>(l => l.Contains(friendId))), Times.Once);
+            _mockClients.Verify(c => c.Group(friendId), Times.Exactly(2)); // UserOnline + UserOffline
+            _mockClientProxy.Verify(c => c.SendCoreAsync("UserOnline", It.Is<object[]>(o => o[0].ToString() == userId), default), Times.Once);
             _mockClientProxy.Verify(c => c.SendCoreAsync("UserOffline", It.Is<object[]>(o => o[0].ToString() == userId), default), Times.Once);
         }
     }

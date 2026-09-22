@@ -34,7 +34,7 @@ namespace UnistayWeb.Tests.Controllers
             _dbContext = new ApplicationDbContext(options);
 
             var store = new Mock<IUserStore<UserProfile>>();
-            _mockUserManager = new Mock<UserManager<UserProfile>>(store.Object, null, null, null, null, null, null, null, null);
+            _mockUserManager = new Mock<UserManager<UserProfile>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
             
             _mockEnv = new Mock<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>();
             _mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<MessagesController>>();
@@ -94,7 +94,7 @@ namespace UnistayWeb.Tests.Controllers
             var item = Assert.Single(items);
             Assert.Equal(otherId, item.UserId);
             Assert.Equal("Other", item.UserName);
-            Assert.Equal("Hello", item.LastMessage.Content);
+            Assert.Equal("Hello", item.LastMessage!.Content);
         }
 
         [Fact]
@@ -146,7 +146,7 @@ namespace UnistayWeb.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             var msgInDb = await _dbContext.Messages.FirstOrDefaultAsync();
             Assert.NotNull(msgInDb);
-            Assert.Equal("Test", msgInDb.Content);
+            Assert.Equal("Test", msgInDb!.Content);
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace UnistayWeb.Tests.Controllers
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var dbMsg = await _dbContext.Messages.FindAsync(msg.Id);
-            Assert.Equal(MessageStatus.Delivered, dbMsg.Status);
+            Assert.Equal(MessageStatus.Delivered, dbMsg!.Status);
         }
         [Fact]
         public async Task GetGroupMessages_ShouldReturnMessages()
@@ -204,7 +204,7 @@ namespace UnistayWeb.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            dynamic data = okResult.Value;
+            dynamic data = okResult.Value!;
             // The result is an anonymous type or object with 'data' property
             // We can inspect it via reflection or Cast if we knew the type.
             // Simplified check:
@@ -232,7 +232,7 @@ namespace UnistayWeb.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             var msgInDb = await _dbContext.Messages.FirstOrDefaultAsync(m => m.Content == "Group Hi");
             Assert.NotNull(msgInDb);
-            Assert.Equal(groupId, msgInDb.ChatGroupId);
+            Assert.Equal(groupId, msgInDb!.ChatGroupId);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace UnistayWeb.Tests.Services
     [TestClass]
     public class ZodiacServiceTests
     {
-        private IMemoryCache _cache;
-        private ZodiacService _zodiacService;
+        private IMemoryCache _cache = null!;
+        private ZodiacService _zodiacService = null!;
 
         [TestInitialize]
         public void Setup()
